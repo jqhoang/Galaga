@@ -2,14 +2,10 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <stddef.h>
-#include "fonts.h"
+#include "shapes.h"
 
 
 uint32_t charSize = 20;
-
-Point scalePoint(Point p, uint32_t scale){
-	return (Point){p.x * scale, p.y * scale};
-}
 
 void fonts_init(void){
 	characters[0] = (FontCharacter){{{{0, 20}, {10, 0}}, {{20, 20}, {10, 0}}, {{5, 12}, {15, 12}}}, 3};
@@ -40,4 +36,11 @@ void fonts_init(void){
 	characters[25] = (FontCharacter){{{{0, 0}, {20, 0}}, {{20, 0}, {0, 20}}, {{0, 20}, {20, 20}}}, 3};
 }
 
-//Solution goes here
+Shape ship = (Shape){{
+	{{0, -3}, 0x000000FF},
+	{{0, -2}, 0x000000FF},
+	{{-1, -1}, 0x000000FF}, {{0, -1}, 0x000000FF}, {{1, -1}, 0x000000FF},
+	{{-1, 0}, 0x000000FF}, {{0, 0}, 0x000000FF}, {{1, 0}, 0x000000FF},
+	{{-2, 1}, 0x000000FF}, {{-1, 1}, 0x000000FF}, {{0, 1}, 0x000000FF}, {{1, 1}, 0x000000FF}, {{2, 1}, 0x000000FF},
+	{{-2, 2}, 0x000000FF}, {{-1, 2}, 0x000000FF}, {{0, 2}, 0x000000FF}, {{1, 2}, 0x000000FF}, {{2, 2}, 0x000000FF}
+	}, 18, {500, 600}};

@@ -45,9 +45,13 @@
  */
 #include <stdint.h>
 
+#define UART0_CHAR_NOT_READY    0
+#define UART0_CHAR_READY        1
+
 void uart0_init( void );
 void uart0_putc( uint8_t c );
 uint8_t uart0_getc( void );
+uint32_t uart0_nonblocking_getc( uint8_t* c );
 void uart0_puts( uint8_t *s );
 void uart0_puthex_64_bits( uint64_t );
 void uart0_puthex_32_bits( uint32_t );

@@ -141,6 +141,22 @@ void uart0_putc( uint8_t c ) {
 /**
  * Receive a character
  */
+uint32_t uart0_nonblocking_getc( uint8_t* c ) {
+
+    if( *UART0_FR&0x10 )
+        return UART0_CHAR_NOT_READY;
+
+    *c=(char)(*UART0_DR);
+
+    if( *c =='\r' )
+        *c = '\n';  //Convert CR to NL
+
+    return UART0_CHAR_READY;
+}
+
+/**
+ * Receive a character
+ */
 uint8_t uart0_getc( void ) {
         char r;
     /* wait until something is in the buffer */

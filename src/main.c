@@ -24,6 +24,8 @@
 #include "system.h"
 #include "hal/hal.h"
 #include "alice.h"
+#include "hal/shapes.h"
+#include "drivers/uart/uart.h"
 
 
 /*
@@ -62,65 +64,25 @@ void main(){
 	//for(uint32_t i=0; i<SYSTEM_SCREEN_WIDTH - 5; i++)
 	//	put_pixel_raw( i + SYSTEM_SCREEN_WIDTH * 45, 0xFFFFFFFF );
 
-    while(true){
-        if(changed){
-			if(false){
-				hal_video_putc('a', zoom_text, 0xFFFFFFFF);
-				hal_video_putc('b', zoom_text, 0xFFFFFFFF);
-				hal_video_putc('c', zoom_text, 0xFFFFFFFF);
-				hal_video_putc('d', zoom_text, 0xFFFFFFFF);
-				hal_video_putc('e', zoom_text, 0xFFFFFFFF);
-				hal_video_putc('f', zoom_text, 0xFFFFFFFF);
-				hal_video_putc('g', zoom_text, 0xFFFFFFFF);
-				hal_video_putc('h', zoom_text, 0xFFFFFFFF);
-				hal_video_putc('i', zoom_text, 0xFFFFFFFF);
-				hal_video_putc('j', zoom_text, 0xFFFFFFFF);
-				hal_video_putc('k', zoom_text, 0xFFFFFFFF);
-				hal_video_putc('l', zoom_text, 0xFFFFFFFF);
-				hal_video_putc('m', zoom_text, 0xFFFFFFFF);
-				hal_video_putc('n', zoom_text, 0xFFFFFFFF);
-				hal_video_putc('o', zoom_text, 0xFFFFFFFF);
-				hal_video_putc('p', zoom_text, 0xFFFFFFFF);
-				hal_video_putc('q', zoom_text, 0xFFFFFFFF);
-				hal_video_putc('r', zoom_text, 0xFFFFFFFF);
-				hal_video_putc('s', zoom_text, 0xFFFFFFFF);
-				hal_video_putc('t', zoom_text, 0xFFFFFFFF);
-				hal_video_putc('u', zoom_text, 0xFFFFFFFF);
-				hal_video_putc('v', zoom_text, 0xFFFFFFFF);
-				hal_video_putc('w', zoom_text, 0xFFFFFFFF);
-				hal_video_putc('x', zoom_text, 0xFFFFFFFF);
-				hal_video_putc('y', zoom_text, 0xFFFFFFFF);
-				hal_video_putc('z', zoom_text, 0xFFFFFFFF);
-				hal_video_puts( "test" , 1, 0xFFFFFFFF );
-			} else {
-				hal_video_clear();
-				hal_video_puts( "Excerpt from Alice in Wonderland:\n\r\n\r\n\r" , 2, VIDEO_COLOR_GREEN );
 
-				hal_video_puts( title , zoom_title, VIDEO_COLOR_WHITE );
-				//hal_video_puts( alice , zoom_text, VIDEO_COLOR_WHITE );
+	
+	
+	
+	// GAME LOOP (20 fps)
+	while(true){
+    	uint8_t c=0;
+		uart0_nonblocking_getc(&c);
+		if (c == 'a')
+			ship.origin.x -= 10;
+		if (c == 'd')
+			ship.origin.x += 10;
+		//clearDrawScreen();
+		drawShape(&ship);
+		draw();
+		//hal_cpu_delay(10);
+	}
+    hal_io_serial_puts( SerialA, "It focking works\n\r" );
 
-				hal_video_puts( "\n\r(-) Zoom Out, (+) Zoom In", 2, VIDEO_COLOR_RED  );
-			}
-        }
-        switch( hal_io_serial_getc(SerialA) ){
-            case '+':
-                hal_io_serial_puts( SerialA, "Zoom In\n\r" );
-                zoom_title++;
-                zoom_text++;
-                changed=true;
-                break;
-            case '-':
-                hal_io_serial_puts( SerialA, "Zoom Out\n\r" );
-                zoom_title--;
-                zoom_text--;
-                changed=true;
-                break;
-            default:
-                changed=false;
-                hal_io_serial_puts( SerialA, "working" );
-                break;
-        }
-    }
 }
 
 void wait_for_ten_secs(void){
