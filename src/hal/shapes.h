@@ -21,7 +21,7 @@ typedef struct {
 } Line;
 
 typedef struct {
-	Pixel pixels[100];
+	Pixel pixels[81];
 	uint8_t pixelNum;
 } Shape;
 
@@ -41,7 +41,7 @@ void fonts_init(void);
 FontCharacter* getCharacter(uint8_t c);
 
 // Shape ship;
-Object obj;
+Object ship;
 
 Shape objectShapes[3];
 

@@ -12,7 +12,10 @@ static uint32_t* fb; //Framebuffer pointer
 
 uint32_t cursorPos = SYSTEM_SCREEN_WIDTH * 5 + 5;
 uint32_t lineHeight = 0;
-uint32_t drawingScreen[SYSTEM_SCREEN_WIDTH * SYSTEM_SCREEN_LENGTH];
+Object* objectsToDraw[100];
+uint32_t objectsToDrawCount = 0;
+Object lastFrameObjetsToDraw[100];
+uint32_t lastFrameObjectsToDrawCount = 0;
 
 /*
 *  HAL Video Init
@@ -21,11 +24,7 @@ uint32_t hal_video_init( void ){
     if( (fb=fb_init()) == NULL ){       //Init framebuffer
         return HAL_FAILED;
     }
-	for(uint32_t i=0; i<SYSTEM_SCREEN_WIDTH; i++)
-		for(uint32_t j=0; j<SYSTEM_SCREEN_LENGTH; j++)
-			drawingScreen[j * SYSTEM_SCREEN_WIDTH + i] = VIDEO_COLOR_BLACK;
     return HAL_SUCCESS;
-
 }
 
 uint32_t point_to_raw(Point p){
@@ -49,25 +48,30 @@ int32_t sign(int32_t x){
 *	Drawing screen functions
 */
 
-void drawShape(Shape* s){
-	for(uint8_t i = 0; i < s->numPixels; ++i)
-		for (uint8_t x = 0; x < PIXEL_SIZE; ++x)
-			for (uint8_t y = 0; y < PIXEL_SIZE; ++y)
-				drawingScreen[x_y_to_raw(s->pixels[i].p.x * PIXEL_SIZE + x, s->pixels[i].p.y * PIXEL_SIZE + y) + point_to_raw(s->origin)] = s->pixels[i].colour;
+void drawShape(Object* s){
+	objectsToDraw[objectsToDrawCount] = s;
+	++objectsToDrawCount;
 }	
 
-void clearDrawScreen(){
-	for(uint32_t i=0; i<SYSTEM_SCREEN_WIDTH; i++)
-		for(uint32_t j=0; j<SYSTEM_SCREEN_LENGTH; j++)
-			drawingScreen[j * SYSTEM_SCREEN_WIDTH + i] = VIDEO_COLOR_BLACK;
-}
-
 void draw(){
-	for(uint32_t i=450; i<SYSTEM_SCREEN_WIDTH; i++)
-		for(uint32_t j=550; j<SYSTEM_SCREEN_LENGTH; j++) {
-			*(fb + j * SYSTEM_SCREEN_WIDTH + i) = drawingScreen[j * SYSTEM_SCREEN_WIDTH + i];
-			drawingScreen[j * SYSTEM_SCREEN_WIDTH + i] = VIDEO_COLOR_BLACK;
-		}
+	for(uint32_t s = 0; s < lastFrameObjectsToDrawCount; ++s)
+		for(uint8_t i = 0; i < objectShapes[lastFrameObjetsToDraw[s].type].pixelNum; ++i)
+			for (uint8_t x = 0; x < PIXEL_SIZE; ++x)
+				for (uint8_t y = 0; y < PIXEL_SIZE; ++y)
+					put_pixel_raw(
+						x_y_to_raw(objectShapes[lastFrameObjetsToDraw[s].type].pixels[i].p.x * PIXEL_SIZE + x, objectShapes[lastFrameObjetsToDraw[s].type].pixels[i].p.y * PIXEL_SIZE + y) + point_to_raw(lastFrameObjetsToDraw[s].origin), 
+						VIDEO_COLOR_BLACK);
+	for(uint32_t s = 0; s < objectsToDrawCount; ++s){
+		lastFrameObjetsToDraw[s] = (Object){objectsToDraw[s]->origin, objectsToDraw[s]->type};
+		for(uint8_t i = 0; i < objectShapes[objectsToDraw[s]->type].pixelNum; ++i)
+			for (uint8_t x = 0; x < PIXEL_SIZE; ++x)
+				for (uint8_t y = 0; y < PIXEL_SIZE; ++y)
+					put_pixel_raw(
+						x_y_to_raw(objectShapes[objectsToDraw[s]->type].pixels[i].p.x * PIXEL_SIZE + x, objectShapes[objectsToDraw[s]->type].pixels[i].p.y * PIXEL_SIZE + y) + point_to_raw(objectsToDraw[s]->origin), 
+						objectShapes[objectsToDraw[s]->type].pixels[i].colour);
+	}
+	lastFrameObjectsToDrawCount = objectsToDrawCount;
+	objectsToDrawCount = 0;
 }
 
 void drawLine(Point start, Point end, VideoColor color){

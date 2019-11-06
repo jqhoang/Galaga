@@ -79,7 +79,7 @@ void main(){
 		//clearDrawScreen();
 		drawShape(&ship);
 		draw();
-		//hal_cpu_delay(10);
+		hal_cpu_delay(20);
 	}
     hal_io_serial_puts( SerialA, "It focking works\n\r" );
 
