@@ -42,6 +42,7 @@ FontCharacter* getCharacter(uint8_t c);
 
 // Shape ship;
 Object ship;
+Object enemy;
 
 Shape objectShapes[3];
 

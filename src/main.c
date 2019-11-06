@@ -77,7 +77,9 @@ void main(){
 		if (c == 'd')
 			ship.origin.x += 10;
 		//clearDrawScreen();
+		// drawShape(&enemy);
 		drawShape(&ship);
+		drawShape(&enemy);
 		draw();
 		hal_cpu_delay(20);
 	}
