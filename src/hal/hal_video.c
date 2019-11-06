@@ -4,8 +4,7 @@
 #include "hal.h"
 #include "shapes.h"
 #include "../drivers/fb/fb.h"
-
-#define NULL 0
+#include "../kprintf/kprintf.h"
 
 
 static uint32_t* fb; //Framebuffer pointer
@@ -24,6 +23,8 @@ uint32_t hal_video_init( void ){
     if( (fb=fb_init()) == NULL ){       //Init framebuffer
         return HAL_FAILED;
     }
+	//fb=(void*)((unsigned long)1007681536); // THIS IS THE NUMBER THAT THE FRAME BUFFER IS SET TO, CAN WE CHANGE THIS TO ANY NUMBER WE WANT TO INCORPORATE FRONT AND BACK FRAME BUFFERS
+	kprintf( "\n\rmagic_number: %0xf", fb );
     return HAL_SUCCESS;
 }
 
