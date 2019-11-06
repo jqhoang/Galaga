@@ -1,1 +1,4 @@
 *.ps1
+*.dump
+*.img
+*.lss
