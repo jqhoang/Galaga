@@ -3,6 +3,8 @@
 
 #define PIXEL_SIZE 4
 
+enum ObjType{Enemy, Ship, Bullet}; 
+
 typedef struct {
 	int16_t x;
 	int16_t y; 
@@ -19,10 +21,14 @@ typedef struct {
 } Line;
 
 typedef struct {
-	Pixel pixels[160];
-	uint8_t numPixels;
-	Point origin;
+	Pixel pixels[100];
+	uint8_t pixelNum;
 } Shape;
+
+typedef struct {
+	Point origin;//center of object
+	enum ObjType type;
+} Object;
 
 typedef struct {
 	Line lines[10];
@@ -34,6 +40,10 @@ FontCharacter characters[26];
 void fonts_init(void);
 FontCharacter* getCharacter(uint8_t c);
 
-Shape ship;
+// Shape ship;
+Object obj;
+
+Shape objectShapes[3];
+
 
 #endif
