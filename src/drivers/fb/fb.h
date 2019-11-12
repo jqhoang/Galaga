@@ -26,3 +26,4 @@
 #include <stdint.h>
 
 uint32_t* fb_init();
+uint32_t flip_buffer();

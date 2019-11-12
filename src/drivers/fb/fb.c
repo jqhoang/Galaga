@@ -45,9 +45,11 @@
  */
 #include "../mbox/mbox.h"
 #include "fb.h"
+#include "../../kprintf/kprintf.h"
 
 static unsigned int width, height, pitch;
 static uint32_t *fb;  //The framebuffer
+static uint32_t buffer = 0;
 
 #define NULL 0
 
@@ -69,13 +71,13 @@ uint32_t* fb_init()
     mbox[8] = 8;
     mbox[9] = 8;
     mbox[10] = 1024;        //FrameBufferInfo.virtual_width
-    mbox[11] = 768;         //FrameBufferInfo.virtual_height
+    mbox[11] = 768 * 2;//768;         //FrameBufferInfo.virtual_height
 
     mbox[12] = 0x48009; //set virt offset
-    mbox[13] = 8;
-    mbox[14] = 8;
+    mbox[13] = 8;			// Size of value
+    mbox[14] = 0;			// Size of results
     mbox[15] = 0;           //FrameBufferInfo.x_offset
-    mbox[16] = 0;           //FrameBufferInfo.y.offset
+    mbox[16] = 768;           //FrameBufferInfo.y.offset
 
     mbox[17] = 0x48005; //set depth
     mbox[18] = 4;
@@ -88,9 +90,9 @@ uint32_t* fb_init()
     mbox[24] = 1;           //RGB, not BGR preferably
 
     mbox[25] = 0x40001; //get framebuffer, gets alignment on request
-    mbox[26] = 8;
+    mbox[26] = 0;
     mbox[27] = 8;
-    mbox[28] = 4096;        //FrameBufferInfo.pointer
+    mbox[28] = 4096;        //FrameBufferInfo.pointer - Passed in value seems useless, gpu sets this value on return anyways
     mbox[29] = 0;           //FrameBufferInfo.size
 
     mbox[30] = 0x40008; //get pitch
@@ -99,17 +101,35 @@ uint32_t* fb_init()
     mbox[33] = 0;           //FrameBufferInfo.pitch
 
     mbox[34] = MBOX_TAG_LAST;
-
+	
     if(mbox_call(MBOX_CH_PROP) && mbox[20]==32 && mbox[28]!=0) {
         mbox[28]&=0x3FFFFFFF;
         width=mbox[5];
         height=mbox[6];
         pitch=mbox[33];
         fb=(void*)((unsigned long)mbox[28]);
+		kprintf("\n\ry:%d", mbox[29]);
     } else {
         //Failed to init screen at 32-bit 1024x768
         return NULL;
     }
 
     return fb;
+}
+
+uint32_t flip_buffer(){
+	buffer = (buffer == 0) ? 1 : 0;
+	
+	mbox[0] = 8*4;
+    mbox[1] = 0;
+	
+	mbox[2] = 0x48009; //set virt offset
+    mbox[3] = 8;
+    mbox[4] = 0;
+    mbox[5] = 0;           //FrameBufferInfo.x_offset
+    mbox[6] = 768;           //FrameBufferInfo.y.offset
+    mbox[7] = MBOX_TAG_LAST;
+	
+	kprintf("\n\r%0x-%d, x:%d, y:%d", mbox_call(MBOX_CH_PROP), buffer, mbox[5], mbox[6]);
+	return mbox[6];
 }
