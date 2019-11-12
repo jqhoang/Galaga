@@ -82,7 +82,7 @@ void main(){
 		drawShape(&ship2);
 		drawShape(&enemy);
 		draw();
-		hal_cpu_delay(20);
+		hal_cpu_delay(50);
 	}
     hal_io_serial_puts( SerialA, "It focking works\n\r" );
 

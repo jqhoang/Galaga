@@ -65,7 +65,7 @@ void draw(){
 						x_y_to_raw(objectShapes[lastFrameObjetsToDraw[s].type].pixels[i].p.x * PIXEL_SIZE + x, objectShapes[lastFrameObjetsToDraw[s].type].pixels[i].p.y * PIXEL_SIZE + y) + point_to_raw(lastFrameObjetsToDraw[s].origin), 
 						VIDEO_COLOR_BLACK);
 	for(uint32_t s = 0; s < objectsToDrawCount; ++s){
-		kprintf("\n\r%d cond:%d~%d", s, (objectsToDraw[s]->origin.y - offset) >= 0 && (objectsToDraw[s]->origin.y - offset) < SYSTEM_SCREEN_LENGTH,  point_to_raw(objectsToDraw[s]->origin) - 768 * SYSTEM_SCREEN_WIDTH);
+		//kprintf("\n\r%d cond:%d~%d", s, (objectsToDraw[s]->origin.y - offset) >= 0 && (objectsToDraw[s]->origin.y - offset) < SYSTEM_SCREEN_LENGTH,  point_to_raw(objectsToDraw[s]->origin) - 768 * SYSTEM_SCREEN_WIDTH);
 		lastFrameObjetsToDraw[s] = (Object){objectsToDraw[s]->origin, objectsToDraw[s]->type};
 		for(uint8_t i = 0; i < objectShapes[objectsToDraw[s]->type].pixelNum; ++i)
 			for (uint8_t x = 0; x < PIXEL_SIZE; ++x)
