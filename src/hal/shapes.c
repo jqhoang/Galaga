@@ -53,6 +53,11 @@ Object ship = (Object){
 	Ship
 };
 
+Object ship2 = (Object){
+	{200, 868},
+	Ship
+};
+
 Object enemy = (Object){
 	{200, 300},
 	Enemy

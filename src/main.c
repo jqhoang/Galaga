@@ -79,6 +79,7 @@ void main(){
 		//clearDrawScreen();
 		// drawShape(&enemy);
 		drawShape(&ship);
+		drawShape(&ship2);
 		drawShape(&enemy);
 		draw();
 		hal_cpu_delay(20);
