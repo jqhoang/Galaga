@@ -127,9 +127,9 @@ uint32_t flip_buffer(){
     mbox[3] = 8;
     mbox[4] = 0;
     mbox[5] = 0;           //FrameBufferInfo.x_offset
-    mbox[6] = 768;           //FrameBufferInfo.y.offset
+    mbox[6] = 768 * buffer;           //FrameBufferInfo.y.offset
     mbox[7] = MBOX_TAG_LAST;
 	
-	kprintf("\n\r%0x-%d, x:%d, y:%d", mbox_call(MBOX_CH_PROP), buffer, mbox[5], mbox[6]);
+	//kprintf("\n\r%0x-%d, x:%d, y:%d", mbox_call(MBOX_CH_PROP), buffer, mbox[5], mbox[6]);
 	return mbox[6];
 }
