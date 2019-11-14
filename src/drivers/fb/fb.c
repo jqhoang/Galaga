@@ -46,6 +46,7 @@
 #include "../mbox/mbox.h"
 #include "fb.h"
 #include "../../kprintf/kprintf.h"
+#include "../../system.h"
 
 static unsigned int width, height, pitch;
 static uint32_t *fb;  //The framebuffer
@@ -64,14 +65,14 @@ uint32_t* fb_init()
     mbox[2] = 0x48003;  //set phy wh
     mbox[3] = 8;
     mbox[4] = 8;
-    mbox[5] = 1024;         //FrameBufferInfo.width
-    mbox[6] = 768;          //FrameBufferInfo.height
+    mbox[5] = SYSTEM_SCREEN_WIDTH;         //FrameBufferInfo.width
+    mbox[6] = SYSTEM_SCREEN_LENGTH;          //FrameBufferInfo.height
 
     mbox[7] = 0x48004;  //set virt wh
     mbox[8] = 8;
     mbox[9] = 8;
-    mbox[10] = 1024;        //FrameBufferInfo.virtual_width
-    mbox[11] = 768 * 2;//768;         //FrameBufferInfo.virtual_height
+    mbox[10] = SYSTEM_SCREEN_WIDTH;        //FrameBufferInfo.virtual_width
+    mbox[11] = SYSTEM_SCREEN_LENGTH * 2;//768;         //FrameBufferInfo.virtual_height
 
     mbox[12] = 0x48009; //set virt offset
     mbox[13] = 8;			// Size of value
@@ -130,6 +131,7 @@ uint32_t flip_buffer(){
     mbox[6] = 768 * buffer;           //FrameBufferInfo.y.offset
     mbox[7] = MBOX_TAG_LAST;
 	
+	// kprintf("\n\rasd:%d", get_system_timer());
 	//kprintf("\n\r%0x-%d, x:%d, y:%d", mbox_call(MBOX_CH_PROP), buffer, mbox[5], mbox[6]);
 	return mbox[6];
 }

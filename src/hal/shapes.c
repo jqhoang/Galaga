@@ -10,9 +10,17 @@
 void shapes_init(void){
 
 
-	for(uint8_t i = 0; i <= MAX_BULLETS; i++) {
+	for(uint8_t i = 0; i < MAX_BULLETS; i++) {
 		bulletArr[i] = (Object){{0, -10},Bullet};
 	}
+
+	for(uint8_t i = 0; i < MAX_ENEMIES; i++) {
+		enemyArr[i] = (Object){{0, -10},Enemy};
+	}
+
+	enemyArr[MAX_ENEMIES-1] = (Object){{200, 300},Enemy};
+
+
 
 }
 
@@ -33,10 +41,10 @@ Object ship = (Object){
 	Ship
 };
 
-Object enemy = (Object){
-	{200, 300},
-	Enemy
-};
+// Object enemy = (Object){
+// 	{200, 300},
+// 	Enemy
+// };
 
 Shape objectShapes[3] = { 
 	(Shape){{

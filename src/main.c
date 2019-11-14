@@ -24,9 +24,11 @@
 #include <stdlib.h> 
 #include "system.h"
 #include "hal/hal.h"
+#include "drivers/delays/delays.h"
 #include "alice.h"
 #include "hal/shapes.h"
 #include "drivers/uart/uart.h"
+#include "./kprintf/kprintf.h"
 
 
 /*
@@ -51,8 +53,11 @@ uint32_t zoom_title=1;
 uint32_t zoom_text=1;
 const uint8_t maxBullets = 10;
 bool changed=true;
+unsigned long prevbullet = 0;
 
 void main(){
+
+	kprintf("\r\nenemyposy:%d",enemy.origin.y);
 
     hal_io_serial_init();
 	shapes_init();
@@ -67,7 +72,6 @@ void main(){
 	//for(uint32_t i=0; i<SYSTEM_SCREEN_WIDTH - 5; i++)
 	//	put_pixel_raw( i + SYSTEM_SCREEN_WIDTH * 45, 0xFFFFFFFF );
 	
-
 	// GAME LOOP (20 fps)
 	while(true){
     	uint8_t c=0;
@@ -77,10 +81,13 @@ void main(){
 		if (c == 'd')
 			ship.origin.x += 10;
 		if (c == 'k'){
-			for(uint8_t i = 0; i < MAX_BULLETS;i++) {
-				if(bulletArr[i].origin.y <=-10) {
-					bulletArr[i] = (Object){{ship.origin.x, ship.origin.y},Bullet};
-					break;
+			if(get_system_timer() - prevbullet >= 250000) {
+				for(uint8_t i = 0; i < MAX_BULLETS;i++) {
+					if(bulletArr[i].origin.y <=0) {
+						prevbullet = get_system_timer();
+						bulletArr[i] = (Object){{ship.origin.x, ship.origin.y},Bullet};
+						break;
+					}
 				}
 			}
 		}
@@ -88,11 +95,34 @@ void main(){
 		//clearDrawScreen();
 		// drawShape(&enemy);
 		drawShape(&ship);
-		drawShape(&enemy);
+
+		// drawShape(&enemy);
+		for(uint8_t i = 0; i < MAX_ENEMIES; i++) {
+			if(enemyArr[i].origin.y != -10) {
+				drawShape(&enemyArr[i]);
+			}
+		}
 		for(uint8_t i = 0; i<MAX_BULLETS;i++) {
-			if(bulletArr[i].origin.y >-10) {
+			
+			if(bulletArr[i].origin.y >=10) {
 				drawShape(&bulletArr[i]);
-				bulletArr[i].origin.y -=10;
+				bool killed = false;
+				for(uint8_t t = 0; t < MAX_ENEMIES; t++) {
+					if(enemyArr[t].origin.y != -10) {
+						// kprintf("\n\a%d",i);
+						
+						if((bulletArr[i].origin.y <= enemyArr[t].origin.y+20 && bulletArr[i].origin.y >= enemyArr[t].origin.y-20)
+						&& (bulletArr[i].origin.x <= enemyArr[t].origin.x+20 && bulletArr[i].origin.x >= enemyArr[t].origin.x-20)){
+							bulletArr[i].origin.y = 0;
+							kprintf("\n\rkilled");
+							killed=true;
+						}
+					}
+				}
+				if(!killed) {
+					kprintf("\r\nbulletposy:%d",bulletArr[i].origin.y);
+					bulletArr[i].origin.y -=10;
+				}
 			}
 		}
 		draw();
@@ -101,6 +131,7 @@ void main(){
     hal_io_serial_puts( SerialA, "It focking works\n\r" );
 
 }
+
 
 void wait_for_ten_secs(void){
     for(uint32_t i=0; i<10; i++)

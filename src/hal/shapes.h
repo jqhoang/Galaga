@@ -3,6 +3,7 @@
 
 #define PIXEL_SIZE 4
 #define MAX_BULLETS 10
+#define MAX_ENEMIES 10
 
 enum ObjType{Enemy, Ship, Bullet}; 
 
@@ -46,6 +47,7 @@ FontCharacter* getCharacter(uint8_t c);
 // Shape ship;
 Object ship;
 Object enemy;
+Object enemyArr[MAX_ENEMIES];
 
 Shape objectShapes[3];
 Object bulletArr[MAX_BULLETS];
