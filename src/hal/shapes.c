@@ -90,7 +90,7 @@ Shape objectShapes[3] = {
 };
 
 Point objectSize[3] = { 
-	(Point){18,18},
+	(Point){(9*PIXEL_SIZE)/2,(9*PIXEL_SIZE)/2},
 	(Point){0,0},
 	(Point){0,0}
 };

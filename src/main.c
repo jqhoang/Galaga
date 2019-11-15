@@ -94,6 +94,7 @@ void main(){
 			}
 		}
 		if (c == 'k'){
+			// kprintf("\r\norigX:%d",abs2(-160));
 			if(get_system_timer() - prevbullet >= 200000) {
 				for(uint8_t i = 0; i < MAX_BULLETS;i++) {
 					if(bulletArr[i].origin.y <=0) {
@@ -170,19 +171,21 @@ void bulletCheck(uint8_t index) {
 			// kprintf("\r\nbulletposy:%d",bulletArr[index].origin.y);
 			bulletArr[index].origin.y = 0;
 			kprintf("\n\rkilled");
+			kprintf("\n\rEnemyPos%d",t);
 			
 			delEnemy(t);
 			return;
 		}
 	}
-	// kprintf("\r\nbulletposy:%d",bulletArr[index].origin.y);
+	// kprintf("\r\nbulletposy:%d",bulletArr[index].origin.x);
 	bulletArr[index].origin.y -=10;
 }
 //semi hardcoded for bullets and enemys should change this after, by adding types
 bool collisionCheck(Object obj1, Object obj2) {
 	// if((p1X <= p2X+objectSize[Enemy].x && p1X >= p2X-objectSize[Enemy].x)
 	// && (p1Y <= p2Y+objectSize[Enemy].y && p1Y >= p2Y-objectSize[Enemy].y))
-	// kprintf("\r\norigX:%d",abs2(obj1.origin.x));
+
+
 	if((abs2(obj1.origin.x-obj2.origin.x) < (objectSize[obj1.type].x + objectSize[obj2.type].x))
 	&& (abs2(obj1.origin.y-obj2.origin.y) < (objectSize[obj1.type].y + objectSize[obj2.type].y)))
 		return true;
