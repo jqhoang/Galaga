@@ -73,7 +73,14 @@ void main(){
 
 
 
-	
+	for (int i = 50; i < SYSTEM_SCREEN_WIDTH - 50; ++i)
+		put_pixel_raw(i + SYSTEM_SCREEN_WIDTH * 50, VIDEO_COLOR_WHITE);
+	for (int i = 50; i < SYSTEM_SCREEN_WIDTH - 50; ++i)
+		put_pixel_raw(i + SYSTEM_SCREEN_WIDTH * (SYSTEM_SCREEN_LENGTH - 50), VIDEO_COLOR_WHITE);
+	for (int i = 50; i < SYSTEM_SCREEN_LENGTH - 50; ++i)
+		put_pixel_raw(50 + SYSTEM_SCREEN_WIDTH * i, VIDEO_COLOR_WHITE);
+	for (int i = 50; i < SYSTEM_SCREEN_LENGTH - 50; ++i)
+		put_pixel_raw(SYSTEM_SCREEN_WIDTH - 50 + SYSTEM_SCREEN_WIDTH * i, VIDEO_COLOR_WHITE);
 	
 	
 	// GAME LOOP (~20 fps)
@@ -108,9 +115,9 @@ void main(){
 		
 		
 		enemyArr[curEnemyArr[0]].origin = enemyPath[i];
-		if (i < 104)
+		if (i < 80)
 			++i;
-		if (i == 104)
+		if (i == 80)
 			i = 0;
 
 		//clearDrawScreen();
