@@ -122,7 +122,6 @@ void main(){
 		if (i == 80)
 			i = 0;
 
-
 		drawShape(&ship);
 		// curEnemy = 1;
 		for(uint8_t i = 0; i <curEnemy;i++) {
@@ -152,7 +151,7 @@ void bulletCheck(uint8_t index) {
 			return;
 		}
 	}
-	bulletArr[index].origin.y -=25;
+	bulletArr[index].origin.y -=35;
 }
 //semi hardcoded for bullets and enemys should change this after, by adding types
 bool collisionCheck(Object obj1, Object obj2) {

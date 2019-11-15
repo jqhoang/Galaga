@@ -58,7 +58,7 @@ void delEnemy(uint8_t index) {
 // };
 
 Object ship = (Object){
-	{500, 600},
+	{500, 750},
 	Ship
 };
 
