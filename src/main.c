@@ -49,6 +49,7 @@ void *memcpy(void *dest, void *src, size_t n){
 
 void wait_for_ten_secs(void);
 void bulletCheck(uint8_t index);
+bool collisionCheck(Object obj1, Object obj2);
 
 uint32_t zoom_title=1;
 uint32_t zoom_text=1;
@@ -105,7 +106,7 @@ void main(){
 		}
 		
 		
-		enemy.origin = enemyPath[i];
+		enemyArr[curEnemyArr[0]].origin = enemyPath[i];
 		if (i < 108)
 			++i;
 		if (i == 108)
@@ -114,7 +115,7 @@ void main(){
 		//clearDrawScreen();
 		// drawShape(&enemy);
 		drawShape(&ship);
-
+		// curEnemy = 1;
 		// drawShape(&enemy);
 		for(uint8_t i = 0; i <curEnemy;i++) {
 			drawShape(&enemyArr[curEnemyArr[i]]);
@@ -155,17 +156,37 @@ void bulletCheck(uint8_t index) {
 	// 	kprintf("\r\nbulletposy:%d",bulletArr[i].origin.y);
 	// 	bulletArr[i].origin.y -=10;
 	// // }
+	// for(uint8_t t = 0; t <curEnemy;t++) {
+	// 	if((bulletArr[index].origin.y <= enemyArr[curEnemyArr[t]].origin.y+objectSize[Enemy].x && bulletArr[index].origin.y >= enemyArr[curEnemyArr[t]].origin.y-objectSize[Enemy].x)
+	// 	&& (bulletArr[index].origin.x <= enemyArr[curEnemyArr[t]].origin.x+objectSize[Enemy].y && bulletArr[index].origin.x >= enemyArr[curEnemyArr[t]].origin.x-objectSize[Enemy].y)){
+	// 		bulletArr[index].origin.y = 0;
+	// 		kprintf("\n\rkilled");
+	// 		delEnemy(t);
+	// 		return;
+	// 	}
+	// }
 	for(uint8_t t = 0; t <curEnemy;t++) {
-		if((bulletArr[index].origin.y <= enemyArr[curEnemyArr[t]].origin.y+20 && bulletArr[index].origin.y >= enemyArr[curEnemyArr[t]].origin.y-20)
-		&& (bulletArr[index].origin.x <= enemyArr[curEnemyArr[t]].origin.x+20 && bulletArr[index].origin.x >= enemyArr[curEnemyArr[t]].origin.x-20)){
+		if(collisionCheck(bulletArr[index],enemyArr[curEnemyArr[t]])){
+			// kprintf("\r\nbulletposy:%d",bulletArr[index].origin.y);
 			bulletArr[index].origin.y = 0;
 			kprintf("\n\rkilled");
+			
 			delEnemy(t);
 			return;
 		}
 	}
-	kprintf("\r\nbulletposy:%d",bulletArr[index].origin.y);
+	// kprintf("\r\nbulletposy:%d",bulletArr[index].origin.y);
 	bulletArr[index].origin.y -=10;
+}
+//semi hardcoded for bullets and enemys should change this after, by adding types
+bool collisionCheck(Object obj1, Object obj2) {
+	// if((p1X <= p2X+objectSize[Enemy].x && p1X >= p2X-objectSize[Enemy].x)
+	// && (p1Y <= p2Y+objectSize[Enemy].y && p1Y >= p2Y-objectSize[Enemy].y))
+	// kprintf("\r\norigX:%d",abs2(obj1.origin.x));
+	if((abs2(obj1.origin.x-obj2.origin.x) < (objectSize[obj1.type].x + objectSize[obj2.type].x))
+	&& (abs2(obj1.origin.y-obj2.origin.y) < (objectSize[obj1.type].y + objectSize[obj2.type].y)))
+		return true;
+	return false;
 }
 
 void wait_for_ten_secs(void){

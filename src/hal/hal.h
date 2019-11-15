@@ -43,6 +43,7 @@ void hal_io_serial_puts( SerialId, uint8_t* );
 
 void put_pixel_raw( uint32_t, uint32_t);
 uint32_t hal_video_init( void );
+int16_t abs2(uint16_t v);
 void hal_video_clear( void );
 void drawShape(Object* s);
 void draw();
