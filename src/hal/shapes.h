@@ -2,6 +2,8 @@
 #define SHAPES_H
 
 #define PIXEL_SIZE 4
+#define MAX_BULLETS 10
+#define MAX_ENEMIES 10
 
 enum ObjType{Enemy, Ship, Bullet}; 
 
@@ -37,16 +39,19 @@ typedef struct {
 
 uint32_t charSize;
 FontCharacter characters[26];
-void fonts_init(void);
+void shapes_init(void);
 FontCharacter* getCharacter(uint8_t c);
+
+
 
 // Shape ship;
 Object ship;
-Object ship2;
 Object enemy;
+Object enemyArr[MAX_ENEMIES];
 
 Shape objectShapes[3];
 
 Point enemyPath[120];
+Object bulletArr[MAX_BULLETS];
 
 #endif

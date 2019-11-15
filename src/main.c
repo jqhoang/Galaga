@@ -21,8 +21,10 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include <stdlib.h> 
 #include "system.h"
 #include "hal/hal.h"
+#include "drivers/delays/delays.h"
 #include "alice.h"
 #include "hal/shapes.h"
 #include "drivers/uart/uart.h"
@@ -49,11 +51,16 @@ void wait_for_ten_secs(void);
 
 uint32_t zoom_title=1;
 uint32_t zoom_text=1;
+const uint8_t maxBullets = 10;
 bool changed=true;
+unsigned long prevbullet = 0;
 
 void main(){
 
+	kprintf("\r\nenemyposy:%d",enemy.origin.y);
+
     hal_io_serial_init();
+	shapes_init();
 
     if( hal_video_init() == HAL_FAILED ){
         while(true){
@@ -76,6 +83,17 @@ void main(){
 			ship.origin.x -= 10;
 		if (c == 'd')
 			ship.origin.x += 10;
+		if (c == 'k'){
+			if(get_system_timer() - prevbullet >= 250000) {
+				for(uint8_t i = 0; i < MAX_BULLETS;i++) {
+					if(bulletArr[i].origin.y <=0) {
+						prevbullet = get_system_timer();
+						bulletArr[i] = (Object){{ship.origin.x, ship.origin.y},Bullet};
+						break;
+					}
+				}
+			}
+		}
 		
 		
 		enemy.origin = enemyPath[i];
@@ -83,15 +101,46 @@ void main(){
 			++i;
 		if (i == 108)
 			i = 0;
-		
+
+		//clearDrawScreen();
+		// drawShape(&enemy);
 		drawShape(&ship);
-		drawShape(&ship2);
-		drawShape(&enemy);
+
+		// drawShape(&enemy);
+		for(uint8_t i = 0; i < MAX_ENEMIES; i++) {
+			if(enemyArr[i].origin.y != -10) {
+				drawShape(&enemyArr[i]);
+			}
+		}
+		for(uint8_t i = 0; i<MAX_BULLETS;i++) {
+			
+			if(bulletArr[i].origin.y >=10) {
+				drawShape(&bulletArr[i]);
+				bool killed = false;
+				for(uint8_t t = 0; t < MAX_ENEMIES; t++) {
+					if(enemyArr[t].origin.y != -10) {
+						// kprintf("\n\a%d",i);
+						
+						if((bulletArr[i].origin.y <= enemyArr[t].origin.y+20 && bulletArr[i].origin.y >= enemyArr[t].origin.y-20)
+						&& (bulletArr[i].origin.x <= enemyArr[t].origin.x+20 && bulletArr[i].origin.x >= enemyArr[t].origin.x-20)){
+							bulletArr[i].origin.y = 0;
+							kprintf("\n\rkilled");
+							killed=true;
+						}
+					}
+				}
+				if(!killed) {
+					kprintf("\r\nbulletposy:%d",bulletArr[i].origin.y);
+					bulletArr[i].origin.y -=10;
+				}
+			}
+		}
 		draw();
 		hal_cpu_delay(50);
 	}
 
 }
+
 
 void wait_for_ten_secs(void){
     for(uint32_t i=0; i<10; i++)
