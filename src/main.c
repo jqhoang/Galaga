@@ -107,9 +107,9 @@ void main(){
 		
 		
 		enemyArr[curEnemyArr[0]].origin = enemyPath[i];
-		if (i < 108)
+		if (i < 104)
 			++i;
-		if (i == 108)
+		if (i == 104)
 			i = 0;
 
 		//clearDrawScreen();
