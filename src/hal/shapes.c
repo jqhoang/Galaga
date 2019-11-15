@@ -38,7 +38,10 @@ void addEnemy(uint8_t index) {
 
 void delEnemy(uint8_t index) {
 	curEnemy -= 1;
-	curEnemyArr[index] = curEnemyArr[curEnemy];
+	// kprintf("\n\r%d",enemyArr[curEnemyArr[curEnemy]].origin.x);
+	if(index!=curEnemy) {
+		curEnemyArr[index] = curEnemyArr[curEnemy];
+	}
 
 }
 

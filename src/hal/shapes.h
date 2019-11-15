@@ -2,7 +2,7 @@
 #define SHAPES_H
 
 #define PIXEL_SIZE 4
-#define MAX_BULLETS 5
+#define MAX_BULLETS 3
 #define MAX_ENEMIES 10
 
 enum ObjType{Enemy, Ship, Bullet}; 

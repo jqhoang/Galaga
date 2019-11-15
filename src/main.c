@@ -95,7 +95,7 @@ void main(){
 		}
 		if (c == 'k'){
 			// kprintf("\r\norigX:%d",abs2(-160));
-			if(get_system_timer() - prevbullet >= 200000) {
+			if(get_system_timer() - prevbullet >= 150000) {
 				for(uint8_t i = 0; i < MAX_BULLETS;i++) {
 					if(bulletArr[i].origin.y <=0) {
 						prevbullet = get_system_timer();
@@ -106,30 +106,24 @@ void main(){
 			}
 		}
 		
-		
+		// if(enemyArr)
+		//when enemy at 0 dies, we change the array so that the next enemy becomes 0
+		//tis makes it look like the enemy that is moving did not get killed.
 		enemyArr[curEnemyArr[0]].origin = enemyPath[i];
 		if (i < 108)
 			++i;
 		if (i == 108)
 			i = 0;
 
-		//clearDrawScreen();
-		// drawShape(&enemy);
+
 		drawShape(&ship);
 		// curEnemy = 1;
-		// drawShape(&enemy);
 		for(uint8_t i = 0; i <curEnemy;i++) {
 			drawShape(&enemyArr[curEnemyArr[i]]);
 		}
-		// for(uint8_t i = 0; i < MAX_ENEMIES; i++) {
-		// 	if(enemyArr[i].origin.y != -10) {
-		// 		drawShape(&enemyArr[i]);
-				
-		// 	}
-		// }
 
 		for(uint8_t i = 0; i<MAX_BULLETS;i++) {
-			if(bulletArr[i].origin.y >=10) {
+			if(bulletArr[i].origin.y >0) {
 				drawShape(&bulletArr[i]);
 				bulletCheck(i);
 			}
@@ -141,49 +135,21 @@ void main(){
 }
 //
 void bulletCheck(uint8_t index) {
-	// // bool killed = false;
-	// for(uint8_t t = 0; t < MAX_ENEMIES; t++) {
-	// 	if(enemyArr[t].origin.y != -10) {
-	// 		if((bulletArr[i].origin.y <= enemyArr[t].origin.y+20 && bulletArr[i].origin.y >= enemyArr[t].origin.y-20)
-	// 		&& (bulletArr[i].origin.x <= enemyArr[t].origin.x+20 && bulletArr[i].origin.x >= enemyArr[t].origin.x-20)){
-	// 			bulletArr[i].origin.y = 0;
-	// 			kprintf("\n\rkilled");
-	// 			// killed=true;
-	// 			return;
-	// 		}
-	// 	}
-	// }
-	// // if(!killed) {
-	// 	kprintf("\r\nbulletposy:%d",bulletArr[i].origin.y);
-	// 	bulletArr[i].origin.y -=10;
-	// // }
-	// for(uint8_t t = 0; t <curEnemy;t++) {
-	// 	if((bulletArr[index].origin.y <= enemyArr[curEnemyArr[t]].origin.y+objectSize[Enemy].x && bulletArr[index].origin.y >= enemyArr[curEnemyArr[t]].origin.y-objectSize[Enemy].x)
-	// 	&& (bulletArr[index].origin.x <= enemyArr[curEnemyArr[t]].origin.x+objectSize[Enemy].y && bulletArr[index].origin.x >= enemyArr[curEnemyArr[t]].origin.x-objectSize[Enemy].y)){
-	// 		bulletArr[index].origin.y = 0;
-	// 		kprintf("\n\rkilled");
-	// 		delEnemy(t);
-	// 		return;
-	// 	}
-	// }
 	for(uint8_t t = 0; t <curEnemy;t++) {
 		if(collisionCheck(bulletArr[index],enemyArr[curEnemyArr[t]])){
 			// kprintf("\r\nbulletposy:%d",bulletArr[index].origin.y);
 			bulletArr[index].origin.y = 0;
 			kprintf("\n\rkilled");
-			kprintf("\n\rEnemyPos%d",t);
 			
 			delEnemy(t);
 			return;
 		}
 	}
-	// kprintf("\r\nbulletposy:%d",bulletArr[index].origin.x);
-	bulletArr[index].origin.y -=10;
+	bulletArr[index].origin.y -=25;
 }
 //semi hardcoded for bullets and enemys should change this after, by adding types
 bool collisionCheck(Object obj1, Object obj2) {
-	// if((p1X <= p2X+objectSize[Enemy].x && p1X >= p2X-objectSize[Enemy].x)
-	// && (p1Y <= p2Y+objectSize[Enemy].y && p1Y >= p2Y-objectSize[Enemy].y))
+
 
 
 	if((abs2(obj1.origin.x-obj2.origin.x) < (objectSize[obj1.type].x + objectSize[obj2.type].x))
