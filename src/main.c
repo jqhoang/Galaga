@@ -28,7 +28,7 @@
 #include "alice.h"
 #include "hal/shapes.h"
 #include "drivers/uart/uart.h"
-#include "./kprintf/kprintf.h"
+#include "kprintf/kprintf.h"
 
 
 /*
@@ -70,10 +70,13 @@ void main(){
         }
     }
 
-	//for(uint32_t i=0; i<SYSTEM_SCREEN_WIDTH - 5; i++)
-	//	put_pixel_raw( i + SYSTEM_SCREEN_WIDTH * 45, 0xFFFFFFFF );
+
+
 	
-	// GAME LOOP (20 fps)
+	
+	
+	// GAME LOOP (~20 fps)
+	int i = 2; // SHOULD START AT 0, BUT THAT WOULD BE OFFSCREEN
 	while(true){
     	uint8_t c=0;
 		uart0_nonblocking_getc(&c);
@@ -100,6 +103,13 @@ void main(){
 				}
 			}
 		}
+		
+		
+		enemy.origin = enemyPath[i];
+		if (i < 108)
+			++i;
+		if (i == 108)
+			i = 0;
 
 		//clearDrawScreen();
 		// drawShape(&enemy);
@@ -125,7 +135,6 @@ void main(){
 		draw();
 		hal_cpu_delay(50);
 	}
-    hal_io_serial_puts( SerialA, "It focking works\n\r" );
 
 }
 //
