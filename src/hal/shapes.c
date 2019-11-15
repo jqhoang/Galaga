@@ -18,9 +18,27 @@ void shapes_init(void){
 		enemyArr[i] = (Object){{0, -10},Enemy};
 	}
 
+
+
 	enemyArr[MAX_ENEMIES-1] = (Object){{200, 300},Enemy};
+	enemyArr[MAX_ENEMIES-2] = (Object){{300, 400},Enemy};
+	curEnemyArr[0] = MAX_ENEMIES-1;
+	for(uint8_t i = 0; i < MAX_ENEMIES; i++) {
+		if(enemyArr[i].origin.y != -10) {
+			addEnemy(i);
+		}
+	}
 
+}
 
+void addEnemy(uint8_t index) {
+	curEnemyArr[curEnemy] = index;
+	curEnemy += 1;
+}
+
+void delEnemy(uint8_t index) {
+	curEnemy -= 1;
+	curEnemyArr[index] = curEnemyArr[curEnemy];
 
 }
 

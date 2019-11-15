@@ -48,6 +48,7 @@ void *memcpy(void *dest, void *src, size_t n){
 }
 
 void wait_for_ten_secs(void);
+void bulletCheck(uint8_t index);
 
 uint32_t zoom_title=1;
 uint32_t zoom_text=1;
@@ -80,8 +81,16 @@ void main(){
 			ship.origin.x -= 10;
 		if (c == 'd')
 			ship.origin.x += 10;
+		if (c=='p') {
+			curEnemy = 0;
+			for(uint8_t i = 0; i < MAX_ENEMIES; i++) {
+				if(enemyArr[i].origin.y != -10) {
+					addEnemy(i);
+				}
+			}
+		}
 		if (c == 'k'){
-			if(get_system_timer() - prevbullet >= 250000) {
+			if(get_system_timer() - prevbullet >= 200000) {
 				for(uint8_t i = 0; i < MAX_BULLETS;i++) {
 					if(bulletArr[i].origin.y <=0) {
 						prevbullet = get_system_timer();
@@ -97,32 +106,20 @@ void main(){
 		drawShape(&ship);
 
 		// drawShape(&enemy);
-		for(uint8_t i = 0; i < MAX_ENEMIES; i++) {
-			if(enemyArr[i].origin.y != -10) {
-				drawShape(&enemyArr[i]);
-			}
+		for(uint8_t i = 0; i <curEnemy;i++) {
+			drawShape(&enemyArr[curEnemyArr[i]]);
 		}
+		// for(uint8_t i = 0; i < MAX_ENEMIES; i++) {
+		// 	if(enemyArr[i].origin.y != -10) {
+		// 		drawShape(&enemyArr[i]);
+				
+		// 	}
+		// }
+
 		for(uint8_t i = 0; i<MAX_BULLETS;i++) {
-			
 			if(bulletArr[i].origin.y >=10) {
 				drawShape(&bulletArr[i]);
-				bool killed = false;
-				for(uint8_t t = 0; t < MAX_ENEMIES; t++) {
-					if(enemyArr[t].origin.y != -10) {
-						// kprintf("\n\a%d",i);
-						
-						if((bulletArr[i].origin.y <= enemyArr[t].origin.y+20 && bulletArr[i].origin.y >= enemyArr[t].origin.y-20)
-						&& (bulletArr[i].origin.x <= enemyArr[t].origin.x+20 && bulletArr[i].origin.x >= enemyArr[t].origin.x-20)){
-							bulletArr[i].origin.y = 0;
-							kprintf("\n\rkilled");
-							killed=true;
-						}
-					}
-				}
-				if(!killed) {
-					kprintf("\r\nbulletposy:%d",bulletArr[i].origin.y);
-					bulletArr[i].origin.y -=10;
-				}
+				bulletCheck(i);
 			}
 		}
 		draw();
@@ -131,7 +128,36 @@ void main(){
     hal_io_serial_puts( SerialA, "It focking works\n\r" );
 
 }
-
+//
+void bulletCheck(uint8_t index) {
+	// // bool killed = false;
+	// for(uint8_t t = 0; t < MAX_ENEMIES; t++) {
+	// 	if(enemyArr[t].origin.y != -10) {
+	// 		if((bulletArr[i].origin.y <= enemyArr[t].origin.y+20 && bulletArr[i].origin.y >= enemyArr[t].origin.y-20)
+	// 		&& (bulletArr[i].origin.x <= enemyArr[t].origin.x+20 && bulletArr[i].origin.x >= enemyArr[t].origin.x-20)){
+	// 			bulletArr[i].origin.y = 0;
+	// 			kprintf("\n\rkilled");
+	// 			// killed=true;
+	// 			return;
+	// 		}
+	// 	}
+	// }
+	// // if(!killed) {
+	// 	kprintf("\r\nbulletposy:%d",bulletArr[i].origin.y);
+	// 	bulletArr[i].origin.y -=10;
+	// // }
+	for(uint8_t t = 0; t <curEnemy;t++) {
+		if((bulletArr[index].origin.y <= enemyArr[curEnemyArr[t]].origin.y+20 && bulletArr[index].origin.y >= enemyArr[curEnemyArr[t]].origin.y-20)
+		&& (bulletArr[index].origin.x <= enemyArr[curEnemyArr[t]].origin.x+20 && bulletArr[index].origin.x >= enemyArr[curEnemyArr[t]].origin.x-20)){
+			bulletArr[index].origin.y = 0;
+			kprintf("\n\rkilled");
+			delEnemy(t);
+			return;
+		}
+	}
+	kprintf("\r\nbulletposy:%d",bulletArr[index].origin.y);
+	bulletArr[index].origin.y -=10;
+}
 
 void wait_for_ten_secs(void){
     for(uint32_t i=0; i<10; i++)
