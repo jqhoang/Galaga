@@ -42,7 +42,7 @@ int32_t abs(float v){
 		else return v;
 }
 
-int16_t abs2(uint16_t v){
+int16_t abs2(int16_t v){
 		// kprintf( "\n\rPrint V2: %d", v );
 		if(v<0) return v*(-1);
 		else return v;
