@@ -47,5 +47,6 @@ Object enemy;
 
 Shape objectShapes[3];
 
+Point enemyPath[120];
 
 #endif
