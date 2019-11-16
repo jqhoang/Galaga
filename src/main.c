@@ -84,7 +84,8 @@ void main(){
 	
 	
 	// GAME LOOP (~20 fps)
-	int i = 2; // SHOULD START AT 0, BUT THAT WOULD BE OFFSCREEN
+	int i0 = 0;
+	int i1 = 0;
 	while(true){
     	uint8_t c=0;
 		uart0_nonblocking_getc(&c);
@@ -116,11 +117,16 @@ void main(){
 		// if(enemyArr)
 		//when enemy at 0 dies, we change the array so that the next enemy becomes 0
 		//tis makes it look like the enemy that is moving did not get killed.
-		enemyArr[curEnemyArr[0]].origin = enemyPath[i];
-		if (i < 80)
-			++i;
-		if (i == 80)
-			i = 0;
+		enemyArr[curEnemyArr[0]].origin = enemyPath[1][i1];
+		if (i1 < 50)
+			++i1;
+		if (i1 == 50)
+			i1 = 0;
+		enemyArr[curEnemyArr[1]].origin = enemyPath[0][i0];
+		if (i0 < 89)
+			++i0;
+		if (i0 == 89)
+			i0 = 0;
 
 		drawShape(&ship);
 		// curEnemy = 1;
