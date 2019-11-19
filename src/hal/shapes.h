@@ -3,7 +3,7 @@
 
 #define PIXEL_SIZE 4
 #define MAX_BULLETS 3
-#define MAX_ENEMIES 10
+#define MAX_ENEMIES 20
 
 enum ObjType{Enemy, Ship, Bullet}; 
 
@@ -30,7 +30,11 @@ typedef struct {
 typedef struct {
 	Point origin;//center of object
 	enum ObjType type;
+	uint8_t currentPath;
+	uint8_t pathPos;
+	Point start;
 } Object;
+
 
 typedef struct {
 	Line lines[10];
@@ -52,11 +56,14 @@ uint8_t curEnemyArr[MAX_ENEMIES];
 uint8_t curEnemy;
 void addEnemy(uint8_t index);
 void delEnemy(uint8_t index);
+Point addPoint(Point p1, Point p2);
+Point subtractPoint(Point p1, Point p2);
 
 Shape objectShapes[3];
 Point objectSize[3];
 
-Point enemyPath[4][128];
+Point relativePath[4][128];
+uint8_t relativePathSizes[5];
 Object bulletArr[MAX_BULLETS];
 
 #endif
