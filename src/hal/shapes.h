@@ -56,7 +56,7 @@ void delEnemy(uint8_t index);
 Shape objectShapes[3];
 Point objectSize[3];
 
-Point enemyPath[4][120];
+Point enemyPath[4][128];
 Object bulletArr[MAX_BULLETS];
 
 #endif
