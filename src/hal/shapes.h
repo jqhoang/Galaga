@@ -62,7 +62,8 @@ Point subtractPoint(Point p1, Point p2);
 Shape objectShapes[3];
 Point objectSize[3];
 
-Point enemyPath[5][128];
+Point relativePath[5][128];
+uint8_t relativePathSizes[5];
 Object bulletArr[MAX_BULLETS];
 
 #endif

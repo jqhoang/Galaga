@@ -113,6 +113,10 @@ void main(){
 				}
 			}
 		}
+
+		if (c == 'z') {
+			//kprintf("\r\npath1size:%d", sizeof(relativePathSizes[0]) / sizeof(relativePathSizes[0][0]));
+		}
 		
 		// if(enemyArr)
 		//when enemy at 0 dies, we change the array so that the next enemy becomes 0
