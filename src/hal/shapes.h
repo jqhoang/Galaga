@@ -33,6 +33,7 @@ typedef struct {
 typedef struct {
 	Point origin;//center of object
 	enum ObjType type;
+	Point speed;
 } Object;
 
 typedef struct {

@@ -78,7 +78,7 @@ void shapes_init(void){
 
 
 	for(uint8_t i = 0; i < MAX_BULLETS; i++) {
-		shipBullets[i] = (Object){{0, -10},Bullet};
+		shipBullets[i] = (Object){{0, -10}, Bullet, {0, -35}};
 	}
 
 	for(uint8_t i = 0; i < MAX_ENEMIES; i++) {
