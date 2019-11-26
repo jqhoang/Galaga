@@ -86,12 +86,13 @@ void shapes_init(void){
 		enemyBullets[i] = (Object){{0, -10},Bullet};
 	}
 
-	uint8_t rand = get_system_timer() % 2;
-	enemyArr[MAX_ENEMIES - 1] = (Object) { {300, 300}, Enemy, 3, 0, { 300, 300 }
+	//uint8_t rand = get_system_timer() % 2;
+	enemyArr[MAX_ENEMIES - 1] = (Object) { {300, 100}, Enemy, 3, 0, { 300, 100 }
 	};
-	uint8_t rand2 = get_system_timer() % 2;
-	enemyArr[MAX_ENEMIES - 2] = (Object) { {300, 100}, Enemy, 1, 0, { 300, 100 } };
-	enemyArr[MAX_ENEMIES - 3] = (Object) { {300, 450}, Enemy, 6, 0, { 300, 450 } };
+	//choose a path
+	//uint8_t rand2 = get_system_timer() % 2;
+	enemyArr[MAX_ENEMIES - 2] = (Object) { {300, 150}, Enemy, 3, 0, { 300, 150 } };
+	enemyArr[MAX_ENEMIES - 3] = (Object) { {300, 200}, Enemy, 3, 0, { 300, 200 } };
 	curEnemyArr[0] = MAX_ENEMIES-1;
 	for(uint8_t i = 0; i < MAX_ENEMIES; i++) {
 		if(enemyArr[i].origin.y != -10) {
