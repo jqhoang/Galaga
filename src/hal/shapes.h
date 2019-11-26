@@ -41,7 +41,7 @@ typedef struct {
 	Point start;
 	Object Enemy;
 	Point gridPos;
-} EnemyObject;
+} Enemy;
 
 
 typedef struct {
@@ -50,9 +50,9 @@ typedef struct {
 } FontCharacter;
 
 typedef struct {
-	 int enemies[MAX_ENEMIES];
+	 Enemy enemies[MAX_ENEMIES];
 	 int numEnemies[MAX_ENEMIES];
-} EnemiesPath;
+} EnemiesStartDelay;
 
 // typedef struct {
 // 	int enemies[MAX_ENEMIES];
