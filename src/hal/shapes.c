@@ -102,6 +102,17 @@ void shapes_init(void){
 
 }
 
+
+void startLevel(uint8_t level){
+
+	for(uint8_t i = 0; i < levels[level].numEnemies; i++) {
+		
+		enemyArr[i] = levels[level].enemies[i].enemy;
+
+	}
+
+}
+
 void addEnemy(uint8_t index) {
 	curEnemyArr[curEnemy] = index;
 	curEnemy += 1;
@@ -142,7 +153,9 @@ Level levels[NUMBER_LEVELS] = {
 		{
 			{ { {{300, 100}, Enemy}, 1, 0, { 300, 100 }, {0,0} }, 0 }
 
-			,{ { {{300, 100}, Enemy}, 0, 0, { 300, 100 }, {0,1} }, 0 }
+			,
+			
+			{ { {{300, 100}, Enemy}, 0, 0, { 300, 100 }, {0,1} }, 0 }
 		},
 		1
 	}
@@ -152,6 +165,8 @@ Level levels[NUMBER_LEVELS] = {
 // 	{200, 300},
 // 	Enemy
 // };
+
+
 
 Shape objectShapes[3] = { 
 	(Shape){{

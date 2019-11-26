@@ -59,13 +59,14 @@ typedef struct {
 
 typedef struct {
 	Spawn enemies[MAX_ENEMIES];
-	uint8_t numEnemmies;
+	uint8_t numEnemies;
 } Level;
 
 
 uint32_t charSize;
 FontCharacter characters[26];
 void shapes_init(void);
+void startLevel(uint8_t level);
 FontCharacter* getCharacter(uint8_t c);
 
 //Level levels[NUMBER_LEVELS];
