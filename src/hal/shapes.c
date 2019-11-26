@@ -5,8 +5,32 @@
 #include "shapes.h"
 #include "../drivers/delays/delays.h"
 
+void pathUpdate(Object* obj){
+	obj->origin = addPoint(obj->start, subtractPoint(relativePath[obj->currentPath][obj->pathPos], relativePath[obj->currentPath][0]));
+	++obj->pathPos;
+}
 
-// uint32_t charSize = 20;
+void entry1Update(Object* obj){
+	pathUpdate(obj);
+}
+
+void entry2Update(Object* obj){
+	pathUpdate(obj);
+}
+
+void attack1Update(Object* obj){
+	pathUpdate(obj);
+}
+
+void attack2Update(Object* obj){
+	pathUpdate(obj);
+}
+
+void attack3Update(Object* obj){
+	pathUpdate(obj);
+}
+
+void (*pathUpdateFuncs[7])(Object*) = {&entry1Update, &entry2Update, &attack1Update, &attack2Update, &attack3Update, NULL, NULL};
 
 Point addPoint(Point p1, Point p2) {
 	return (Point) { p1.x + p2.x, p1.y + p2.y };

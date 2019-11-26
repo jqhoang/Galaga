@@ -65,8 +65,8 @@ Point objectSize[3];
 
 Point relativePath[5][128];
 uint8_t relativePathSizes[5];
-void (*pathUpdateFuncs[7])(Object);
-void (*pathCompleteFuncs[7])(Object);
+void (*pathUpdateFuncs[7])(Object*);
+void (*pathCompleteFuncs[7])(Object*);
 
 Object shipBullets[MAX_BULLETS];
 Object enemyBullets[MAX_ENEMIES];
