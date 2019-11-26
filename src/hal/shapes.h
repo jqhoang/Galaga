@@ -3,7 +3,9 @@
 
 #define PIXEL_SIZE 4
 #define MAX_BULLETS 3
-#define MAX_ENEMIES 20
+#define MAX_ENEMIES 8
+#define NUMBER_LEVELS 1
+
 
 enum ObjType{Enemy, Ship, Bullet}; 
 enum Paths{Entry1, Entry2, Attack1, Attack2, Attack3, Idle, ReEntry}; 
@@ -31,10 +33,15 @@ typedef struct {
 typedef struct {
 	Point origin;//center of object
 	enum ObjType type;
+} Object;
+
+typedef struct {
 	uint8_t currentPath;
 	uint8_t pathPos;
 	Point start;
-} Object;
+	Object Enemy;
+	Point gridPos;
+} EnemyObject;
 
 
 typedef struct {
@@ -42,12 +49,23 @@ typedef struct {
 	uint32_t numLines;
 } FontCharacter;
 
+typedef struct {
+	 int enemies[MAX_ENEMIES];
+	 int numEnemies[MAX_ENEMIES];
+} EnemiesPath;
+
+// typedef struct {
+// 	int enemies[MAX_ENEMIES];
+// 	// int numPath;
+// } Level;
+
+
 uint32_t charSize;
 FontCharacter characters[26];
 void shapes_init(void);
 FontCharacter* getCharacter(uint8_t c);
 
-
+Level levels[NUMBER_LEVELS];
 
 // Shape ship;
 Object ship;

@@ -131,6 +131,15 @@ Object ship = (Object){
 	Ship
 };
 
+
+// Level levels[NUMBER_LEVELS] = {
+
+// 	{1,0,1,0,1,0,1,0}
+// 	// ,2
+
+	
+// };
+
 // Object enemy = (Object){
 // 	{200, 300},
 // 	Enemy
