@@ -86,6 +86,7 @@ void main(){
 	// GAME LOOP (~20 fps)
 	int i0 = 0;
 	int i1 = 0;
+	int frameCount = 0;
 	while(true){
     	uint8_t c=0;
 		uart0_nonblocking_getc(&c);
@@ -105,17 +106,13 @@ void main(){
 			// kprintf("\r\norigX:%d",abs2(-160));
 			if(get_system_timer() - prevbullet >= 150000) {
 				for(uint8_t i = 0; i < MAX_BULLETS;i++) {
-					if(bulletArr[i].origin.y <=0) {
+					if(bulletArr[i].origin.y <=0) { 
 						prevbullet = get_system_timer();
 						bulletArr[i] = (Object){{ship.origin.x, ship.origin.y},Bullet};
 						break;
 					}
 				}
 			}
-		}
-
-		if (c == 'z') {
-			//kprintf("\r\npath1size:%d", sizeof(relativePathSizes[0]) / sizeof(relativePathSizes[0][0]));
 		}
 		
 		// if(enemyArr)
@@ -127,11 +124,23 @@ void main(){
 				enemyArr[curEnemyArr[enemy]].pathPos = 0;
 				enemyArr[curEnemyArr[enemy]].origin = enemyArr[curEnemyArr[enemy]].start;
 			}
+			//idle path check, 6 is the idle path
+			//every 40 frames, enemies attack
+			//0,1 are entry, 2,3,4
+			if (frameCount % 40 == 0 && frameCount != 0)
+			{
+				if (enemyArr[curEnemyArr[enemy]].currentPath == 6) {
+					uint8_t rand = get_system_timer() % 3;
+					enemyArr[curEnemyArr[enemy]].currentPath = rand + 2;
+				}
+			}
+
 			enemyArr[curEnemyArr[enemy]].origin = addPoint(enemyArr[curEnemyArr[enemy]].start,
 				subtractPoint(relativePath[enemyArr[curEnemyArr[enemy]].currentPath][enemyArr[curEnemyArr[enemy]].pathPos],
 					relativePath[enemyArr[curEnemyArr[enemy]].currentPath][0]));
 			++enemyArr[curEnemyArr[enemy]].pathPos;
 		}
+
 
 		drawShape(&ship);
 		// curEnemy = 1;
@@ -147,6 +156,7 @@ void main(){
 		}
 		draw();
 		hal_cpu_delay(50);
+		frameCount++;
 	}
 
 }
