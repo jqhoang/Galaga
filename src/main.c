@@ -122,22 +122,8 @@ void main(){
 		//when enemy at 0 dies, we change the array so that the next enemy becomes 0
 		//tis makes it look like the enemy that is moving did not get killed.
 		for (uint8_t enemy = 0; enemy < curEnemy; ++enemy) {
+			(*pathCompleteFuncs[enemyArr[curEnemyArr[enemy]].currentPath])(&enemyArr[curEnemyArr[enemy]]);
 			(*pathUpdateFuncs[enemyArr[curEnemyArr[enemy]].currentPath])(&enemyArr[curEnemyArr[enemy]]);
-			if (enemyArr[curEnemyArr[enemy]].currentPath < 6) {
-				if (enemyArr[curEnemyArr[enemy]].pathPos == relativePathSizes[enemyArr[curEnemyArr[enemy]].currentPath]
-					|| enemyArr[curEnemyArr[enemy]].origin.y > SYSTEM_SCREEN_LENGTH - 25) {
-					enemyArr[curEnemyArr[enemy]].pathPos = 0;
-					enemyArr[curEnemyArr[enemy]].origin = enemyArr[curEnemyArr[enemy]].start;
-				}
-				/*enemyArr[curEnemyArr[enemy]].origin = addPoint(enemyArr[curEnemyArr[enemy]].start,
-					subtractPoint(relativePath[enemyArr[curEnemyArr[enemy]].currentPath][enemyArr[curEnemyArr[enemy]].pathPos],
-						relativePath[enemyArr[curEnemyArr[enemy]].currentPath][0]));
-				++enemyArr[curEnemyArr[enemy]].pathPos;*/
-			} else if (enemyArr[curEnemyArr[enemy]].currentPath == 6){
-
-			} else if (enemyArr[curEnemyArr[enemy]].currentPath == 7){
-
-			}
 		}
 
 		drawShape(&ship);
