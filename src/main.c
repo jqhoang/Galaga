@@ -127,7 +127,6 @@ void main(){
 		// 	(*pathUpdateFuncs[enemyArr[curEnemyArr[enemy]].currentPath])(&enemyArr[curEnemyArr[enemy]]);
 		// }
 
-
 		drawShape(&ship);
 		// curEnemy = 1;
 		for(uint8_t i = 0; i <curEnemy;i++) {

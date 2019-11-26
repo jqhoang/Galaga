@@ -35,6 +35,7 @@ typedef struct {
 typedef struct {
 	Point origin;//center of object
 	enum ObjType type;
+	Point speed;
 } Object;
 
 typedef struct {
@@ -91,6 +92,5 @@ void (*pathCompleteFuncs[7])(EnemyObj*);
 
 Object shipBullets[MAX_BULLETS];
 Object enemyBullets[MAX_ENEMIES];
-
 
 #endif
