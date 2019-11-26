@@ -82,7 +82,8 @@ void main(){
 	
 	
 	// GAME LOOP (~20 fps)
-	int frameCount = 0;
+	int i0 = 0;
+	int i1 = 0;
 	while(true){
     	uint8_t c=0;
 		uart0_nonblocking_getc(&c);
@@ -110,20 +111,18 @@ void main(){
 				}
 			}
 		}
+
+		if (c == 'z') {
+			//kprintf("\r\npath1size:%d", sizeof(relativePathSizes[0]) / sizeof(relativePathSizes[0][0]));
+		}
 		
 		// if(enemyArr)
 		//when enemy at 0 dies, we change the array so that the next enemy becomes 0
 		//tis makes it look like the enemy that is moving did not get killed.
 		for (uint8_t enemy = 0; enemy < curEnemy; ++enemy) {
-			if (enemyArr[curEnemyArr[enemy]].currentPath == 6 && frameCount % 40 == 0 && frameCount != 0)
-			{
-				uint8_t rand = get_system_timer() % 3;
-				enemyArr[curEnemyArr[enemy]].currentPath = rand + 2;
-			}
 			(*pathCompleteFuncs[enemyArr[curEnemyArr[enemy]].currentPath])(&enemyArr[curEnemyArr[enemy]]);
 			(*pathUpdateFuncs[enemyArr[curEnemyArr[enemy]].currentPath])(&enemyArr[curEnemyArr[enemy]]);
 		}
-
 
 		drawShape(&ship);
 		// curEnemy = 1;
@@ -158,7 +157,6 @@ void main(){
 		}
 		draw();
 		hal_cpu_delay(50);
-		frameCount++;
 	}
 
 }
