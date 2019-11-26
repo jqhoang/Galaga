@@ -59,8 +59,6 @@ unsigned long prevbullet = 0;
 
 void main(){
 
-	kprintf("\r\nenemyposy:%d",enemy.origin.y);
-
     hal_io_serial_init();
 	shapes_init();
 
@@ -95,7 +93,7 @@ void main(){
 		if (c=='p') {
 			curEnemy = 0;
 			for(uint8_t i = 0; i < MAX_ENEMIES; i++) {
-				if(enemyArr[i].origin.y != -10) {
+				if(enemyArr[i].o.origin.y != -10) {
 					addEnemy(i);
 				}
 			}
@@ -130,7 +128,7 @@ void main(){
 		drawShape(&ship);
 		// curEnemy = 1;
 		for(uint8_t i = 0; i <curEnemy;i++) {
-			drawShape(&enemyArr[curEnemyArr[i]]);
+			drawShape(&(enemyArr[curEnemyArr[i]].o));
 		}
 
 		for(uint8_t i = 0; i<MAX_BULLETS;i++) {
@@ -138,7 +136,7 @@ void main(){
 				shipBullets[i].origin.y -=35;
 				drawShape(&shipBullets[i]);
 				for(uint8_t t = 0; t <curEnemy;t++) {
-					if(collisionCheck(shipBullets[i],enemyArr[curEnemyArr[t]])){
+					if(collisionCheck(shipBullets[i],enemyArr[curEnemyArr[t]].o)){
 						shipBullets[i].origin.y = 0;
 						kprintf("\n\rkilled");
 						delEnemy(t);

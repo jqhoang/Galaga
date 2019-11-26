@@ -6,65 +6,65 @@
 #include "../system.h"
 #include "../drivers/delays/delays.h"
 
-void pathUpdate(Object* obj){
-	obj->origin = addPoint(obj->start, subtractPoint(relativePath[obj->currentPath][obj->pathPos], relativePath[obj->currentPath][0]));
+void pathUpdate(EnemyObj* obj){
+	obj->o.origin = addPoint(obj->start, subtractPoint(relativePath[obj->currentPath][obj->pathPos], relativePath[obj->currentPath][0]));
 	++obj->pathPos;
 }
 
-void pathRepeat(Object* obj){
+void pathRepeat(EnemyObj* obj){
 	if (obj->pathPos == relativePathSizes[obj->currentPath]
-		|| obj->origin.y > SYSTEM_SCREEN_LENGTH - 25) {
+		|| obj->o.origin.y > SYSTEM_SCREEN_LENGTH - 25) {
 		obj->pathPos = 0;
-		obj->origin = obj->start;
+		obj->o.origin = obj->start;
 	}
 }
 
-void entry1Update(Object* obj){
+void entry1Update(EnemyObj* obj){
 	pathRepeat(obj);
 }
-void entry2Update(Object* obj){
+void entry2Update(EnemyObj* obj){
 	pathRepeat(obj);
 }
-void attack1Update(Object* obj){
+void attack1Update(EnemyObj* obj){
 	pathRepeat(obj);
 }
-void attack2Update(Object* obj){
+void attack2Update(EnemyObj* obj){
 	pathRepeat(obj);
 }
-void attack3Update(Object* obj){
+void attack3Update(EnemyObj* obj){
 	pathRepeat(obj);
 }
-void idleUpdate(Object* obj){
+void idleUpdate(EnemyObj* obj){
 
 }
-void reEntry(Object* obj){
+void reEntry(EnemyObj* obj){
 
 }
 
-void entry1Complete(Object* obj){
+void entry1Complete(EnemyObj* obj){
 	pathUpdate(obj);
 }
-void entry2Complete(Object* obj){
+void entry2Complete(EnemyObj* obj){
 	pathUpdate(obj);
 }
-void attack1Complete(Object* obj){
+void attack1Complete(EnemyObj* obj){
 	pathUpdate(obj);
 }
-void attack2Complete(Object* obj){
+void attack2Complete(EnemyObj* obj){
 	pathUpdate(obj);
 }
-void attack3Complete(Object* obj){
+void attack3Complete(EnemyObj* obj){
 	pathUpdate(obj);
 }
-void idleComplete(Object* obj){
+void idleComplete(EnemyObj* obj){
 
 }
-void reEntryComplete(Object* obj){
+void reEntryComplete(EnemyObj* obj){
 
 }
 
-void (*pathUpdateFuncs[7])(Object*) = {&entry1Update, &entry2Update, &attack1Update, &attack2Update, &attack3Update, &idleUpdate, &reEntry};
-void (*pathCompleteFuncs[7])(Object*) = {&entry1Complete, &entry2Complete, &attack1Complete, &attack2Complete, &attack3Complete, &idleComplete, &reEntryComplete};
+void (*pathUpdateFuncs[7])(EnemyObj*) = {&entry1Update, &entry2Update, &attack1Update, &attack2Update, &attack3Update, &idleUpdate, &reEntry};
+void (*pathCompleteFuncs[7])(EnemyObj*) = {&entry1Complete, &entry2Complete, &attack1Complete, &attack2Complete, &attack3Complete, &idleComplete, &reEntryComplete};
 
 Point addPoint(Point p1, Point p2) {
 	return (Point) { p1.x + p2.x, p1.y + p2.y };
@@ -82,7 +82,7 @@ void shapes_init(void){
 	}
 
 	for(uint8_t i = 0; i < MAX_ENEMIES; i++) {
-		enemyArr[i] = (Object){{0, -10},Enemy};
+		enemyArr[i] = (EnemyObj){{{0, -10}, Enemy}, Idle, 0, {0, -10}, {0, 0}};
 		enemyBullets[i] = (Object){{0, -10},Bullet};
 	}
 
@@ -95,7 +95,7 @@ void shapes_init(void){
 	enemyArr[MAX_ENEMIES - 3] = (Object) { {300, 200}, Enemy, 3, 0, { 300, 200 } };
 	curEnemyArr[0] = MAX_ENEMIES-1;
 	for(uint8_t i = 0; i < MAX_ENEMIES; i++) {
-		if(enemyArr[i].origin.y != -10) {
+		if(enemyArr[i].o.origin.y != -10) {
 			addEnemy(i);
 		}
 	}
@@ -132,6 +132,15 @@ Object ship = (Object){
 	{500, 750},
 	Ship
 };
+
+
+// Level levels[NUMBER_LEVELS] = {
+
+// 	{1,0,1,0,1,0,1,0}
+// 	// ,2
+
+	
+// };
 
 // Object enemy = (Object){
 // 	{200, 300},

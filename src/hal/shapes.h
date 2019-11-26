@@ -3,7 +3,9 @@
 
 #define PIXEL_SIZE 4
 #define MAX_BULLETS 3
-#define MAX_ENEMIES 20
+#define MAX_ENEMIES 8
+#define NUMBER_LEVELS 1
+
 
 enum ObjType{Enemy, Ship, Bullet}; 
 enum Paths{Entry1, Entry2, Attack1, Attack2, Attack3, Idle, ReEntry}; 
@@ -31,10 +33,15 @@ typedef struct {
 typedef struct {
 	Point origin;//center of object
 	enum ObjType type;
+} Object;
+
+typedef struct {
+	Object o;
 	uint8_t currentPath;
 	uint8_t pathPos;
 	Point start;
-} Object;
+	Point gridPos;
+} EnemyObj;
 
 
 typedef struct {
@@ -42,17 +49,27 @@ typedef struct {
 	uint32_t numLines;
 } FontCharacter;
 
+typedef struct {
+	 EnemyObj enemies[MAX_ENEMIES];
+	 int numEnemies[MAX_ENEMIES];
+} EnemiesStartDelay;
+
+// typedef struct {
+// 	int enemies[MAX_ENEMIES];
+// 	// int numPath;
+// } Level;
+
+
 uint32_t charSize;
 FontCharacter characters[26];
 void shapes_init(void);
 FontCharacter* getCharacter(uint8_t c);
 
-
+//Level levels[NUMBER_LEVELS];
 
 // Shape ship;
 Object ship;
-Object enemy;
-Object enemyArr[MAX_ENEMIES];
+EnemyObj enemyArr[MAX_ENEMIES];
 uint8_t curEnemyArr[MAX_ENEMIES];
 uint8_t curEnemy;
 void addEnemy(uint8_t index);
@@ -65,8 +82,8 @@ Point objectSize[3];
 
 Point relativePath[5][128];
 uint8_t relativePathSizes[5];
-void (*pathUpdateFuncs[7])(Object*);
-void (*pathCompleteFuncs[7])(Object*);
+void (*pathUpdateFuncs[7])(EnemyObj*);
+void (*pathCompleteFuncs[7])(EnemyObj*);
 
 Object shipBullets[MAX_BULLETS];
 Object enemyBullets[MAX_ENEMIES];

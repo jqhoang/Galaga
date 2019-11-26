@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "mbox.h": "c",
-        "mbox.h\u0000box.h": "c"
+        "mbox.h\u0000box.h": "c",
+        "stddef.h": "c"
     }
 }
