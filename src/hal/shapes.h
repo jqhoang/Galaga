@@ -3,7 +3,7 @@
 
 #define PIXEL_SIZE 4
 #define MAX_BULLETS 3
-#define MAX_ENEMIES 8
+#define MAX_ENEMIES 20
 #define NUMBER_LEVELS 1
 
 
@@ -36,28 +36,29 @@ typedef struct {
 } Object;
 
 typedef struct {
+	Object Enemy;
 	uint8_t currentPath;
 	uint8_t pathPos;
 	Point start;
-	Object Enemy;
 	Point gridPos;
-} Enemy;
+} EnemyObj;
 
 
 typedef struct {
 	Line lines[10];
-	uint32_t numLines;
+	uint8_t numLines;
 } FontCharacter;
 
 typedef struct {
-	 Enemy enemies[MAX_ENEMIES];
-	 int numEnemies[MAX_ENEMIES];
-} EnemiesStartDelay;
+	 EnemyObj enemy;
+	 uint8_t frame;
+	 
+} Spawn;
 
-// typedef struct {
-// 	int enemies[MAX_ENEMIES];
-// 	// int numPath;
-// } Level;
+typedef struct {
+	Spawn enemies[MAX_ENEMIES];
+	uint8_t numEnemmies;
+} Level;
 
 
 uint32_t charSize;

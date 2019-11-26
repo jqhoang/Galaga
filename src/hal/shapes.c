@@ -132,13 +132,21 @@ Object ship = (Object){
 };
 
 
-// Level levels[NUMBER_LEVELS] = {
 
-// 	{1,0,1,0,1,0,1,0}
-// 	// ,2
+
+Level levels[NUMBER_LEVELS] = {
+
+	(Level){
+		{
+			{ { {{300, 100}, Enemy}, 1, 0, { 300, 100 }, {0,0} }, 0 }
+		},
+		1
+	};
+
+
 
 	
-// };
+};
 
 // Object enemy = (Object){
 // 	{200, 300},
