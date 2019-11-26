@@ -105,9 +105,9 @@ void main(){
 			// kprintf("\r\norigX:%d",abs2(-160));
 			if(get_system_timer() - prevbullet >= 150000) {
 				for(uint8_t i = 0; i < MAX_BULLETS;i++) {
-					if(bulletArr[i].origin.y <=0) {
+					if(shipBullets[i].origin.y <=0) {
 						prevbullet = get_system_timer();
-						bulletArr[i] = (Object){{ship.origin.x, ship.origin.y},Bullet};
+						shipBullets[i] = (Object){{ship.origin.x, ship.origin.y},Bullet};
 						break;
 					}
 				}
@@ -122,15 +122,21 @@ void main(){
 		//when enemy at 0 dies, we change the array so that the next enemy becomes 0
 		//tis makes it look like the enemy that is moving did not get killed.
 		for (uint8_t enemy = 0; enemy < curEnemy; ++enemy) {
-			if (enemyArr[curEnemyArr[enemy]].pathPos == relativePathSizes[enemyArr[curEnemyArr[enemy]].currentPath]
-				|| enemyArr[curEnemyArr[enemy]].origin.y > SYSTEM_SCREEN_LENGTH - 25) {
-				enemyArr[curEnemyArr[enemy]].pathPos = 0;
-				enemyArr[curEnemyArr[enemy]].origin = enemyArr[curEnemyArr[enemy]].start;
+			if (enemyArr[curEnemyArr[enemy]].currentPath < 6) {
+				if (enemyArr[curEnemyArr[enemy]].pathPos == relativePathSizes[enemyArr[curEnemyArr[enemy]].currentPath]
+					|| enemyArr[curEnemyArr[enemy]].origin.y > SYSTEM_SCREEN_LENGTH - 25) {
+					enemyArr[curEnemyArr[enemy]].pathPos = 0;
+					enemyArr[curEnemyArr[enemy]].origin = enemyArr[curEnemyArr[enemy]].start;
+				}
+				enemyArr[curEnemyArr[enemy]].origin = addPoint(enemyArr[curEnemyArr[enemy]].start,
+					subtractPoint(relativePath[enemyArr[curEnemyArr[enemy]].currentPath][enemyArr[curEnemyArr[enemy]].pathPos],
+						relativePath[enemyArr[curEnemyArr[enemy]].currentPath][0]));
+				++enemyArr[curEnemyArr[enemy]].pathPos;
+			} else if (enemyArr[curEnemyArr[enemy]].currentPath == 6){
+
+			} else if (enemyArr[curEnemyArr[enemy]].currentPath == 7){
+
 			}
-			enemyArr[curEnemyArr[enemy]].origin = addPoint(enemyArr[curEnemyArr[enemy]].start,
-				subtractPoint(relativePath[enemyArr[curEnemyArr[enemy]].currentPath][enemyArr[curEnemyArr[enemy]].pathPos],
-					relativePath[enemyArr[curEnemyArr[enemy]].currentPath][0]));
-			++enemyArr[curEnemyArr[enemy]].pathPos;
 		}
 
 		drawShape(&ship);
@@ -140,9 +146,28 @@ void main(){
 		}
 
 		for(uint8_t i = 0; i<MAX_BULLETS;i++) {
-			if(bulletArr[i].origin.y >0) {
-				drawShape(&bulletArr[i]);
-				bulletCheck(i);
+			if(shipBullets[i].origin.y > 0) {
+				shipBullets[i].origin.y -=35;
+				drawShape(&shipBullets[i]);
+				for(uint8_t t = 0; t <curEnemy;t++) {
+					if(collisionCheck(shipBullets[i],enemyArr[curEnemyArr[t]])){
+						shipBullets[i].origin.y = 0;
+						kprintf("\n\rkilled");
+						delEnemy(t);
+						break;
+					}
+				}
+			}
+		}
+		for(uint8_t i = 0; i<MAX_ENEMIES;i++) {
+			if(enemyBullets[i].origin.y > 0) {
+				enemyBullets[i].origin.y =35;
+				drawShape(&enemyBullets[i]);
+				if(collisionCheck(enemyBullets[i], ship)){
+					enemyBullets[i].origin.y = 0;
+					kprintf("\n\rLost a life");
+					break;
+				}
 			}
 		}
 		draw();
@@ -152,22 +177,10 @@ void main(){
 }
 //
 void bulletCheck(uint8_t index) {
-	for(uint8_t t = 0; t <curEnemy;t++) {
-		if(collisionCheck(bulletArr[index],enemyArr[curEnemyArr[t]])){
-			// kprintf("\r\nbulletposy:%d",bulletArr[index].origin.y);
-			bulletArr[index].origin.y = 0;
-			kprintf("\n\rkilled");
-			
-			delEnemy(t);
-			return;
-		}
-	}
-	bulletArr[index].origin.y -=35;
+	
 }
 //semi hardcoded for bullets and enemys should change this after, by adding types
 bool collisionCheck(Object obj1, Object obj2) {
-
-
 
 	if((abs2(obj1.origin.x-obj2.origin.x) < (objectSize[obj1.type].x + objectSize[obj2.type].x))
 	&& (abs2(obj1.origin.y-obj2.origin.y) < (objectSize[obj1.type].y + objectSize[obj2.type].y)))

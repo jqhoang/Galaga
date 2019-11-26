@@ -20,14 +20,13 @@ void shapes_init(void){
 
 
 	for(uint8_t i = 0; i < MAX_BULLETS; i++) {
-		bulletArr[i] = (Object){{0, -10},Bullet};
+		shipBullets[i] = (Object){{0, -10},Bullet};
 	}
 
 	for(uint8_t i = 0; i < MAX_ENEMIES; i++) {
 		enemyArr[i] = (Object){{0, -10},Enemy};
+		enemyBullets[i] = (Object){{0, -10},Bullet};
 	}
-
-
 
 	uint8_t rand = get_system_timer() % 2;
 	enemyArr[MAX_ENEMIES - 1] = (Object) { {300, 300}, Enemy, 3, 0, { 300, 300 }
