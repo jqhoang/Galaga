@@ -6,6 +6,7 @@
 #define MAX_ENEMIES 20
 
 enum ObjType{Enemy, Ship, Bullet}; 
+enum Paths{Entry1, Entry2, Attack1, Attack2, Attack3, Idle, ReEntry}; 
 
 typedef struct {
 	int16_t x;
@@ -62,8 +63,12 @@ Point subtractPoint(Point p1, Point p2);
 Shape objectShapes[3];
 Point objectSize[3];
 
-Point relativePath[6][128];
-uint8_t relativePathSizes[6];
-Object bulletArr[MAX_BULLETS];
+Point relativePath[5][128];
+uint8_t relativePathSizes[5];
+void (*pathUpdateFuncs[7])(Object*);
+void (*pathCompleteFuncs[7])(Object*);
+
+Object shipBullets[MAX_BULLETS];
+Object enemyBullets[MAX_ENEMIES];
 
 #endif

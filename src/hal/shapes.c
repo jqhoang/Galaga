@@ -3,10 +3,68 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include "shapes.h"
+#include "../system.h"
 #include "../drivers/delays/delays.h"
 
+void pathUpdate(Object* obj){
+	obj->origin = addPoint(obj->start, subtractPoint(relativePath[obj->currentPath][obj->pathPos], relativePath[obj->currentPath][0]));
+	++obj->pathPos;
+}
 
-// uint32_t charSize = 20;
+void pathRepeat(Object* obj){
+	if (obj->pathPos == relativePathSizes[obj->currentPath]
+		|| obj->origin.y > SYSTEM_SCREEN_LENGTH - 25) {
+		obj->pathPos = 0;
+		obj->origin = obj->start;
+	}
+}
+
+void entry1Update(Object* obj){
+	pathRepeat(obj);
+}
+void entry2Update(Object* obj){
+	pathRepeat(obj);
+}
+void attack1Update(Object* obj){
+	pathRepeat(obj);
+}
+void attack2Update(Object* obj){
+	pathRepeat(obj);
+}
+void attack3Update(Object* obj){
+	pathRepeat(obj);
+}
+void idleUpdate(Object* obj){
+
+}
+void reEntry(Object* obj){
+
+}
+
+void entry1Complete(Object* obj){
+	pathUpdate(obj);
+}
+void entry2Complete(Object* obj){
+	pathUpdate(obj);
+}
+void attack1Complete(Object* obj){
+	pathUpdate(obj);
+}
+void attack2Complete(Object* obj){
+	pathUpdate(obj);
+}
+void attack3Complete(Object* obj){
+	pathUpdate(obj);
+}
+void idleComplete(Object* obj){
+
+}
+void reEntryComplete(Object* obj){
+
+}
+
+void (*pathUpdateFuncs[7])(Object*) = {&entry1Update, &entry2Update, &attack1Update, &attack2Update, &attack3Update, &idleUpdate, &reEntry};
+void (*pathCompleteFuncs[7])(Object*) = {&entry1Complete, &entry2Complete, &attack1Complete, &attack2Complete, &attack3Complete, &idleComplete, &reEntryComplete};
 
 Point addPoint(Point p1, Point p2) {
 	return (Point) { p1.x + p2.x, p1.y + p2.y };
@@ -20,14 +78,13 @@ void shapes_init(void){
 
 
 	for(uint8_t i = 0; i < MAX_BULLETS; i++) {
-		bulletArr[i] = (Object){{0, -10},Bullet};
+		shipBullets[i] = (Object){{0, -10},Bullet};
 	}
 
 	for(uint8_t i = 0; i < MAX_ENEMIES; i++) {
 		enemyArr[i] = (Object){{0, -10},Enemy};
+		enemyBullets[i] = (Object){{0, -10},Bullet};
 	}
-
-
 
 	uint8_t rand = get_system_timer() % 2;
 	enemyArr[MAX_ENEMIES - 1] = (Object) { {300, 300}, Enemy, 3, 0, { 300, 300 }
