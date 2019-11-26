@@ -36,12 +36,12 @@ typedef struct {
 } Object;
 
 typedef struct {
+	Object o;
 	uint8_t currentPath;
 	uint8_t pathPos;
 	Point start;
-	Object Enemy;
 	Point gridPos;
-} Enemy;
+} EnemyObj;
 
 
 typedef struct {
@@ -50,7 +50,7 @@ typedef struct {
 } FontCharacter;
 
 typedef struct {
-	 Enemy enemies[MAX_ENEMIES];
+	 EnemyObj enemies[MAX_ENEMIES];
 	 int numEnemies[MAX_ENEMIES];
 } EnemiesStartDelay;
 
@@ -65,12 +65,11 @@ FontCharacter characters[26];
 void shapes_init(void);
 FontCharacter* getCharacter(uint8_t c);
 
-Level levels[NUMBER_LEVELS];
+//Level levels[NUMBER_LEVELS];
 
 // Shape ship;
 Object ship;
-Object enemy;
-Object enemyArr[MAX_ENEMIES];
+EnemyObj enemyArr[MAX_ENEMIES];
 uint8_t curEnemyArr[MAX_ENEMIES];
 uint8_t curEnemy;
 void addEnemy(uint8_t index);
@@ -83,8 +82,8 @@ Point objectSize[3];
 
 Point relativePath[5][128];
 uint8_t relativePathSizes[5];
-void (*pathUpdateFuncs[7])(Object*);
-void (*pathCompleteFuncs[7])(Object*);
+void (*pathUpdateFuncs[7])(EnemyObj*);
+void (*pathCompleteFuncs[7])(EnemyObj*);
 
 Object shipBullets[MAX_BULLETS];
 Object enemyBullets[MAX_ENEMIES];
