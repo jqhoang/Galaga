@@ -84,8 +84,6 @@ void main(){
 	
 	
 	// GAME LOOP (~20 fps)
-	int i0 = 0;
-	int i1 = 0;
 	int frameCount = 0;
 	while(true){
     	uint8_t c=0;
@@ -121,6 +119,11 @@ void main(){
 		for (uint8_t enemy = 0; enemy < curEnemy; ++enemy) {
 			(*pathCompleteFuncs[enemyArr[curEnemyArr[enemy]].currentPath])(&enemyArr[curEnemyArr[enemy]]);
 			(*pathUpdateFuncs[enemyArr[curEnemyArr[enemy]].currentPath])(&enemyArr[curEnemyArr[enemy]]);
+			if (frameCount % 40 == 0 && frameCount != 0)
+			{
+				uint8_t rand = get_system_timer() % 3;
+				enemyArr[curEnemyArr[enemy]].currentPath = rand + 2;
+			}
 		}
 
 
