@@ -175,10 +175,8 @@ void main(){
 	}
 
 }
-//
-void bulletCheck(uint8_t index) {
-	
-}
+
+
 //semi hardcoded for bullets and enemys should change this after, by adding types
 bool collisionCheck(Object obj1, Object obj2) {
 
