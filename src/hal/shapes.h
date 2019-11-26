@@ -91,4 +91,5 @@ void (*pathCompleteFuncs[7])(EnemyObj*);
 Object shipBullets[MAX_BULLETS];
 Object enemyBullets[MAX_ENEMIES];
 
+
 #endif
