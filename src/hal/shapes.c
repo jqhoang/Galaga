@@ -38,21 +38,25 @@ void entry1Update(EnemyObj* obj, Point p){
 	pathUpdate(obj);
 	if (obj->pathPos == relativePathSizes[obj->currentPath]
 		|| obj->o.origin.y > SYSTEM_SCREEN_LENGTH - 25) {
-		obj->currentPath = 5;
-		obj->pathPos = 0;
+		obj->currentPath = Finish;
+		obj->o.speed.x = 0 + (obj->o.origin.x - (p.y*(60 - abs2(60 - (p.y*(p.x+(p.y*(FRAMES_FOR_ENTRY_FINISH * IDLE_SHIFT))))))+ obj->gridPos.x * 55 + 156))/FRAMES_FOR_ENTRY_FINISH;
+		obj->o.speed.y = (obj->o.origin.y - (150 + obj->gridPos.y * 50))/FRAMES_FOR_ENTRY_FINISH;
+
 	}
 }
 void entry2Update(EnemyObj* obj, Point p){
 	pathUpdate(obj);
 	if (obj->pathPos == relativePathSizes[obj->currentPath]
 		|| obj->o.origin.y > SYSTEM_SCREEN_LENGTH - 25) {
-		obj->currentPath = 5;
-		obj->pathPos = 0;
+		obj->currentPath = Finish;
+		obj->o.speed.x = 0 + (obj->o.origin.x - (p.y*(60 - abs2(60 - (p.y*(p.x+(p.y*(FRAMES_FOR_ENTRY_FINISH * IDLE_SHIFT))))))+ obj->gridPos.x * 55 + 156))/FRAMES_FOR_ENTRY_FINISH;
+		obj->o.speed.y = (obj->o.origin.y - (150 + obj->gridPos.y * 50))/FRAMES_FOR_ENTRY_FINISH;
+
 	}
 }
 void attack1Update(EnemyObj* obj, Point p){
 	relativePathUpdate(obj);
-	if (obj->pathPos == 15)
+	if (obj->pathPos == 15)  
 		attackShoot(obj, p);
 	if (obj->pathPos == relativePathSizes[obj->currentPath]
 		|| obj->o.origin.y > SYSTEM_SCREEN_LENGTH - 25) {
@@ -90,10 +94,12 @@ void reEntryUpdate(EnemyObj* obj, Point p){
 
 //path 7 starting from 0
 void entryFinish(EnemyObj* obj, Point p) {
-	pathUpdate(obj);
-	if (obj->pathPos == relativePathSizes[obj->currentPath]
-		|| obj->o.origin.y > SYSTEM_SCREEN_LENGTH - 25) {
-		obj->currentPath = 5;
+	// obj->o.origin = (Point){p.x + obj->gridPos.x * 55 + 156, 150 + obj->gridPos.y * 50};
+	obj->o.origin.x -= obj->o.speed.x;
+	obj->o.origin.y -= obj->o.speed.y;
+	if (obj->o.origin.y < 185 + obj->gridPos.y * 50) {
+		obj->currentPath = Idle;
+		obj->pathPos = 0;
 	}
 }
 
@@ -165,7 +171,7 @@ void startLevel(uint8_t level){
 
 bool spawnEnemies(uint8_t frames,Spawn spawn) {
 	if(frames == spawn.frame) {
-		kprintf("\n\rspawning");
+		// kprintf("\n\rspawning");
 		curEnemy +=1;
 		return true;
 	}
@@ -182,9 +188,10 @@ void delEnemy(uint8_t index) {
 	curEnemy -= 1;
 	// kprintf("\n\r%d",enemyArr[curEnemyArr[curEnemy]].origin.x);
 	if(index!=curEnemy) {
-		uint8_t t = curEnemyArr[index];
+		// uint8_t t = curEnemyArr[index];
+		// curEnemyArr[index] = curEnemyArr[curEnemy];
+		// curEnemyArr[curEnemy] = t;
 		curEnemyArr[index] = curEnemyArr[curEnemy];
-		curEnemyArr[curEnemy] = t;
 	}
 
 }
@@ -242,6 +249,7 @@ Level levels[NUMBER_LEVELS] = {
 			{ { {{300, 150}, Enemy}, 0, 0, { 0, 0 }, {4,2} }, 65 }
 		},
 		14
+		
 	}
 };
 
