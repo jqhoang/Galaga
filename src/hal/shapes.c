@@ -6,8 +6,13 @@
 #include "../system.h"
 #include "../drivers/delays/delays.h"
 
-void pathUpdate(EnemyObj* obj){
+void relativePathUpdate(EnemyObj* obj){
 	obj->o.origin = addPoint(obj->start, subtractPoint(relativePath[obj->currentPath][obj->pathPos], relativePath[obj->currentPath][0]));
+	++obj->pathPos;
+}
+
+void pathUpdate(EnemyObj* obj){
+	obj->o.origin = relativePath[obj->currentPath][obj->pathPos];
 	++obj->pathPos;
 }
 
@@ -15,56 +20,52 @@ void pathRepeat(EnemyObj* obj){
 	if (obj->pathPos == relativePathSizes[obj->currentPath]
 		|| obj->o.origin.y > SYSTEM_SCREEN_LENGTH - 25) {
 		obj->pathPos = 0;
-		obj->o.origin = obj->start;
+		obj->o.origin = relativePath[obj->currentPath][0];
 	}
 }
 
-void entry1Update(EnemyObj* obj){
+void entry1Update(EnemyObj* obj, Point p){
+	pathUpdate(obj);
+	if (obj->pathPos == relativePathSizes[obj->currentPath]
+		|| obj->o.origin.y > SYSTEM_SCREEN_LENGTH - 25) {
+		obj->currentPath = 5;
+	}
+}
+void entry2Update(EnemyObj* obj, Point p){
+	pathUpdate(obj);
+	if (obj->pathPos == relativePathSizes[obj->currentPath]
+		|| obj->o.origin.y > SYSTEM_SCREEN_LENGTH - 25) {
+		obj->currentPath = 5;
+	}
+}
+void attack1Update(EnemyObj* obj, Point p){
+	relativePathUpdate(obj);
+	if (obj->pathPos == 15)
+		for(uint8_t i = 0; i < MAX_ENEMIES; i++) 
+			if(enemyBullets[i].origin.y >= 868) {
+				float slope = (obj->o.origin.y - p.y) / (float)(obj->o.origin.x - p.x);
+				float division = 35 / (slope + 1);
+				enemyBullets[i] = (Object){{obj->o.origin.x, obj->o.origin.y}, Bullet, {division, 35 - division}};
+				break;
+			}
 	pathRepeat(obj);
 }
-void entry2Update(EnemyObj* obj){
+void attack2Update(EnemyObj* obj, Point p){
+	relativePathUpdate(obj);
 	pathRepeat(obj);
 }
-void attack1Update(EnemyObj* obj){
+void attack3Update(EnemyObj* obj, Point p){
+	relativePathUpdate(obj);
 	pathRepeat(obj);
 }
-void attack2Update(EnemyObj* obj){
-	pathRepeat(obj);
-}
-void attack3Update(EnemyObj* obj){
-	pathRepeat(obj);
-}
-void idleUpdate(EnemyObj* obj){
+void idleUpdate(EnemyObj* obj, Point p){
 
 }
-void reEntry(EnemyObj* obj){
+void reEntryUpdate(EnemyObj* obj, Point p){
 
 }
 
-void entry1Complete(EnemyObj* obj){
-	pathUpdate(obj);
-}
-void entry2Complete(EnemyObj* obj){
-	pathUpdate(obj);
-}
-void attack1Complete(EnemyObj* obj){
-	pathUpdate(obj);
-}
-void attack2Complete(EnemyObj* obj){
-	pathUpdate(obj);
-}
-void attack3Complete(EnemyObj* obj){
-	pathUpdate(obj);
-}
-void idleComplete(EnemyObj* obj){
-
-}
-void reEntryComplete(EnemyObj* obj){
-
-}
-
-void (*pathUpdateFuncs[7])(EnemyObj*) = {&entry1Update, &entry2Update, &attack1Update, &attack2Update, &attack3Update, &idleUpdate, &reEntry};
-void (*pathCompleteFuncs[7])(EnemyObj*) = {&entry1Complete, &entry2Complete, &attack1Complete, &attack2Complete, &attack3Complete, &idleComplete, &reEntryComplete};
+void (*pathUpdateFuncs[7])(EnemyObj*, Point) = {&entry1Update, &entry2Update, &attack1Update, &attack2Update, &attack3Update, &idleUpdate, &reEntryUpdate};
 
 Point addPoint(Point p1, Point p2) {
 	return (Point) { p1.x + p2.x, p1.y + p2.y };
@@ -162,13 +163,35 @@ Level levels[NUMBER_LEVELS] = {
 
 	(Level){
 		{
-			{ { {{300, 150}, Enemy}, 1, 0, { 0, 0 }, {0,0} }, 0 }
-
+			{ { {{300, 150}, Enemy}, 0, 0, { 0, 0 }, {0,0} }, 0 }
 			,
-			
-			{ { {{250, 100}, Enemy}, 0, 0, { 250, 100 }, {0,1} }, 0 }
+			{ { {{250, 100}, Enemy}, 1, 0, { 250, 100 }, {6,2} }, 0 }
+			,
+			{ { {{300, 150}, Enemy}, 0, 0, { 0, 0 }, {7,0} }, 4 }
+			,
+			{ { {{250, 100}, Enemy}, 1, 0, { 250, 100 }, {1,2} }, 5 }
+			,
+			{ { {{300, 150}, Enemy}, 0, 0, { 0, 0 }, {2,1} }, 8 }
+			,
+			{ { {{250, 100}, Enemy}, 1, 0, { 250, 100 }, {5,2} }, 10 }
+			,
+			{ { {{300, 150}, Enemy}, 0, 0, { 0, 0 }, {5,1} }, 12 }
+			,
+			{ { {{250, 100}, Enemy}, 1, 0, { 250, 100 }, {2,2} }, 15 }
+			,
+			{ { {{250, 100}, Enemy}, 1, 0, { 250, 100 }, {1,1} }, 20 }
+			,
+			{ { {{250, 100}, Enemy}, 1, 0, { 250, 100 }, {6,1} }, 25 }
+			,
+			{ { {{250, 100}, Enemy}, 1, 0, { 250, 100 }, {3,1} }, 30 }
+			,
+			{ { {{250, 100}, Enemy}, 1, 0, { 250, 100 }, {4,1} }, 35 }
+			,
+			{ { {{300, 150}, Enemy}, 0, 0, { 0, 0 }, {3,2} }, 60 }
+			,
+			{ { {{300, 150}, Enemy}, 0, 0, { 0, 0 }, {4,2} }, 65 }
 		},
-		2
+		14
 	}
 };
 
