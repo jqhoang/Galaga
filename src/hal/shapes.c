@@ -97,7 +97,7 @@ void entryFinish(EnemyObj* obj, Point p) {
 	// obj->o.origin = (Point){p.x + obj->gridPos.x * 55 + 156, 150 + obj->gridPos.y * 50};
 	obj->o.origin.x -= obj->o.speed.x;
 	obj->o.origin.y -= obj->o.speed.y;
-	if (obj->o.origin.y < 185 + obj->gridPos.y * 50) {
+	if (obj->o.origin.y < 190 + obj->gridPos.y * 50) {
 		obj->currentPath = Idle;
 		obj->pathPos = 0;
 	}

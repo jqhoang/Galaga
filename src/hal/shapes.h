@@ -5,7 +5,7 @@
 #define MAX_BULLETS 3
 #define MAX_ENEMIES 20
 #define NUMBER_LEVELS 1
-#define FRAMES_FOR_ENTRY_FINISH 8
+#define FRAMES_FOR_ENTRY_FINISH 9
 #define IDLE_SHIFT 3
 // row 1 is 100 
 // row 2 is 150 
