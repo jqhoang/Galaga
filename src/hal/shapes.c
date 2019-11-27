@@ -121,7 +121,7 @@ void shapes_init(void){
 	uint8_t rand = get_system_timer() % 2;
 	enemyArr[MAX_ENEMIES - 1] = (EnemyObj) { {{106, 150}, Enemy}, Idle, 0, { 300, 300 }, {0, 0} };
 	uint8_t rand2 = get_system_timer() % 2;
-	enemyArr[MAX_ENEMIES - 2] = (EnemyObj) { {{300, 250}, Enemy}, Attack2, 0, { 300, 250 }, {0, 0} };
+	enemyArr[MAX_ENEMIES - 2] = (EnemyObj) { {{300, 250}, Enemy}, Attack2, 0, { 300, 250 }, {0, 1} };
 	curEnemyArr[0] = MAX_ENEMIES-1;
 	for(uint8_t i = 0; i < MAX_ENEMIES; i++) {
 		if(enemyArr[i].o.origin.y != -10) {
