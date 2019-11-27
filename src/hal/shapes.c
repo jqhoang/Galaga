@@ -24,6 +24,16 @@ void pathRepeat(EnemyObj* obj){
 	}
 }
 
+void attackShoot(EnemyObj* obj, Point p){
+	for(uint8_t i = 0; i < MAX_ENEMIES; i++) 
+		if(enemyBullets[i].origin.y >= 868) {
+			float slope = (obj->o.origin.y - p.y) / (float)(obj->o.origin.x - p.x);
+			float division = 35 / (slope + 1);
+			enemyBullets[i] = (Object){{obj->o.origin.x, obj->o.origin.y}, Bullet, {division, 35 - division}};
+			return;
+		}
+}
+
 void entry1Update(EnemyObj* obj, Point p){
 	pathUpdate(obj);
 	pathRepeat(obj);
@@ -35,25 +45,35 @@ void entry2Update(EnemyObj* obj, Point p){
 void attack1Update(EnemyObj* obj, Point p){
 	relativePathUpdate(obj);
 	if (obj->pathPos == 15)
-		for(uint8_t i = 0; i < MAX_ENEMIES; i++) 
-			if(enemyBullets[i].origin.y >= 868) {
-				float slope = (obj->o.origin.y - p.y) / (float)(obj->o.origin.x - p.x);
-				float division = 35 / (slope + 1);
-				enemyBullets[i] = (Object){{obj->o.origin.x, obj->o.origin.y}, Bullet, {division, 35 - division}};
-				break;
-			}
-	pathRepeat(obj);
+		attackShoot(obj, p);
+	if (obj->pathPos == relativePathSizes[obj->currentPath]
+		|| obj->o.origin.y > SYSTEM_SCREEN_LENGTH - 25) {
+		obj->currentPath = Idle;
+		obj->pathPos = 0;
+	}
 }
 void attack2Update(EnemyObj* obj, Point p){
 	relativePathUpdate(obj);
-	pathRepeat(obj);
+	if (obj->pathPos == 15)
+		attackShoot(obj, p);
+	if (obj->pathPos == relativePathSizes[obj->currentPath]
+		|| obj->o.origin.y > SYSTEM_SCREEN_LENGTH - 25) {
+		obj->currentPath = Idle;
+		obj->pathPos = 0;
+	}
 }
 void attack3Update(EnemyObj* obj, Point p){
 	relativePathUpdate(obj);
-	pathRepeat(obj);
+	if (obj->pathPos == 10)
+		attackShoot(obj, p);
+	if (obj->pathPos == relativePathSizes[obj->currentPath]
+		|| obj->o.origin.y > SYSTEM_SCREEN_LENGTH - 25) {
+		obj->currentPath = Idle;
+		obj->pathPos = 0;
+	}
 }
 void idleUpdate(EnemyObj* obj, Point p){
-
+	obj->o.origin = (Point){p.x + obj->gridPos.x * 55 + 156, 150 + obj->gridPos.y * 50};
 }
 void reEntryUpdate(EnemyObj* obj, Point p){
 
@@ -82,9 +102,9 @@ void shapes_init(void){
 	}
 
 	uint8_t rand = get_system_timer() % 2;
-	enemyArr[MAX_ENEMIES - 1] = (EnemyObj) { {{300, 300}, Enemy}, 0, 0, { 300, 300 }, {0, 0} };
+	enemyArr[MAX_ENEMIES - 1] = (EnemyObj) { {{106, 150}, Enemy}, Idle, 0, { 300, 300 }, {0, 0} };
 	uint8_t rand2 = get_system_timer() % 2;
-	enemyArr[MAX_ENEMIES - 2] = (EnemyObj) { {{300, 100}, Enemy}, 2, 0, { 300, 100 }, {0, 0} };
+	enemyArr[MAX_ENEMIES - 2] = (EnemyObj) { {{300, 250}, Enemy}, Attack2, 0, { 300, 250 }, {0, 0} };
 	curEnemyArr[0] = MAX_ENEMIES-1;
 	for(uint8_t i = 0; i < MAX_ENEMIES; i++) {
 		if(enemyArr[i].o.origin.y != -10) {
