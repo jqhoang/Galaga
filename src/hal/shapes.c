@@ -86,8 +86,13 @@ void reEntryUpdate(EnemyObj* obj, Point p){
 
 }
 
+//path 7 starting from 0
 void entryFinish(EnemyObj* obj, Point p) {
-
+	pathUpdate(obj);
+	if (obj->pathPos == relativePathSizes[obj->currentPath]
+		|| obj->o.origin.y > SYSTEM_SCREEN_LENGTH - 25) {
+		obj->currentPath = 5;
+	}
 }
 
 
