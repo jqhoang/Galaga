@@ -39,6 +39,7 @@ void entry1Update(EnemyObj* obj, Point p){
 	if (obj->pathPos == relativePathSizes[obj->currentPath]
 		|| obj->o.origin.y > SYSTEM_SCREEN_LENGTH - 25) {
 		obj->currentPath = 5;
+		obj->pathPos = 0;
 	}
 }
 void entry2Update(EnemyObj* obj, Point p){
@@ -46,6 +47,7 @@ void entry2Update(EnemyObj* obj, Point p){
 	if (obj->pathPos == relativePathSizes[obj->currentPath]
 		|| obj->o.origin.y > SYSTEM_SCREEN_LENGTH - 25) {
 		obj->currentPath = 5;
+		obj->pathPos = 0;
 	}
 }
 void attack1Update(EnemyObj* obj, Point p){
