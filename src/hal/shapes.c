@@ -100,6 +100,23 @@ void shapes_init(void){
 		enemyArr[i] = (EnemyObj){{{0, -10}, Enemy}, Idle, 0, {0, -10}, {0, 0}};
 		enemyBullets[i] = (Object){{0, 868},Bullet};
 	}
+	/*
+		uint8_t row = 1;
+	uint8_t col = 1;
+	for (uint8_t i = 0; i < MAX_ENEMIES; i++) {
+		enemyArr[MAX_ENEMIES - (i+1)] = (EnemyObj) { { {100 + (col * 55), row * 50}, Enemy}, 1, 0, { 100+(col * 55), row * 50 }, { col, row } };
+		col++;
+		if ((i+1) % (MAX_ENEMIES/3) == 0 && i != 0) {
+			row++;
+			col = 1;
+		}
+		curEnemyArr[i] = i;
+		curEnemy++;
+	}
+	*/
+	
+	
+	//curEnemyArr[0] = MAX_ENEMIES-1;
 
 	uint8_t rand = get_system_timer() % 2;
 	enemyArr[MAX_ENEMIES - 1] = (EnemyObj) { {{106, 150}, Enemy}, Idle, 0, { 300, 300 }, {0, 0} };

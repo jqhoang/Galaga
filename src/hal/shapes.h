@@ -3,7 +3,7 @@
 
 #define PIXEL_SIZE 4
 #define MAX_BULLETS 3
-#define MAX_ENEMIES 8
+#define MAX_ENEMIES 24
 #define NUMBER_LEVELS 1
 
 
