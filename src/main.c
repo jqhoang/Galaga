@@ -51,11 +51,12 @@ void wait_for_ten_secs(void);
 void bulletCheck(uint8_t index);
 bool collisionCheck(Object obj1, Object obj2);
 
-uint32_t zoom_title=1;
-uint32_t zoom_text=1;
-const uint8_t maxBullets = 10;
-bool changed=true;
-unsigned long prevbullet = 0;
+
+
+
+#define IDLE_SHIFT 3
+
+
 
 void main(){
 
@@ -86,6 +87,9 @@ void main(){
 	int currentLevel = 0;
 	bool tempEnemySpawn = false;
 	uint8_t spawn=0;
+	int8_t idleShift = 0;
+	int8_t idleDirec = 1;
+	unsigned long prevbullet = 0;
 	while(true){
     	uint8_t c=0;
 		uart0_nonblocking_getc(&c);
@@ -138,14 +142,18 @@ void main(){
 			{
 				uint8_t rand = get_system_timer() % 3;
 				enemyArr[curEnemyArr[enemy]].currentPath = rand + 2;
+				enemyArr[curEnemyArr[enemy]].start = enemyArr[curEnemyArr[enemy]].o.origin;
 			}
 
 			Point p = {0, 0};
 			switch(enemyArr[curEnemyArr[enemy]].currentPath){
-				case 2:
-				case 3:
-				case 4:
+				case Attack1:
+				case Attack2:
+				case Attack3:
 					p = ship.origin;
+					break;
+				case Idle:
+					p.x = idleShift;
 					break;
 			}
 			(*pathUpdateFuncs[enemyArr[curEnemyArr[enemy]].currentPath])(&enemyArr[curEnemyArr[enemy]], p);
@@ -185,10 +193,12 @@ void main(){
 			}
 		}
 		draw();
-		hal_cpu_delay(50);
 		frameCount++;
+		idleShift += idleDirec * IDLE_SHIFT;
+		if (idleShift == 60 || idleShift == -60)
+			idleDirec *= -1;
+		hal_cpu_delay(50);
 	}
-
 }
 
 
