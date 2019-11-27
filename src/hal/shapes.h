@@ -67,6 +67,7 @@ typedef struct {
 uint32_t charSize;
 FontCharacter characters[26];
 void shapes_init(void);
+bool spawnEnemies(uint8_t frames,Spawn spawn);
 void startLevel(uint8_t level);
 FontCharacter* getCharacter(uint8_t c);
 
@@ -81,7 +82,7 @@ void addEnemy(uint8_t index);
 void delEnemy(uint8_t index);
 Point addPoint(Point p1, Point p2);
 Point subtractPoint(Point p1, Point p2);
-
+Level levels[NUMBER_LEVELS];
 Shape objectShapes[3];
 Point objectSize[3];
 

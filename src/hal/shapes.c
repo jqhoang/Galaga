@@ -82,44 +82,58 @@ void shapes_init(void){
 	}
 
 	for(uint8_t i = 0; i < MAX_ENEMIES; i++) {
-		enemyArr[i] = (EnemyObj){{{0, -10}, Enemy}, Idle, 0, {0, -10}, {0, 0}};
+		// enemyArr[i] = (EnemyObj){{{0, -10}, Enemy}, Idle, 0, {0, -10}, {0, 0}};
 		enemyBullets[i] = (Object){{0, -10},Bullet};
 	}
 
-	uint8_t rand = get_system_timer() % 2;
-	enemyArr[MAX_ENEMIES - 1] = (EnemyObj) { {{300, 300}, Enemy}, 3, 0, { 300, 300 }, {0, 0} };
-	uint8_t rand2 = get_system_timer() % 2;
-	enemyArr[MAX_ENEMIES - 2] = (EnemyObj) { {{300, 100}, Enemy}, 1, 0, { 300, 100 }, {0, 0} };
-	curEnemyArr[0] = MAX_ENEMIES-1;
-	for(uint8_t i = 0; i < MAX_ENEMIES; i++) {
-		if(enemyArr[i].o.origin.y != -10) {
-			addEnemy(i);
-		}
-	}
+	// uint8_t rand = get_system_timer() % 2;
+	// enemyArr[MAX_ENEMIES - 1] = (EnemyObj) { {{300, 300}, Enemy}, 3, 0, { 300, 300 }, {0, 0} };
+	// uint8_t rand2 = get_system_timer() % 2;
+	// enemyArr[MAX_ENEMIES - 2] = (EnemyObj) { {{300, 100}, Enemy}, 1, 0, { 300, 100 }, {0, 0} };
+	// curEnemyArr[0] = MAX_ENEMIES-1;
+	// for(uint8_t i = 0; i < MAX_ENEMIES; i++) {
+	// 	if(enemyArr[i].o.origin.y != -10) {
+	// 		addEnemy(i);
+	// 	}
+	// }
+
+
+	startLevel(0);
 
 }
 
 
 void startLevel(uint8_t level){
-
-	for(uint8_t i = 0; i < levels[level].numEnemies; i++) {
-		
-		enemyArr[i] = levels[level].enemies[i].enemy;
-
+	for(uint8_t i = 0; i < MAX_ENEMIES; i++) {
+		curEnemyArr[i] = i;
 	}
+	for(uint8_t i = 0; i < levels[level].numEnemies; i++) {
+		enemyArr[i] = levels[level].enemies[i].enemy;
+	}
+}
+
+bool spawnEnemies(uint8_t frames,Spawn spawn) {
+	if(frames == spawn.frame) {
+		kprintf("\n\rspawning");
+		curEnemy +=1;
+		return true;
+	}
+	return false;
+
 
 }
 
-void addEnemy(uint8_t index) {
-	curEnemyArr[curEnemy] = index;
-	curEnemy += 1;
-}
+// void addEnemy() {
+// 	curEnemy += 1;
+// }
 
 void delEnemy(uint8_t index) {
 	curEnemy -= 1;
 	// kprintf("\n\r%d",enemyArr[curEnemyArr[curEnemy]].origin.x);
 	if(index!=curEnemy) {
+		uint8_t t = curEnemyArr[index];
 		curEnemyArr[index] = curEnemyArr[curEnemy];
+		curEnemyArr[curEnemy] = t;
 	}
 
 }
@@ -148,13 +162,13 @@ Level levels[NUMBER_LEVELS] = {
 
 	(Level){
 		{
-			{ { {{300, 100}, Enemy}, 1, 0, { 300, 100 }, {0,0} }, 0 }
+			{ { {{300, 150}, Enemy}, 1, 0, { 0, 0 }, {0,0} }, 0 }
 
 			,
 			
-			{ { {{300, 100}, Enemy}, 0, 0, { 300, 100 }, {0,1} }, 0 }
+			{ { {{250, 100}, Enemy}, 0, 0, { 250, 100 }, {0,1} }, 0 }
 		},
-		1
+		2
 	}
 };
 

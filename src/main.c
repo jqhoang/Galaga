@@ -83,6 +83,9 @@ void main(){
 	
 	// GAME LOOP (~20 fps)
 	int frameCount = 0;
+	int currentLevel = 0;
+	bool tempEnemySpawn = false;
+	uint8_t spawn=0;
 	while(true){
     	uint8_t c=0;
 		uart0_nonblocking_getc(&c);
@@ -91,12 +94,15 @@ void main(){
 		if (c == 'd')
 			ship.origin.x += 10;
 		if (c=='p') {
-			curEnemy = 0;
-			for(uint8_t i = 0; i < MAX_ENEMIES; i++) {
-				if(enemyArr[i].o.origin.y != -10) {
-					addEnemy(i);
-				}
-			}
+			// curEnemy = 0;
+			// for(uint8_t i = 0; i < MAX_ENEMIES; i++) {
+			// 	if(enemyArr[i].o.origin.y != -10) {
+			// 		addEnemy(i);
+			// 	}
+			// }
+			tempEnemySpawn = true;
+			frameCount = 0;
+
 		}
 		if (c == 'k'){
 			// kprintf("\r\norigX:%d",abs2(-160));
@@ -110,6 +116,16 @@ void main(){
 				}
 			}
 		}
+
+
+		//this will trigger is users click p
+		if(tempEnemySpawn && spawn < levels[currentLevel].numEnemies) {
+			kprintf("\n\r%d",spawn);
+			while(spawnEnemies(frameCount,levels[currentLevel].enemies[spawn]) && spawn < levels[currentLevel].numEnemies) {
+				kprintf("\n\r%d change",spawn);
+				spawn++;
+			}
+		}
 		
 		// if(enemyArr)
 		//when enemy at 0 dies, we change the array so that the next enemy becomes 0
@@ -117,18 +133,19 @@ void main(){
 		
 		
 		
-		// for (uint8_t enemy = 0; enemy < curEnemy; ++enemy) {
-		// 	if (enemyArr[curEnemyArr[enemy]].currentPath == 6 && frameCount % 40 == 0 && frameCount != 0)
-		// 	{
-		// 		uint8_t rand = get_system_timer() % 3;
-		// 		enemyArr[curEnemyArr[enemy]].currentPath = rand + 2;
-		// 	}
-		// 	(*pathCompleteFuncs[enemyArr[curEnemyArr[enemy]].currentPath])(&enemyArr[curEnemyArr[enemy]]);
-		// 	(*pathUpdateFuncs[enemyArr[curEnemyArr[enemy]].currentPath])(&enemyArr[curEnemyArr[enemy]]);
-		// }
+		for (uint8_t enemy = 0; enemy < curEnemy; ++enemy) {
+			if (enemyArr[curEnemyArr[enemy]].currentPath == 6 && frameCount % 40 == 0 && frameCount != 0)
+			{
+				uint8_t rand = get_system_timer() % 3;
+				enemyArr[curEnemyArr[enemy]].currentPath = rand + 2;
+			}
+			(*pathCompleteFuncs[enemyArr[curEnemyArr[enemy]].currentPath])(&enemyArr[curEnemyArr[enemy]]);
+			(*pathUpdateFuncs[enemyArr[curEnemyArr[enemy]].currentPath])(&enemyArr[curEnemyArr[enemy]]);
+		}
 
 		drawShape(&ship);
 		// curEnemy = 1;
+		// kprintf("\n\r%d",curEnemy);
 		for(uint8_t i = 0; i <curEnemy;i++) {
 			drawShape(&(enemyArr[curEnemyArr[i]].o));
 		}
