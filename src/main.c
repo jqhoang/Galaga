@@ -120,8 +120,16 @@ void main(){
 				uint8_t rand = get_system_timer() % 3;
 				enemyArr[curEnemyArr[enemy]].currentPath = rand + 2;
 			}
-			(*pathCompleteFuncs[enemyArr[curEnemyArr[enemy]].currentPath])(&enemyArr[curEnemyArr[enemy]]);
-			(*pathUpdateFuncs[enemyArr[curEnemyArr[enemy]].currentPath])(&enemyArr[curEnemyArr[enemy]]);
+
+			Point p = {0, 0};
+			switch(enemyArr[curEnemyArr[enemy]].currentPath){
+				case 2:
+				case 3:
+				case 4:
+					p = ship.origin;
+					break;
+			}
+			(*pathUpdateFuncs[enemyArr[curEnemyArr[enemy]].currentPath])(&enemyArr[curEnemyArr[enemy]], p);
 		}
 
 		drawShape(&ship);
@@ -132,7 +140,7 @@ void main(){
 
 		for(uint8_t i = 0; i<MAX_BULLETS;i++) {
 			if(shipBullets[i].origin.y > 0) {
-				shipBullets[i].origin.y -=35;
+				shipBullets[i].origin.y -= 35;
 				drawShape(&shipBullets[i]);
 				for(uint8_t t = 0; t <curEnemy;t++) {
 					if(collisionCheck(shipBullets[i],enemyArr[curEnemyArr[t]].o)){
@@ -144,12 +152,13 @@ void main(){
 				}
 			}
 		}
-		for(uint8_t i = 0; i<MAX_ENEMIES;i++) {
-			if(enemyBullets[i].origin.y > 0) {
-				enemyBullets[i].origin.y =35;
+		for(uint8_t i = 0; i < MAX_ENEMIES; i++) {
+			if(enemyBullets[i].origin.y < 868) {
+				enemyBullets[i].origin.x += enemyBullets[i].speed.x;
+				enemyBullets[i].origin.y += enemyBullets[i].speed.y;
 				drawShape(&enemyBullets[i]);
 				if(collisionCheck(enemyBullets[i], ship)){
-					enemyBullets[i].origin.y = 0;
+					enemyBullets[i].origin.y = 868;
 					kprintf("\n\rLost a life");
 					break;
 				}
