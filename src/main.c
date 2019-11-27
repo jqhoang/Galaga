@@ -134,11 +134,31 @@ void main(){
 		// if(enemyArr)
 		//when enemy at 0 dies, we change the array so that the next enemy becomes 0
 		//tis makes it look like the enemy that is moving did not get killed.
-		
+		uint8_t idlingEnemies[MAX_ENEMIES];
+		uint8_t idlingEnemiesCount = 0;
+		uint8_t ship1Attack = -1;
+		uint8_t ship2Attack = -1;
+		if (frameCount % 100 == 0 
+			&& frameCount > levels[currentLevel].enemies[levels[currentLevel].numEnemies - 1].frame + relativePathSizes[levels[currentLevel].enemies[levels[currentLevel].numEnemies - 1].enemy.currentPath] + FRAMES_FOR_ENTRY_FINISH){
+			for (uint8_t enemy = 0; enemy < curEnemy; ++enemy) 
+				if (enemyArr[curEnemyArr[enemy]].currentPath == Idle) {
+					idlingEnemies[idlingEnemiesCount] = curEnemyArr[enemy];
+					idlingEnemiesCount++;
+				}
+			
+			if (idlingEnemiesCount > 1) {
+				ship1Attack = idlingEnemies[get_system_timer() % idlingEnemiesCount];
+				idlingEnemies[ship1Attack] = idlingEnemies[idlingEnemiesCount];
+				idlingEnemiesCount--;
+			}
+			if (idlingEnemiesCount > 1) 
+				ship2Attack = idlingEnemies[get_system_timer() % idlingEnemiesCount];
+		}
+
 		
 		
 		for (uint8_t enemy = 0; enemy < curEnemy; ++enemy) {
-			if (enemyArr[curEnemyArr[enemy]].currentPath == 6 && frameCount % 40 == 0 && frameCount != 0)
+			if (curEnemyArr[enemy] == ship1Attack || curEnemyArr[enemy] == ship2Attack)
 			{
 				uint8_t rand = get_system_timer() % 3;
 				enemyArr[curEnemyArr[enemy]].currentPath = rand + 2;
