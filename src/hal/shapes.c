@@ -81,11 +81,17 @@ void attack3Update(EnemyObj* obj, Point p){
 void idleUpdate(EnemyObj* obj, Point p){
 	obj->o.origin = (Point){p.x + obj->gridPos.x * 55 + 156, 150 + obj->gridPos.y * 50};
 }
+
 void reEntryUpdate(EnemyObj* obj, Point p){
 
 }
 
-void (*pathUpdateFuncs[7])(EnemyObj*, Point) = {&entry1Update, &entry2Update, &attack1Update, &attack2Update, &attack3Update, &idleUpdate, &reEntryUpdate};
+void entryFinish(EnemyObj* obj, Point p) {
+
+}
+
+
+void (*pathUpdateFuncs[8])(EnemyObj*, Point) = {&entry1Update, &entry2Update, &attack1Update, &attack2Update, &attack3Update, &idleUpdate, &reEntryUpdate, &entryFinish};
 
 Point addPoint(Point p1, Point p2) {
 	return (Point) { p1.x + p2.x, p1.y + p2.y };

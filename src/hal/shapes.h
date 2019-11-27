@@ -5,12 +5,13 @@
 #define MAX_BULLETS 3
 #define MAX_ENEMIES 20
 #define NUMBER_LEVELS 1
+#define FRAMES_FOR_ENTRY_FINISH 7
 // row 1 is 100 
 // row 2 is 150 
 // row 3 is 200
 
 enum ObjType{Enemy, Ship, Bullet}; 
-enum Paths{Entry1, Entry2, Attack1, Attack2, Attack3, Idle, ReEntry}; 
+enum Paths{Entry1, Entry2, Attack1, Attack2, Attack3, Idle, ReEntry, Finish}; 
 
 typedef struct {
 	int16_t x;
@@ -88,7 +89,7 @@ Point objectSize[3];
 
 Point relativePath[5][128];
 uint8_t relativePathSizes[5];
-void (*pathUpdateFuncs[7])(EnemyObj*, Point);
+void (*pathUpdateFuncs[8])(EnemyObj*, Point);
 
 Object shipBullets[MAX_BULLETS];
 Object enemyBullets[MAX_ENEMIES];
