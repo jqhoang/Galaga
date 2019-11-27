@@ -36,11 +36,17 @@ void attackShoot(EnemyObj* obj, Point p){
 
 void entry1Update(EnemyObj* obj, Point p){
 	pathUpdate(obj);
-	pathRepeat(obj);
+	if (obj->pathPos == relativePathSizes[obj->currentPath]
+		|| obj->o.origin.y > SYSTEM_SCREEN_LENGTH - 25) {
+		obj->currentPath = 5;
+	}
 }
 void entry2Update(EnemyObj* obj, Point p){
 	pathUpdate(obj);
-	pathRepeat(obj);
+	if (obj->pathPos == relativePathSizes[obj->currentPath]
+		|| obj->o.origin.y > SYSTEM_SCREEN_LENGTH - 25) {
+		obj->currentPath = 5;
+	}
 }
 void attack1Update(EnemyObj* obj, Point p){
 	relativePathUpdate(obj);
@@ -75,11 +81,17 @@ void attack3Update(EnemyObj* obj, Point p){
 void idleUpdate(EnemyObj* obj, Point p){
 	obj->o.origin = (Point){p.x + obj->gridPos.x * 55 + 156, 150 + obj->gridPos.y * 50};
 }
+
 void reEntryUpdate(EnemyObj* obj, Point p){
 
 }
 
-void (*pathUpdateFuncs[7])(EnemyObj*, Point) = {&entry1Update, &entry2Update, &attack1Update, &attack2Update, &attack3Update, &idleUpdate, &reEntryUpdate};
+void entryFinish(EnemyObj* obj, Point p) {
+
+}
+
+
+void (*pathUpdateFuncs[8])(EnemyObj*, Point) = {&entry1Update, &entry2Update, &attack1Update, &attack2Update, &attack3Update, &idleUpdate, &reEntryUpdate, &entryFinish};
 
 Point addPoint(Point p1, Point p2) {
 	return (Point) { p1.x + p2.x, p1.y + p2.y };
@@ -97,8 +109,8 @@ void shapes_init(void){
 	}
 
 	for(uint8_t i = 0; i < MAX_ENEMIES; i++) {
-		enemyArr[i] = (EnemyObj){{{0, -10}, Enemy}, Idle, 0, {0, -10}, {0, 0}};
-		enemyBullets[i] = (Object){{0, 868},Bullet};
+		// enemyArr[i] = (EnemyObj){{{0, -10}, Enemy}, Idle, 0, {0, -10}, {0, 0}};
+		enemyBullets[i] = (Object){{0, -10},Bullet};
 	}
 	/*
 		uint8_t row = 1;
@@ -118,29 +130,54 @@ void shapes_init(void){
 	
 	//curEnemyArr[0] = MAX_ENEMIES-1;
 
-	uint8_t rand = get_system_timer() % 2;
-	enemyArr[MAX_ENEMIES - 1] = (EnemyObj) { {{106, 150}, Enemy}, Idle, 0, { 300, 300 }, {0, 0} };
-	uint8_t rand2 = get_system_timer() % 2;
-	enemyArr[MAX_ENEMIES - 2] = (EnemyObj) { {{300, 250}, Enemy}, Attack2, 0, { 300, 250 }, {0, 1} };
-	curEnemyArr[0] = MAX_ENEMIES-1;
+	// uint8_t rand = get_system_timer() % 2;
+	// enemyArr[MAX_ENEMIES - 1] = (EnemyObj) { {{300, 300}, Enemy}, 3, 0, { 300, 300 }, {0, 0} };
+	// uint8_t rand2 = get_system_timer() % 2;
+	// enemyArr[MAX_ENEMIES - 2] = (EnemyObj) { {{300, 100}, Enemy}, 1, 0, { 300, 100 }, {0, 0} };
+	// curEnemyArr[0] = MAX_ENEMIES-1;
+	// for(uint8_t i = 0; i < MAX_ENEMIES; i++) {
+	// 	if(enemyArr[i].o.origin.y != -10) {
+	// 		addEnemy(i);
+	// 	}
+	// }
+
+
+	startLevel(0);
+
+}
+
+
+void startLevel(uint8_t level){
 	for(uint8_t i = 0; i < MAX_ENEMIES; i++) {
-		if(enemyArr[i].o.origin.y != -10) {
-			addEnemy(i);
-		}
+		curEnemyArr[i] = i;
 	}
+	for(uint8_t i = 0; i < levels[level].numEnemies; i++) {
+		enemyArr[i] = levels[level].enemies[i].enemy;
+	}
+}
+
+bool spawnEnemies(uint8_t frames,Spawn spawn) {
+	if(frames == spawn.frame) {
+		kprintf("\n\rspawning");
+		curEnemy +=1;
+		return true;
+	}
+	return false;
+
 
 }
 
-void addEnemy(uint8_t index) {
-	curEnemyArr[curEnemy] = index;
-	curEnemy += 1;
-}
+// void addEnemy() {
+// 	curEnemy += 1;
+// }
 
 void delEnemy(uint8_t index) {
 	curEnemy -= 1;
 	// kprintf("\n\r%d",enemyArr[curEnemyArr[curEnemy]].origin.x);
 	if(index!=curEnemy) {
+		uint8_t t = curEnemyArr[index];
 		curEnemyArr[index] = curEnemyArr[curEnemy];
+		curEnemyArr[curEnemy] = t;
 	}
 
 }
@@ -163,18 +200,50 @@ Object ship = (Object){
 };
 
 
-// Level levels[NUMBER_LEVELS] = {
 
-// 	{1,0,1,0,1,0,1,0}
-// 	// ,2
 
-	
-// };
+Level levels[NUMBER_LEVELS] = {
+
+	(Level){
+		{
+			{ { {{300, 150}, Enemy}, 0, 0, { 0, 0 }, {0,0} }, 0 }
+			,
+			{ { {{250, 100}, Enemy}, 1, 0, { 250, 100 }, {6,2} }, 0 }
+			,
+			{ { {{300, 150}, Enemy}, 0, 0, { 0, 0 }, {7,0} }, 4 }
+			,
+			{ { {{250, 100}, Enemy}, 1, 0, { 250, 100 }, {1,2} }, 5 }
+			,
+			{ { {{300, 150}, Enemy}, 0, 0, { 0, 0 }, {2,1} }, 8 }
+			,
+			{ { {{250, 100}, Enemy}, 1, 0, { 250, 100 }, {5,2} }, 10 }
+			,
+			{ { {{300, 150}, Enemy}, 0, 0, { 0, 0 }, {5,1} }, 12 }
+			,
+			{ { {{250, 100}, Enemy}, 1, 0, { 250, 100 }, {2,2} }, 15 }
+			,
+			{ { {{250, 100}, Enemy}, 1, 0, { 250, 100 }, {1,1} }, 20 }
+			,
+			{ { {{250, 100}, Enemy}, 1, 0, { 250, 100 }, {6,1} }, 25 }
+			,
+			{ { {{250, 100}, Enemy}, 1, 0, { 250, 100 }, {3,1} }, 30 }
+			,
+			{ { {{250, 100}, Enemy}, 1, 0, { 250, 100 }, {4,1} }, 35 }
+			,
+			{ { {{300, 150}, Enemy}, 0, 0, { 0, 0 }, {3,2} }, 60 }
+			,
+			{ { {{300, 150}, Enemy}, 0, 0, { 0, 0 }, {4,2} }, 65 }
+		},
+		14
+	}
+};
 
 // Object enemy = (Object){
 // 	{200, 300},
 // 	Enemy
 // };
+
+
 
 Shape objectShapes[3] = { 
 	(Shape){{

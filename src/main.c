@@ -84,6 +84,9 @@ void main(){
 	
 	// GAME LOOP (~20 fps)
 	int frameCount = 0;
+	int currentLevel = 0;
+	bool tempEnemySpawn = false;
+	uint8_t spawn=0;
 	int8_t idleShift = 0;
 	int8_t idleDirec = 1;
 	unsigned long prevbullet = 0;
@@ -95,12 +98,15 @@ void main(){
 		if (c == 'd')
 			ship.origin.x += 10;
 		if (c=='p') {
-			curEnemy = 0;
-			for(uint8_t i = 0; i < MAX_ENEMIES; i++) {
-				if(enemyArr[i].o.origin.y != -10) {
-					addEnemy(i);
-				}
-			}
+			// curEnemy = 0;
+			// for(uint8_t i = 0; i < MAX_ENEMIES; i++) {
+			// 	if(enemyArr[i].o.origin.y != -10) {
+			// 		addEnemy(i);
+			// 	}
+			// }
+			tempEnemySpawn = true;
+			frameCount = 0;
+
 		}
 		if (c == 'k'){
 			// kprintf("\r\norigX:%d",abs2(-160));
@@ -112,6 +118,16 @@ void main(){
 						break;
 					}
 				}
+			}
+		}
+
+
+		//this will trigger is users click p
+		if(tempEnemySpawn && spawn < levels[currentLevel].numEnemies) {
+			kprintf("\n\r%d",spawn);
+			while(spawnEnemies(frameCount,levels[currentLevel].enemies[spawn]) && spawn < levels[currentLevel].numEnemies) {
+				kprintf("\n\r%d change",spawn);
+				spawn++;
 			}
 		}
 		
@@ -143,6 +159,7 @@ void main(){
 
 		drawShape(&ship);
 		// curEnemy = 1;
+		// kprintf("\n\r%d",curEnemy);
 		for(uint8_t i = 0; i <curEnemy;i++) {
 			drawShape(&(enemyArr[curEnemyArr[i]].o));
 		}
