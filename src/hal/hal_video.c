@@ -76,7 +76,7 @@ void draw(){
 						&& abs2(objectShapes[lastFrameObjetsToDraw[s].type].pixels[i].p.y * PIXEL_SIZE + y + lastFrameObjetsToDraw[s].origin.y - SYSTEM_SCREEN_LENGTH / 2) < SYSTEM_SCREEN_LENGTH / 2 - 50)
 						put_pixel_raw(
 							x_y_to_raw(objectShapes[lastFrameObjetsToDraw[s].type].pixels[i].p.x * PIXEL_SIZE + x, objectShapes[lastFrameObjetsToDraw[s].type].pixels[i].p.y * PIXEL_SIZE + y) + point_to_raw(lastFrameObjetsToDraw[s].origin), 
-							VIDEO_COLOR_BLACK);
+								VIDEO_COLOR_BLACK);
 	for(uint32_t s = 0; s < objectsToDrawCount; ++s){
 		lastFrameObjetsToDraw[s] = (Object){objectsToDraw[s]->origin, objectsToDraw[s]->type};
 		for(uint8_t i = 0; i < objectShapes[objectsToDraw[s]->type].pixelNum; ++i)
@@ -86,7 +86,7 @@ void draw(){
 						&& abs2(objectShapes[objectsToDraw[s]->type].pixels[i].p.y * PIXEL_SIZE + y + objectsToDraw[s]->origin.y - SYSTEM_SCREEN_LENGTH / 2) < SYSTEM_SCREEN_LENGTH / 2 - 50)
 						put_pixel_raw(
 							x_y_to_raw(objectShapes[objectsToDraw[s]->type].pixels[i].p.x * PIXEL_SIZE + x, objectShapes[objectsToDraw[s]->type].pixels[i].p.y * PIXEL_SIZE + y) + point_to_raw(objectsToDraw[s]->origin), 
-							objectShapes[objectsToDraw[s]->type].pixels[i].colour);
+								objectShapes[objectsToDraw[s]->type].pixels[i].colour);
 	}
 	lastFrameObjectsToDrawCount = objectsToDrawCount;
 	objectsToDrawCount = 0;
@@ -99,13 +99,13 @@ void staticDraw(Object* s){
 				for (uint8_t y = 0; y < PIXEL_SIZE; ++y)
 					put_pixel_raw(
 						x_y_to_raw(i * PIXEL_SIZE + x, j * PIXEL_SIZE + y) + point_to_raw(s->origin), 
-						objectShapes[s->type].pixels[i].colour);
+							VIDEO_COLOR_BLACK);
 	for(uint8_t i = 0; i < objectShapes[s->type].pixelNum; ++i)
 		for (uint8_t x = 0; x < PIXEL_SIZE; ++x)
 			for (uint8_t y = 0; y < PIXEL_SIZE; ++y)
 				put_pixel_raw(
 					x_y_to_raw(objectShapes[s->type].pixels[i].p.x * PIXEL_SIZE + x, objectShapes[s->type].pixels[i].p.y * PIXEL_SIZE + y) + point_to_raw(s->origin), 
-					objectShapes[s->type].pixels[i].colour);
+						objectShapes[s->type].pixels[i].colour);
 }
 
 void drawLine(Point start, Point end, VideoColor color){

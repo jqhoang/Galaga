@@ -31,11 +31,6 @@
 #include "kprintf/kprintf.h"
 
 
-/*
-*     For some reason, GCC's built in memcpy doesn't work on the Physical device
-*     (even though it works on QEMU), so until I figure this out,
-*     here is a custom copy of memcpy
-*/
 void *memcpy(void *dest, void *src, size_t n){
 	uint8_t *my_dest = (uint8_t *)dest;
 	uint8_t *my_src = (uint8_t *)src;
@@ -103,12 +98,6 @@ void main(){
 		if (c == 'd')
 			ship.origin.x += 20;
 		if (c=='p') {
-			// curEnemy = 0;
-			// for(uint8_t i = 0; i < MAX_ENEMIES; i++) {
-			// 	if(enemyArr[i].o.origin.y != -10) {
-			// 		addEnemy(i);
-			// 	}
-			// }
 			tempEnemySpawn = true;
 			frameCount = 0;
 
@@ -134,9 +123,6 @@ void main(){
 			}
 		}
 		
-		// if(enemyArr)
-		//when enemy at 0 dies, we change the array so that the next enemy becomes 0
-		//tis makes it look like the enemy that is moving did not get killed.
 		uint8_t idlingEnemies[MAX_ENEMIES];
 		uint8_t idlingEnemiesCount = 0;
 		uint8_t ship1Attack = -1;
@@ -161,7 +147,6 @@ void main(){
 		for (uint8_t enemy = 0; enemy < curEnemy; ++enemy) {
 			if (curEnemyArr[enemy] == ship1Attack || curEnemyArr[enemy] == ship2Attack)
 			{
-				//TODO only select 2 idle guys
 				uint8_t rand = get_system_timer() % 3;
 				enemyArr[curEnemyArr[enemy]].currentPath = rand + 2;
 				enemyArr[curEnemyArr[enemy]].start = enemyArr[curEnemyArr[enemy]].o.origin;
@@ -196,8 +181,7 @@ void main(){
 		}
 
 		drawShape(&ship);
-		// curEnemy = 1;
-		// kprintf("\n\r%d",curEnemy);
+		
 		for(uint8_t i = 0; i <curEnemy;i++) {
 			drawShape(&(enemyArr[curEnemyArr[i]].o));
 		}

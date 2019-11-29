@@ -75,8 +75,6 @@ bool spawnEnemies(uint8_t frames, Spawn spawn, uint8_t i);
 void startLevel(uint8_t level);
 FontCharacter* getCharacter(uint8_t c);
 
-//Level levels[NUMBER_LEVELS];
-
 // Shape ship;
 Object ship;
 Object shipLife1;
