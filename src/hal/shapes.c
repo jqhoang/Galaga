@@ -60,8 +60,12 @@ void attack1Update(EnemyObj* obj, Point p){
 		attackShoot(obj, p);
 	if (obj->pathPos == relativePathSizes[obj->currentPath]
 		|| obj->o.origin.y > SYSTEM_SCREEN_LENGTH - 25) {
-		obj->currentPath = Idle;
+		obj->currentPath = ReEntry;
 		obj->pathPos = 0;
+		
+		int framesforrentry = ((150 + obj->gridPos.y*50) - 50)/25;
+		obj->o.origin.y = 50;
+		obj->o.origin.x = p.x+(p.y*(framesforrentry * IDLE_SHIFT));
 	}
 }
 void attack2Update(EnemyObj* obj, Point p){
@@ -70,8 +74,12 @@ void attack2Update(EnemyObj* obj, Point p){
 		attackShoot(obj, p);
 	if (obj->pathPos == relativePathSizes[obj->currentPath]
 		|| obj->o.origin.y > SYSTEM_SCREEN_LENGTH - 25) {
-		obj->currentPath = Idle;
+		obj->currentPath = ReEntry;
 		obj->pathPos = 0;
+
+		int framesforrentry = ((150 + obj->gridPos.y*50) - 50)/25;
+		obj->o.origin.y = 50;
+		obj->o.origin.x = p.x+(p.y*(framesforrentry * IDLE_SHIFT));
 	}
 }
 void attack3Update(EnemyObj* obj, Point p){
@@ -80,8 +88,12 @@ void attack3Update(EnemyObj* obj, Point p){
 		attackShoot(obj, p);
 	if (obj->pathPos == relativePathSizes[obj->currentPath]
 		|| obj->o.origin.y > SYSTEM_SCREEN_LENGTH - 25) {
-		obj->currentPath = Idle;
+		obj->currentPath = ReEntry;
 		obj->pathPos = 0;
+		//rentry
+		int framesforrentry = ((150 + obj->gridPos.y*50) - 50)/25;
+		obj->o.origin.y = 50;
+		obj->o.origin.x = p.x+(p.y*(framesforrentry * IDLE_SHIFT));
 	}
 }
 void idleUpdate(EnemyObj* obj, Point p){
@@ -89,6 +101,21 @@ void idleUpdate(EnemyObj* obj, Point p){
 }
 
 void reEntryUpdate(EnemyObj* obj, Point p){
+	// int framesforrentry = ((150 + obj->gridPos.y*50) - 50)/25;
+	//p.x is current idle shift in pixels
+	//framesforrentry is how many frames to get from y:50 to the y:gridpos
+	//idle shift is number of pixels per frame
+	//
+	//x:pos in 10 frames p.x+(p.y*(framesforrentry * IDLE_SHIFT));
+
+	obj->o.origin.y +=25;
+	
+	if(obj->o.origin.y >= obj->gridPos.y) {
+		obj->currentPath = Idle;
+	}
+
+	// obj->o.speed.x = 0 + (obj->o.origin.x - (p.y*(60 - abs2(60 - (p.y*(p.x+(p.y*(FRAMES_FOR_ENTRY_FINISH * IDLE_SHIFT))))))+ obj->gridPos.x * 55 + 156))/FRAMES_FOR_ENTRY_FINISH;
+	// obj->o.speed.y = (obj->o.origin.y - (150 + obj->gridPos.y * 50))/FRAMES_FOR_ENTRY_FINISH;
 
 }
 
@@ -217,6 +244,40 @@ Object ship = (Object){
 
 
 Level levels[NUMBER_LEVELS] = {
+
+	(Level){
+		{
+			{ { {{300, 150}, Enemy}, 0, 0, { 0, 0 }, {0,0} }, 0 }
+			,
+			{ { {{250, 100}, Enemy}, 1, 0, { 250, 100 }, {6,2} }, 0 }
+			,
+			{ { {{300, 150}, Enemy}, 0, 0, { 0, 0 }, {7,0} }, 4 }
+			,
+			{ { {{250, 100}, Enemy}, 1, 0, { 250, 100 }, {1,2} }, 5 }
+			,
+			{ { {{300, 150}, Enemy}, 0, 0, { 0, 0 }, {2,1} }, 8 }
+			,
+			{ { {{250, 100}, Enemy}, 1, 0, { 250, 100 }, {5,2} }, 10 }
+			,
+			{ { {{300, 150}, Enemy}, 0, 0, { 0, 0 }, {5,1} }, 12 }
+			,
+			{ { {{250, 100}, Enemy}, 1, 0, { 250, 100 }, {2,2} }, 15 }
+			,
+			{ { {{250, 100}, Enemy}, 1, 0, { 250, 100 }, {1,1} }, 20 }
+			,
+			{ { {{250, 100}, Enemy}, 1, 0, { 250, 100 }, {6,1} }, 25 }
+			,
+			{ { {{250, 100}, Enemy}, 1, 0, { 250, 100 }, {3,1} }, 30 }
+			,
+			{ { {{250, 100}, Enemy}, 1, 0, { 250, 100 }, {4,1} }, 35 }
+			,
+			{ { {{300, 150}, Enemy}, 0, 0, { 0, 0 }, {3,2} }, 60 }
+			,
+			{ { {{300, 150}, Enemy}, 0, 0, { 0, 0 }, {4,2} }, 65 }
+		},
+		14
+		
+	},
 
 	(Level){
 		{
