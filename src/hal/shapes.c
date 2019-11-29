@@ -137,7 +137,7 @@ void shapes_init(void){
 	
 	uint8_t row = 0;
 	uint8_t col = 0;
-	for (uint8_t i = 0; i < 2; i++) {
+	for (uint8_t i = 0; i < MAX_ENEMIES; i++) {
 		enemyArr[i] = (EnemyObj) { { {156 + (col * 55), 150 +(row * 50)}, Enemy}, 2	, 0, { 156+(col * 55), 150 + (row * 50) }, { col, row } };
 		col++;
 		if ((i+1) % (MAX_ENEMIES/3) == 0 && i != 0) {

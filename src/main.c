@@ -234,7 +234,7 @@ void main(){
 			Object numberToDraw = (Object) { {digit * digitOffset + 300,720}, ObjType[7 + rightMostNumber]}
 			//drawStatic(&numberToDraw)
 			scoreCopy /= 10;
-		}
+		}*/
 		drawShape(&letterS);
 		drawShape(&letterC);
 		drawShape(&letterO);
@@ -251,7 +251,7 @@ void main(){
 		drawShape(&number8);
 		drawShape(&number9);
 		//
-		*/
+		
 		idleShift += idleDirec * IDLE_SHIFT;
 		if (idleShift == 60 || idleShift == -60)
 			idleDirec *= -1;
