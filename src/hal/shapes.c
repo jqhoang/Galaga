@@ -5,10 +5,16 @@
 #include "shapes.h"
 #include "../system.h"
 #include "../drivers/delays/delays.h"
+#include "../kprintf/kprintf.h"
 #include "hal.h"
 
 void relativePathUpdate(EnemyObj* obj){
-	obj->o.origin = addPoint(obj->start, subtractPoint(relativePath[obj->currentPath][obj->pathPos], relativePath[obj->currentPath][0]));
+	if (obj->pathDirection == Right)
+		obj->o.origin = addPoint(obj->start, subtractPoint(relativePath[obj->currentPath][obj->pathPos], relativePath[obj->currentPath][0]));
+	else{
+		Point p = subtractPoint(relativePath[obj->currentPath][obj->pathPos], relativePath[obj->currentPath][0]);
+		obj->o.origin = (Point){obj->start.x - p.x, obj->start.y + p.y};
+	}
 	++obj->pathPos;
 }
 
@@ -26,11 +32,11 @@ void pathRepeat(EnemyObj* obj){
 }
 
 void attackShoot(EnemyObj* obj, Point p){
-	for(uint8_t i = 0; i < MAX_ENEMIES; i++) 
-		if(enemyBullets[i].origin.y >= 868) {
-			float slope = (obj->o.origin.y - p.y) / (float)(obj->o.origin.x - p.x);
+	for (uint8_t i = 0; i < MAX_ENEMIES; i++) 
+		if (enemyBullets[i].origin.y >= 868) {
+			float slope = absf((obj->o.origin.y - p.y) / (float)(obj->o.origin.x - p.x));
 			float division = 35 / (slope + 1);
-			enemyBullets[i] = (Object){{obj->o.origin.x, obj->o.origin.y}, Bullet, {division, 35 - division}};
+			enemyBullets[i] = (Object){{obj->o.origin.x, obj->o.origin.y}, Bullet, {sign(p.x - obj->o.origin.x) * division, 35 - division}};
 			return;
 		}
 }
@@ -44,8 +50,8 @@ void entry1Update(EnemyObj* obj, Point p){
 	if (obj->pathPos == relativePathSizes[obj->currentPath]
 		|| obj->o.origin.y > SYSTEM_SCREEN_LENGTH - 25) {
 		obj->currentPath = Finish;
-		obj->o.speed.x = 0 + (obj->o.origin.x - (p.y*(60 - abs2(60 - (p.y*(p.x+(p.y*(FRAMES_FOR_ENTRY_FINISH * IDLE_SHIFT))))))+ obj->gridPos.x * 55 + 156))/FRAMES_FOR_ENTRY_FINISH;
-		obj->o.speed.y = (obj->o.origin.y - (150 + obj->gridPos.y * 50))/FRAMES_FOR_ENTRY_FINISH;
+		obj->o.speed.x = 0 + (obj->o.origin.x - (p.y * (60 - absf(60 - (p.y * (p.x + (p.y * (FRAMES_FOR_ENTRY_FINISH * IDLE_SHIFT))))))+ obj->gridPos.x * 55 + 156)) / (float)FRAMES_FOR_ENTRY_FINISH;
+		obj->o.speed.y = (obj->o.origin.y - (150 + obj->gridPos.y * 50)) / (float)FRAMES_FOR_ENTRY_FINISH;
 
 	}
 }
@@ -58,14 +64,14 @@ void entry2Update(EnemyObj* obj, Point p){
 	if (obj->pathPos == relativePathSizes[obj->currentPath]
 		|| obj->o.origin.y > SYSTEM_SCREEN_LENGTH - 25) {
 		obj->currentPath = Finish;
-		obj->o.speed.x = 0 + (obj->o.origin.x - (p.y*(60 - abs2(60 - (p.y*(p.x+(p.y*(FRAMES_FOR_ENTRY_FINISH * IDLE_SHIFT))))))+ obj->gridPos.x * 55 + 156))/FRAMES_FOR_ENTRY_FINISH;
-		obj->o.speed.y = (obj->o.origin.y - (150 + obj->gridPos.y * 50))/FRAMES_FOR_ENTRY_FINISH;
+		obj->o.speed.x = 0 + (obj->o.origin.x - (p.y*(60 - absf(60 - (p.y*(p.x+(p.y*(FRAMES_FOR_ENTRY_FINISH * IDLE_SHIFT))))))+ obj->gridPos.x * 55 + 156)) / (float)FRAMES_FOR_ENTRY_FINISH;
+		obj->o.speed.y = (obj->o.origin.y - (150 + obj->gridPos.y * 50)) / (float)FRAMES_FOR_ENTRY_FINISH;
 
 	}
 }
 void attack1Update(EnemyObj* obj, Point p){
 	relativePathUpdate(obj);
-	if (obj->pathPos == 15)  
+	if (obj->pathPos == 15) 
 		attackShoot(obj, p);
 	if (obj->pathPos == relativePathSizes[obj->currentPath]
 		|| obj->o.origin.y > SYSTEM_SCREEN_LENGTH - 25) {
@@ -131,11 +137,10 @@ void shapes_init(void){
 	}
 
 	for(uint8_t i = 0; i < MAX_ENEMIES; i++) {
-		// enemyArr[i] = (EnemyObj){{{0, -10}, Enemy}, Idle, 0, {0, -10}, {0, 0}};
-		enemyBullets[i] = (Object){{0, -10},Bullet};
+		enemyBullets[i] = (Object){{0, 868}, Bullet};
 	}
 	
-	uint8_t row = 0;
+	/*uint8_t row = 0;
 	uint8_t col = 0;
 	for (uint8_t i = 0; i < MAX_ENEMIES; i++) {
 		enemyArr[i] = (EnemyObj) { { {156 + (col * 55), 150 +(row * 50)}, Enemy}, 2	, 0, { 156+(col * 55), 150 + (row * 50) }, { col, row } };
@@ -146,7 +151,7 @@ void shapes_init(void){
 		}
 		curEnemyArr[i] = i;
 		curEnemy++;
-	}
+	}*/
 	
 	
 	
@@ -178,9 +183,9 @@ void startLevel(uint8_t level){
 	}
 }
 
-bool spawnEnemies(uint8_t frames,Spawn spawn) {
+bool spawnEnemies(uint8_t frames, Spawn spawn, uint8_t i) {
 	if(frames == spawn.frame) {
-		// kprintf("\n\rspawning");
+		curEnemyArr[curEnemy] = i;
 		curEnemy +=1;
 		return true;
 	}
@@ -189,33 +194,13 @@ bool spawnEnemies(uint8_t frames,Spawn spawn) {
 
 }
 
-// void addEnemy() {
-// 	curEnemy += 1;
-// }
-
 void delEnemy(uint8_t index) {
 	curEnemy -= 1;
-	// kprintf("\n\r%d",enemyArr[curEnemyArr[curEnemy]].origin.x);
 	if(index!=curEnemy) {
-		// uint8_t t = curEnemyArr[index];
-		// curEnemyArr[index] = curEnemyArr[curEnemy];
-		// curEnemyArr[curEnemy] = t;
 		curEnemyArr[index] = curEnemyArr[curEnemy];
 	}
 
 }
-
-// Shape ship = (Shape){
-// 	{
-// 	{{0, -3}, 0x000000FF},
-// 	{{0, -2}, 0x000000FF},
-// 	{{-1, -1}, 0x000000FF}, {{0, -1}, 0x000000FF}, {{1, -1}, 0x000000FF},
-// 	{{-1, 0}, 0x000000FF}, {{0, 0}, 0x000000FF}, {{1, 0}, 0x000000FF},
-// 	{{-2, 1}, 0x000000FF}, {{-1, 1}, 0x000000FF}, {{0, 1}, 0x000000FF}, {{1, 1}, 0x000000FF}, {{2, 1}, 0x000000FF},
-// 	{{-2, 2}, 0x000000FF}, {{-1, 2}, 0x000000FF}, {{0, 2}, 0x000000FF}, {{1, 2}, 0x000000FF}, {{2, 2}, 0x000000FF}
-// 	}, 18
-	
-// };
 
 Object ship = (Object){
 	{500, 750},
@@ -279,11 +264,6 @@ Level levels[NUMBER_LEVELS] = {
 	}
 };
 
-// Object enemy = (Object){
-// 	{200, 300},
-// 	Enemy
-// };
-
 Shape objectShapes[18] = { 
 	(Shape){{
 	{{-4, 4}, 0x000000FF},{{4, 4}, 0x000000FF},
@@ -297,13 +277,6 @@ Shape objectShapes[18] = {
 	{{-4,-4}, 0x000000FF},{{4,-4}, 0x000000FF}, {{0,-4}, 0x00FF0000},{{-3, -4}, 0x000000FF},{{3, -4}, 0x000000FF},
 	}, 57},
 	(Shape){{
-		// {{0, -3}, 0x000000FF},
-		// {{0, -2}, 0x000000FF},
-		// {{-1, -1}, 0x000000FF}, {{0, -1}, 0x000000FF}, {{1, -1}, 0x000000FF},
-		// {{-1, 0}, 0x000000FF}, {{0, 0}, 0x000000FF}, {{1, 0}, 0x000000FF},
-		// {{-2, 1}, 0x000000FF}, {{-1, 1}, 0x000000FF}, {{0, 1}, 0x000000FF}, {{1, 1}, 0x000000FF}, {{2, 1}, 0x000000FF},
-		// {{-2, 2}, 0x000000FF}, {{-1, 2}, 0x000000FF}, {{0, 2}, 0x000000FF}, {{1, 2}, 0x000000FF}, {{2, 2}, 0x000000FF}
-		// }, 18	
 																					{{0, -4}, 0xFBB74F},
 																{{-1, -3}, 0xFBB74F},{{0, -3}, 0x2BFD41},{{1, -3}, 0xFBB74F},
 																{{-1, -2}, 0xFBB74F},{{0, -2}, 0x2BFD41},{{1, -2}, 0xFBB74F},
@@ -316,16 +289,6 @@ Shape objectShapes[18] = {
 		}, 49	
 	},
 	(Shape){{
-		// {{0, 4}, 0xE813DC},
-		// {{-1, 3}, 0xE813DC},{{0, 3}, 0xE813DC},{{1, 3}, 0xE813DC},
-		// {{-1, 2}, 0xE813DC},{{0, 2}, 0x0DE3FF},{{1, 2}, 0xE813DC},
-		// {{0, 1}, 0x2D2DC5},
-		// {{-1, 0}, 0x2D2DC5},{{0, 0}, 0xE813DC},{{1, 0}, 0x2D2DC5},
-		// {{0, -1}, 0x2D2DC5},
-		// {{-1, -2}, 0xE813DC},{{0, -2}, 0x0DE3FF},{{1, -2}, 0xE813DC},
-		// {{-1, -3}, 0xE813DC},{{0, -3}, 0xE813DC},{{1, -3}, 0xE813DC},
-		// {{0, -4}, 0xE813DC},
-		// }, 22}
 		{{0, -2}, 0x2B2BFD},
 		{{0, -1}, 0xE813DC},
 		{{0, 0}, 0xE813DC},
