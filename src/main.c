@@ -45,20 +45,13 @@ void *memcpy(void *dest, void *src, size_t n){
 void wait_for_ten_secs(void);
 void bulletCheck(uint8_t index);
 bool collisionCheck(Object obj1, Object obj2);
-
-
-
-
-
-
-
+void drawNumbers();
 
 uint8_t lives = 3;
 uint8_t scoreIncrement = 10;
 uint16_t score = 0;
 uint16_t scoreLimit = 65530; //65536 = max size of uint16_t, 2^16
-uint8_t scoreLimitDigits = 5;
-uint8_t digitOffset = -25;
+uint8_t digitOffset = 25;
 
 void main(){
 
@@ -193,8 +186,10 @@ void main(){
 					if(collisionCheck(shipBullets[i],enemyArr[curEnemyArr[t]].o)){
 						shipBullets[i].origin.y = 0;
 						kprintf("\n\rkilled");
-						score += scoreIncrement;
-						//drawStatic()
+						if (score <= scoreLimit) {
+							score += scoreIncrement;
+							drawNumbers();
+						}
 						delEnemy(t);
 						break;
 					}
@@ -229,14 +224,6 @@ void main(){
 			drawShape(&shipLife1);
 		}
 		//need to call draw static a million times, so 5 max digits
-		uint16_t scoreCopy = score;
-		for(uint8_t digit = 0; digit < scoreLimitDigits; ++digit) {
-			uint8_t rightMostNumber = scoreCopy % 10;
-			//300, 720 needs to change to actual position
-			Object numberToDraw = (Object) { {digit * digitOffset + 300,720}, ObjType[7 + rightMostNumber]}
-			//drawStatic(&numberToDraw)
-			scoreCopy /= 10;
-		}*/
 		drawShape(&letterS);
 		drawShape(&letterC);
 		drawShape(&letterO);
@@ -252,7 +239,7 @@ void main(){
 		drawShape(&number7);
 		drawShape(&number8);
 		drawShape(&number9);
-		//
+		//*/
 		
 		idleShift += idleDirec * IDLE_SHIFT;
 		if (idleShift == 60 || idleShift == -60)
@@ -274,4 +261,17 @@ bool collisionCheck(Object obj1, Object obj2) {
 void wait_for_ten_secs(void){
     for(uint32_t i=0; i<10; i++)
         hal_cpu_delay(1000);
+}
+
+void drawNumbers() {
+	uint16_t scoreCopy = score;
+	uint8_t digit = 0;
+	while(scoreCopy) {
+		uint8_t rightMostNumber = scoreCopy % 10;
+		//300, 720 needs to change to actual position
+		Object numberToDraw = (Object) { {-(digit * digitOffset) + 300, 25}, (ObjType)(8 + rightMostNumber), { 0,0 } };
+		staticDraw(&numberToDraw);
+		scoreCopy /= 10;
+		digit++;
+	}
 }

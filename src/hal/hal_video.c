@@ -93,19 +93,19 @@ void draw(){
 }
 
 void staticDraw(Object* s){
-	for(uint8_t i = -2; i <= 2; ++i)
-		for(uint8_t j = -3; j <= 3; ++j)
-			for (uint8_t x = 0; x < PIXEL_SIZE; ++x)
-				for (uint8_t y = 0; y < PIXEL_SIZE; ++y)
+	for (uint8_t i = -2; i <= 2; ++i) 
+		for (uint8_t j = -3; j <= 3; ++j) 
+			for (uint8_t x = 0; x < PIXEL_SIZE; ++x) 
+				for (uint8_t y = 0; y < PIXEL_SIZE; ++y) 
 					put_pixel_raw(
-						x_y_to_raw(i * PIXEL_SIZE + x, j * PIXEL_SIZE + y) + point_to_raw(s->origin), 
-							VIDEO_COLOR_BLACK);
-	for(uint8_t i = 0; i < objectShapes[s->type].pixelNum; ++i)
-		for (uint8_t x = 0; x < PIXEL_SIZE; ++x)
-			for (uint8_t y = 0; y < PIXEL_SIZE; ++y)
+						x_y_to_raw(i * PIXEL_SIZE + x, j * PIXEL_SIZE + y) + point_to_raw(s->origin),
+						VIDEO_COLOR_BLACK);
+	for (uint8_t i = 0; i < objectShapes[s->type].pixelNum; ++i) 
+		for (uint8_t x = 0; x < PIXEL_SIZE; ++x) 
+			for (uint8_t y = 0; y < PIXEL_SIZE; ++y) 
 				put_pixel_raw(
-					x_y_to_raw(objectShapes[s->type].pixels[i].p.x * PIXEL_SIZE + x, objectShapes[s->type].pixels[i].p.y * PIXEL_SIZE + y) + point_to_raw(s->origin), 
-						objectShapes[s->type].pixels[i].colour);
+					x_y_to_raw(objectShapes[s->type].pixels[i].p.x * PIXEL_SIZE + x, objectShapes[s->type].pixels[i].p.y * PIXEL_SIZE + y) + point_to_raw(s->origin),
+					objectShapes[s->type].pixels[i].colour);
 }
 
 void drawLine(Point start, Point end, VideoColor color){

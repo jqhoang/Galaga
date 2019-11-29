@@ -11,7 +11,8 @@
 // row 2 is 150 
 // row 3 is 200
 
-enum ObjType{Enemy, Ship, Bullet, S, C, O, R, E, n0, n1, n2, n3, n4, n5, n6,n7,n8,n9}; 
+//enum ObjType{Enemy, Ship, Bullet, S, C, O, R, E, n0, n1, n2, n3, n4, n5, n6,n7,n8,n9}; 
+typedef enum ObjType { Enemy, Ship, Bullet, S, C, O, R, E, n0, n1, n2, n3, n4, n5, n6, n7, n8, n9 } ObjType;
 enum Paths{Entry1, Entry2, Attack1, Attack2, Attack3, Idle, ReEntry, Finish}; 
 enum Direction{Left, Right};
 
