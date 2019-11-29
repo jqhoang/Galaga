@@ -5,10 +5,16 @@
 #include "shapes.h"
 #include "../system.h"
 #include "../drivers/delays/delays.h"
+#include "../kprintf/kprintf.h"
 #include "hal.h"
 
 void relativePathUpdate(EnemyObj* obj){
-	obj->o.origin = addPoint(obj->start, subtractPoint(relativePath[obj->currentPath][obj->pathPos], relativePath[obj->currentPath][0]));
+	if (obj->pathDirection == Right)
+		obj->o.origin = addPoint(obj->start, subtractPoint(relativePath[obj->currentPath][obj->pathPos], relativePath[obj->currentPath][0]));
+	else{
+		Point p = subtractPoint(relativePath[obj->currentPath][obj->pathPos], relativePath[obj->currentPath][0]);
+		obj->o.origin = (Point){obj->start.x - p.x, obj->start.y + p.y};
+	}
 	++obj->pathPos;
 }
 
@@ -26,11 +32,11 @@ void pathRepeat(EnemyObj* obj){
 }
 
 void attackShoot(EnemyObj* obj, Point p){
-	for(uint8_t i = 0; i < MAX_ENEMIES; i++) 
-		if(enemyBullets[i].origin.y >= 868) {
-			float slope = (obj->o.origin.y - p.y) / (float)(obj->o.origin.x - p.x);
+	for (uint8_t i = 0; i < MAX_ENEMIES; i++) 
+		if (enemyBullets[i].origin.y >= 868) {
+			float slope = absf((obj->o.origin.y - p.y) / (float)(obj->o.origin.x - p.x));
 			float division = 35 / (slope + 1);
-			enemyBullets[i] = (Object){{obj->o.origin.x, obj->o.origin.y}, Bullet, {division, 35 - division}};
+			enemyBullets[i] = (Object){{obj->o.origin.x, obj->o.origin.y}, Bullet, {sign(p.x - obj->o.origin.x) * division, 35 - division}};
 			return;
 		}
 }
@@ -44,8 +50,8 @@ void entry1Update(EnemyObj* obj, Point p){
 	if (obj->pathPos == relativePathSizes[obj->currentPath]
 		|| obj->o.origin.y > SYSTEM_SCREEN_LENGTH - 25) {
 		obj->currentPath = Finish;
-		obj->o.speed.x = 0 + (obj->o.origin.x - (p.y*(60 - abs2(60 - (p.y*(p.x+(p.y*(FRAMES_FOR_ENTRY_FINISH * IDLE_SHIFT))))))+ obj->gridPos.x * 55 + 156))/FRAMES_FOR_ENTRY_FINISH;
-		obj->o.speed.y = (obj->o.origin.y - (150 + obj->gridPos.y * 50))/FRAMES_FOR_ENTRY_FINISH;
+		obj->o.speed.x = 0 + (obj->o.origin.x - (p.y * (60 - absf(60 - (p.y * (p.x + (p.y * (FRAMES_FOR_ENTRY_FINISH * IDLE_SHIFT))))))+ obj->gridPos.x * 55 + 156)) / (float)FRAMES_FOR_ENTRY_FINISH;
+		obj->o.speed.y = (obj->o.origin.y - (150 + obj->gridPos.y * 50)) / (float)FRAMES_FOR_ENTRY_FINISH;
 
 	}
 }
@@ -58,14 +64,14 @@ void entry2Update(EnemyObj* obj, Point p){
 	if (obj->pathPos == relativePathSizes[obj->currentPath]
 		|| obj->o.origin.y > SYSTEM_SCREEN_LENGTH - 25) {
 		obj->currentPath = Finish;
-		obj->o.speed.x = 0 + (obj->o.origin.x - (p.y*(60 - abs2(60 - (p.y*(p.x+(p.y*(FRAMES_FOR_ENTRY_FINISH * IDLE_SHIFT))))))+ obj->gridPos.x * 55 + 156))/FRAMES_FOR_ENTRY_FINISH;
-		obj->o.speed.y = (obj->o.origin.y - (150 + obj->gridPos.y * 50))/FRAMES_FOR_ENTRY_FINISH;
+		obj->o.speed.x = 0 + (obj->o.origin.x - (p.y*(60 - absf(60 - (p.y*(p.x+(p.y*(FRAMES_FOR_ENTRY_FINISH * IDLE_SHIFT))))))+ obj->gridPos.x * 55 + 156)) / (float)FRAMES_FOR_ENTRY_FINISH;
+		obj->o.speed.y = (obj->o.origin.y - (150 + obj->gridPos.y * 50)) / (float)FRAMES_FOR_ENTRY_FINISH;
 
 	}
 }
 void attack1Update(EnemyObj* obj, Point p){
 	relativePathUpdate(obj);
-	if (obj->pathPos == 15)  
+	if (obj->pathPos == 15) 
 		attackShoot(obj, p);
 	if (obj->pathPos == relativePathSizes[obj->currentPath]
 		|| obj->o.origin.y > SYSTEM_SCREEN_LENGTH - 25) {
@@ -132,7 +138,7 @@ void shapes_init(void){
 
 	for(uint8_t i = 0; i < MAX_ENEMIES; i++) {
 		// enemyArr[i] = (EnemyObj){{{0, -10}, Enemy}, Idle, 0, {0, -10}, {0, 0}};
-		enemyBullets[i] = (Object){{0, -10},Bullet};
+		enemyBullets[i] = (Object){{0, 868}, Bullet};
 	}
 	/*
 		uint8_t row = 1;
@@ -178,9 +184,9 @@ void startLevel(uint8_t level){
 	}
 }
 
-bool spawnEnemies(uint8_t frames,Spawn spawn) {
+bool spawnEnemies(uint8_t frames, Spawn spawn, uint8_t i) {
 	if(frames == spawn.frame) {
-		// kprintf("\n\rspawning");
+		curEnemyArr[curEnemy] = i;
 		curEnemy +=1;
 		return true;
 	}
@@ -202,6 +208,9 @@ void delEnemy(uint8_t index) {
 		// curEnemyArr[curEnemy] = t;
 		curEnemyArr[index] = curEnemyArr[curEnemy];
 	}
+	for(int i = 0; i < curEnemy; ++i)
+		kprintf("%d,", curEnemyArr[i]);
+	kprintf("\n\n");
 
 }
 
