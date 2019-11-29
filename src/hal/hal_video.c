@@ -87,6 +87,8 @@ void draw(){
 	objectsToDrawCount = 0;
 }
 
+
+
 void drawLine(Point start, Point end, VideoColor color){
 	float xChange = end.x - start.x;
 	float yChange = end.y - start.y;

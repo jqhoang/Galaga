@@ -7,7 +7,7 @@
 #define NUMBER_LEVELS 1
 
 
-enum ObjType{Enemy, Ship, Bullet}; 
+enum ObjType{Enemy, Ship, Bullet, S, C, O, R, E, n0, n1, n2, n3, n4, n5, n6,n7,n8,n9}; 
 enum Paths{Entry1, Entry2, Attack1, Attack2, Attack3, Idle, ReEntry}; 
 
 typedef struct {
@@ -44,11 +44,11 @@ typedef struct {
 	Point gridPos;
 } EnemyObj;
 
-
 typedef struct {
 	Line lines[10];
-	uint32_t numLines;
+	uint8_t numLines;
 } FontCharacter;
+
 
 typedef struct {
 	 EnemyObj enemies[MAX_ENEMIES];
@@ -70,6 +70,23 @@ FontCharacter* getCharacter(uint8_t c);
 
 // Shape ship;
 Object ship;
+Object shipLife1;
+Object shipLife2;
+Object letterS;
+Object letterC;
+Object letterO;
+Object letterR;
+Object letterE;
+Object number0;
+Object number1;
+Object number2;
+Object number3;
+Object number4;
+Object number5;
+Object number6;
+Object number7;
+Object number8;
+Object number9;
 EnemyObj enemyArr[MAX_ENEMIES];
 uint8_t curEnemyArr[MAX_ENEMIES];
 uint8_t curEnemy;
@@ -78,7 +95,7 @@ void delEnemy(uint8_t index);
 Point addPoint(Point p1, Point p2);
 Point subtractPoint(Point p1, Point p2);
 
-Shape objectShapes[3];
+Shape objectShapes[18];
 Point objectSize[3];
 
 Point relativePath[5][128];
