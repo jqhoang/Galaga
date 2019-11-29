@@ -46,12 +46,15 @@ void wait_for_ten_secs(void);
 void bulletCheck(uint8_t index);
 bool collisionCheck(Object obj1, Object obj2);
 void drawNumbers();
+void drawInitialStatics();
 
 uint8_t lives = 3;
 uint8_t scoreIncrement = 10;
 uint16_t score = 0;
 uint16_t scoreLimit = 65530; //65536 = max size of uint16_t, 2^16
 uint8_t digitOffset = 25;
+unsigned long prevLife = 0;
+uint32_t invulnerabilityTime = 800000;
 
 void main(){
 
@@ -83,6 +86,10 @@ void main(){
 	int8_t idleShift = 0;
 	int8_t idleDirec = 1;
 	unsigned long prevbullet = 0;
+
+	
+	drawInitialStatics();
+
 	while(true){
     	uint8_t c=0;
 		uart0_nonblocking_getc(&c);
@@ -169,7 +176,11 @@ void main(){
 
 			//Enemy ship collision check
 			if (collisionCheck(enemyArr[curEnemyArr[enemy]].o, ship)) {
-				lives--;
+				if (get_system_timer() - prevLife >= invulnerabilityTime) {
+					kprintf("\n\rdied");
+					lives--;
+					prevLife = get_system_timer();
+				}	
 			}
 		}
 
@@ -202,7 +213,11 @@ void main(){
 				drawShape(&enemyBullets[i]);
 				if(collisionCheck(enemyBullets[i], ship)){
 					enemyBullets[i].origin.y = 868;
-					lives--;
+					if (get_system_timer() - prevLife >= invulnerabilityTime) {
+						kprintf("\n\rdied");
+						lives--;
+						prevLife = get_system_timer();
+					}
 					break;
 				}
 				enemyBullets[i].origin.x += enemyBullets[i].speed.x;
@@ -211,35 +226,13 @@ void main(){
 		}
 		draw();
 		frameCount++;
-		//Previous check for lives/score
-
-		//TODO move outside of while and call drawStatic()
 		/*
 		
 		if (lives == 3) {
-			drawShape(&shipLife1);
-			drawShape(&shipLife2);
 		}
 		else if (lives == 2) {
 			drawShape(&shipLife1);
-		}
-		//need to call draw static a million times, so 5 max digits
-		drawShape(&letterS);
-		drawShape(&letterC);
-		drawShape(&letterO);
-		drawShape(&letterR);
-		drawShape(&letterE);
-		drawShape(&number0);
-		drawShape(&number1);
-		drawShape(&number2);
-		drawShape(&number3);
-		drawShape(&number4);
-		drawShape(&number5);
-		drawShape(&number6);
-		drawShape(&number7);
-		drawShape(&number8);
-		drawShape(&number9);
-		//*/
+		}*/
 		
 		idleShift += idleDirec * IDLE_SHIFT;
 		if (idleShift == 60 || idleShift == -60)
@@ -263,15 +256,32 @@ void wait_for_ten_secs(void){
         hal_cpu_delay(1000);
 }
 
+void drawInitialStatics() {
+	staticDraw(&shipLife1);
+	staticDraw(&shipLife2);
+	staticDraw(&letterS);
+	staticDraw(&letterC);
+	staticDraw(&letterO);
+	staticDraw(&letterR);
+	staticDraw(&letterE);
+}
+
 void drawNumbers() {
 	uint16_t scoreCopy = score;
 	uint8_t digit = 0;
 	while(scoreCopy) {
 		uint8_t rightMostNumber = scoreCopy % 10;
-		//300, 720 needs to change to actual position
-		Object numberToDraw = (Object) { {-(digit * digitOffset) + 300, 25}, (ObjType)(8 + rightMostNumber), { 0,0 } };
+		Object numberToDraw = (Object) { {-(digit * digitOffset) + 500, 25}, (ObjType)(8 + rightMostNumber), { 0,0 } };
 		staticDraw(&numberToDraw);
 		scoreCopy /= 10;
 		digit++;
 	}
+}
+
+void drawShipLives() {
+	/*
+		uint8_t offset = 0;
+	if(lives == 2)
+		staticDraw()
+	*/
 }

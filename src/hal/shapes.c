@@ -207,23 +207,13 @@ Object ship = (Object){
 	Ship
 };
 
-Object shipLife1 = (Object) {{100, 720},Ship};
-Object shipLife2 = (Object) {{150, 720},Ship};
-Object letterS = (Object) {{200, 720},S};
-Object letterC = (Object) {{225, 720},C};
-Object letterO = (Object) {{250, 720},O};
-Object letterR = (Object) {{275, 720},R};
-Object letterE = (Object) {{300, 720},E};
-Object number0 = (Object) {{325, 720},n0};
-Object number1 = (Object) {{350, 720},n1};
-Object number2 = (Object) {{375, 720},n2};
-Object number3 = (Object) {{400, 720},n3};
-Object number4 = (Object) {{425, 720},n4};
-Object number5 = (Object) {{450, 720},n5};
-Object number6 = (Object) {{475, 720},n6};
-Object number7 = (Object) {{500, 720},n7};
-Object number8 = (Object) {{525, 720},n8};
-Object number9 = (Object) {{550, 720},n9};
+Object shipLife1 = (Object) {{70, 25},Ship};
+Object shipLife2 = (Object) {{120, 25},Ship};
+Object letterS = (Object) {{175, 25},S};
+Object letterC = (Object) {{200, 25},C};
+Object letterO = (Object) {{225, 25},O};
+Object letterR = (Object) {{250, 25},R};
+Object letterE = (Object) {{275, 25},E};
 
 
 
