@@ -31,11 +31,6 @@
 #include "kprintf/kprintf.h"
 
 
-/*
-*     For some reason, GCC's built in memcpy doesn't work on the Physical device
-*     (even though it works on QEMU), so until I figure this out,
-*     here is a custom copy of memcpy
-*/
 void *memcpy(void *dest, void *src, size_t n){
 	uint8_t *my_dest = (uint8_t *)dest;
 	uint8_t *my_src = (uint8_t *)src;
@@ -50,13 +45,17 @@ void *memcpy(void *dest, void *src, size_t n){
 void wait_for_ten_secs(void);
 void bulletCheck(uint8_t index);
 bool collisionCheck(Object obj1, Object obj2);
+void drawNumbers();
+void drawInitialStatics();
+void deleteShipLives();
 
-
-
-
-
-
-
+uint8_t lives = 3;
+uint8_t scoreIncrement = 10;
+uint16_t score = 0;
+uint16_t scoreLimit = 65530; //65536 = max size of uint16_t, 2^16
+uint8_t digitOffset = 25;
+unsigned long prevLife = 0;
+uint32_t invulnerabilityTime = 800000;
 
 void main(){
 
@@ -69,8 +68,6 @@ void main(){
             wait_for_ten_secs();
         }
     }
-
-
 
 	for (int i = 50; i < SYSTEM_SCREEN_WIDTH - 50; ++i)
 		put_pixel_raw(i + SYSTEM_SCREEN_WIDTH * 50, VIDEO_COLOR_WHITE);
@@ -86,24 +83,32 @@ void main(){
 	int frameCount = 0;
 	int currentLevel = 0;
 	bool tempEnemySpawn = false;
-	uint8_t spawn=0;
+	uint8_t spawn = 0;
 	int8_t idleShift = 0;
 	int8_t idleDirec = 1;
 	unsigned long prevbullet = 0;
+
+	
+	drawInitialStatics();
+
 	while(true){
     	uint8_t c=0;
 		uart0_nonblocking_getc(&c);
 		if (c == 'a')
-			ship.origin.x -= 10;
+		{
+			if (ship.origin.x - 25 >= 60)
+			{
+				ship.origin.x -= 20;
+			}
+		}
 		if (c == 'd')
-			ship.origin.x += 10;
+		{
+			if (ship.origin.x + 25 <= SYSTEM_SCREEN_WIDTH - 55)
+			{
+				ship.origin.x += 20;
+			}
+		}
 		if (c=='p') {
-			// curEnemy = 0;
-			// for(uint8_t i = 0; i < MAX_ENEMIES; i++) {
-			// 	if(enemyArr[i].o.origin.y != -10) {
-			// 		addEnemy(i);
-			// 	}
-			// }
 			tempEnemySpawn = true;
 			frameCount = 0;
 
@@ -124,25 +129,43 @@ void main(){
 
 		//this will trigger is users click p
 		if(tempEnemySpawn && spawn < levels[currentLevel].numEnemies) {
-			// kprintf("\n\r%d",spawn);
-			while(spawnEnemies(frameCount,levels[currentLevel].enemies[spawn]) && spawn < levels[currentLevel].numEnemies) {
-				// kprintf("\n\r%d change",spawn);
+			while(spawnEnemies(frameCount, levels[currentLevel].enemies[spawn], spawn) && spawn < levels[currentLevel].numEnemies) {
 				spawn++;
 			}
 		}
 		
-		// if(enemyArr)
-		//when enemy at 0 dies, we change the array so that the next enemy becomes 0
-		//tis makes it look like the enemy that is moving did not get killed.
-		
+		uint8_t idlingEnemies[MAX_ENEMIES];
+		uint8_t idlingEnemiesCount = 0;
+		uint8_t ship1Attack = -1;
+		uint8_t ship2Attack = -1;
+		if (frameCount % 100 == 0 
+			&& frameCount > levels[currentLevel].enemies[levels[currentLevel].numEnemies - 1].frame + relativePathSizes[levels[currentLevel].enemies[levels[currentLevel].numEnemies - 1].enemy.currentPath] + FRAMES_FOR_ENTRY_FINISH){
+			for (uint8_t enemy = 0; enemy < curEnemy; ++enemy) 
+				if (enemyArr[curEnemyArr[enemy]].currentPath == Idle) {
+					idlingEnemies[idlingEnemiesCount] = curEnemyArr[enemy];
+					idlingEnemiesCount++;
+				}
+			if (idlingEnemiesCount > 1) {
+				ship1Attack = idlingEnemies[get_system_timer() % idlingEnemiesCount];
+				idlingEnemies[ship1Attack] = idlingEnemies[idlingEnemiesCount];
+				idlingEnemiesCount--;
+			}
+			if (idlingEnemiesCount > 1) 
+				ship2Attack = idlingEnemies[get_system_timer() % idlingEnemiesCount];
+		}
 		
 		
 		for (uint8_t enemy = 0; enemy < curEnemy; ++enemy) {
-			if (enemyArr[curEnemyArr[enemy]].currentPath == 6 && frameCount % 40 == 0 && frameCount != 0)
+			if (curEnemyArr[enemy] == ship1Attack || curEnemyArr[enemy] == ship2Attack)
 			{
 				uint8_t rand = get_system_timer() % 3;
 				enemyArr[curEnemyArr[enemy]].currentPath = rand + 2;
 				enemyArr[curEnemyArr[enemy]].start = enemyArr[curEnemyArr[enemy]].o.origin;
+				if (enemyArr[curEnemyArr[enemy]].o.origin.x > SYSTEM_SCREEN_WIDTH / 2)
+					enemyArr[curEnemyArr[enemy]].pathDirection = Left;
+				else
+					enemyArr[curEnemyArr[enemy]].pathDirection = Right;
+
 			}
 
 			Point p = {0, 0};
@@ -152,55 +175,76 @@ void main(){
 				case Attack3:
 					p = ship.origin;
 					break;
-				
 				case Entry1:
 				case Entry2:
 				case Finish:
 					p.y = idleDirec;
 				case Idle:
 					p.x = idleShift;
-
-
 					break;
 			}
 			(*pathUpdateFuncs[enemyArr[curEnemyArr[enemy]].currentPath])(&enemyArr[curEnemyArr[enemy]], p);
+
+			//Enemy ship collision check
+			if (collisionCheck(enemyArr[curEnemyArr[enemy]].o, ship)) {
+				if (get_system_timer() - prevLife >= invulnerabilityTime) {
+					kprintf("\n\rdied");
+					lives--;
+					deleteShipLives();
+					prevLife = get_system_timer();
+				}	
+			}
 		}
 
 		drawShape(&ship);
-		// curEnemy = 1;
-		// kprintf("\n\r%d",curEnemy);
+		
 		for(uint8_t i = 0; i <curEnemy;i++) {
 			drawShape(&(enemyArr[curEnemyArr[i]].o));
 		}
 
 		for(uint8_t i = 0; i<MAX_BULLETS;i++) {
 			if(shipBullets[i].origin.y > 0) {
-				shipBullets[i].origin.y -= 35;
 				drawShape(&shipBullets[i]);
 				for(uint8_t t = 0; t <curEnemy;t++) {
 					if(collisionCheck(shipBullets[i],enemyArr[curEnemyArr[t]].o)){
 						shipBullets[i].origin.y = 0;
 						kprintf("\n\rkilled");
+						if (score <= scoreLimit) {
+							score += scoreIncrement;
+							drawNumbers();
+						}
 						delEnemy(t);
 						break;
 					}
 				}
+				shipBullets[i].origin.y -= 35;
 			}
 		}
 		for(uint8_t i = 0; i < MAX_ENEMIES; i++) {
 			if(enemyBullets[i].origin.y < 868) {
-				enemyBullets[i].origin.x += enemyBullets[i].speed.x;
-				enemyBullets[i].origin.y += enemyBullets[i].speed.y;
 				drawShape(&enemyBullets[i]);
 				if(collisionCheck(enemyBullets[i], ship)){
 					enemyBullets[i].origin.y = 868;
-					kprintf("\n\rLost a life");
+					if (get_system_timer() - prevLife >= invulnerabilityTime) {
+						kprintf("\n\rdied");
+						lives--;
+						deleteShipLives();
+						prevLife = get_system_timer();
+					}
 					break;
 				}
+				enemyBullets[i].origin.x += enemyBullets[i].speed.x;
+				enemyBullets[i].origin.y += enemyBullets[i].speed.y;
 			}
 		}
 		draw();
 		frameCount++;
+		
+		if (lives == 0) {
+			kprintf("\n\rGAME OVER!");
+			break;
+		}
+		
 		idleShift += idleDirec * IDLE_SHIFT;
 		if (idleShift == 60 || idleShift == -60)
 			idleDirec *= -1;
@@ -221,4 +265,24 @@ bool collisionCheck(Object obj1, Object obj2) {
 void wait_for_ten_secs(void){
     for(uint32_t i=0; i<10; i++)
         hal_cpu_delay(1000);
+}
+
+void drawNumbers() {
+	uint16_t scoreCopy = score;
+	uint8_t digit = 0;
+	while(scoreCopy) {
+		uint8_t rightMostNumber = scoreCopy % 10;
+		Object numberToDraw = (Object) { {-(digit * digitOffset) + 410, 25}, (ObjType)(8 + rightMostNumber), { 0,0 } };
+		staticDraw(&numberToDraw);
+		scoreCopy /= 10;
+		digit++;
+	}
+}
+
+void deleteShipLives() {
+	if (lives == 2) 
+		staticDeleteShip(&shipLife1);
+	else if (lives == 1)
+		staticDeleteShip(&shipLife2);
+	
 }

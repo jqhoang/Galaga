@@ -5,9 +5,16 @@
 #include "shapes.h"
 #include "../system.h"
 #include "../drivers/delays/delays.h"
+#include "../kprintf/kprintf.h"
+#include "hal.h"
 
 void relativePathUpdate(EnemyObj* obj){
-	obj->o.origin = addPoint(obj->start, subtractPoint(relativePath[obj->currentPath][obj->pathPos], relativePath[obj->currentPath][0]));
+	if (obj->pathDirection == Right)
+		obj->o.origin = addPoint(obj->start, subtractPoint(relativePath[obj->currentPath][obj->pathPos], relativePath[obj->currentPath][0]));
+	else{
+		Point p = subtractPoint(relativePath[obj->currentPath][obj->pathPos], relativePath[obj->currentPath][0]);
+		obj->o.origin = (Point){obj->start.x - p.x, obj->start.y + p.y};
+	}
 	++obj->pathPos;
 }
 
@@ -25,38 +32,46 @@ void pathRepeat(EnemyObj* obj){
 }
 
 void attackShoot(EnemyObj* obj, Point p){
-	for(uint8_t i = 0; i < MAX_ENEMIES; i++) 
-		if(enemyBullets[i].origin.y >= 868) {
-			float slope = (obj->o.origin.y - p.y) / (float)(obj->o.origin.x - p.x);
+	for (uint8_t i = 0; i < MAX_ENEMIES; i++) 
+		if (enemyBullets[i].origin.y >= 868) {
+			float slope = absf((obj->o.origin.y - p.y) / (float)(obj->o.origin.x - p.x));
 			float division = 35 / (slope + 1);
-			enemyBullets[i] = (Object){{obj->o.origin.x, obj->o.origin.y}, Bullet, {division, 35 - division}};
+			enemyBullets[i] = (Object){{obj->o.origin.x, obj->o.origin.y}, Bullet, {sign(p.x - obj->o.origin.x) * division, 35 - division}};
 			return;
 		}
 }
 
 void entry1Update(EnemyObj* obj, Point p){
-	pathUpdate(obj);
+	if (obj->pathDirection == Right)
+		obj->o.origin = relativePath[obj->currentPath][obj->pathPos];
+	else
+		obj->o.origin = (Point){SYSTEM_SCREEN_WIDTH - relativePath[obj->currentPath][obj->pathPos].x, relativePath[obj->currentPath][obj->pathPos].y};
+	++obj->pathPos;
 	if (obj->pathPos == relativePathSizes[obj->currentPath]
 		|| obj->o.origin.y > SYSTEM_SCREEN_LENGTH - 25) {
 		obj->currentPath = Finish;
-		obj->o.speed.x = 0 + (obj->o.origin.x - (p.y*(60 - abs2(60 - (p.y*(p.x+(p.y*(FRAMES_FOR_ENTRY_FINISH * IDLE_SHIFT))))))+ obj->gridPos.x * 55 + 156))/FRAMES_FOR_ENTRY_FINISH;
-		obj->o.speed.y = (obj->o.origin.y - (150 + obj->gridPos.y * 50))/FRAMES_FOR_ENTRY_FINISH;
+		obj->o.speed.x = 0 + (obj->o.origin.x - (p.y * (60 - absf(60 - (p.y * (p.x + (p.y * (FRAMES_FOR_ENTRY_FINISH * IDLE_SHIFT))))))+ obj->gridPos.x * 55 + 156)) / (float)FRAMES_FOR_ENTRY_FINISH;
+		obj->o.speed.y = (obj->o.origin.y - (150 + obj->gridPos.y * 50)) / (float)FRAMES_FOR_ENTRY_FINISH;
 
 	}
 }
 void entry2Update(EnemyObj* obj, Point p){
-	pathUpdate(obj);
+	if (obj->pathDirection == Left)
+		obj->o.origin = relativePath[obj->currentPath][obj->pathPos];
+	else
+		obj->o.origin = (Point){SYSTEM_SCREEN_WIDTH - relativePath[obj->currentPath][obj->pathPos].x, relativePath[obj->currentPath][obj->pathPos].y};
+	++obj->pathPos;
 	if (obj->pathPos == relativePathSizes[obj->currentPath]
 		|| obj->o.origin.y > SYSTEM_SCREEN_LENGTH - 25) {
 		obj->currentPath = Finish;
-		obj->o.speed.x = 0 + (obj->o.origin.x - (p.y*(60 - abs2(60 - (p.y*(p.x+(p.y*(FRAMES_FOR_ENTRY_FINISH * IDLE_SHIFT))))))+ obj->gridPos.x * 55 + 156))/FRAMES_FOR_ENTRY_FINISH;
-		obj->o.speed.y = (obj->o.origin.y - (150 + obj->gridPos.y * 50))/FRAMES_FOR_ENTRY_FINISH;
+		obj->o.speed.x = 0 + (obj->o.origin.x - (p.y*(60 - absf(60 - (p.y*(p.x+(p.y*(FRAMES_FOR_ENTRY_FINISH * IDLE_SHIFT))))))+ obj->gridPos.x * 55 + 156)) / (float)FRAMES_FOR_ENTRY_FINISH;
+		obj->o.speed.y = (obj->o.origin.y - (150 + obj->gridPos.y * 50)) / (float)FRAMES_FOR_ENTRY_FINISH;
 
 	}
 }
 void attack1Update(EnemyObj* obj, Point p){
 	relativePathUpdate(obj);
-	if (obj->pathPos == 15)  
+	if (obj->pathPos == 15) 
 		attackShoot(obj, p);
 	if (obj->pathPos == relativePathSizes[obj->currentPath]
 		|| obj->o.origin.y > SYSTEM_SCREEN_LENGTH - 25) {
@@ -149,23 +164,22 @@ void shapes_init(void){
 	}
 
 	for(uint8_t i = 0; i < MAX_ENEMIES; i++) {
-		// enemyArr[i] = (EnemyObj){{{0, -10}, Enemy}, Idle, 0, {0, -10}, {0, 0}};
-		enemyBullets[i] = (Object){{0, -10},Bullet};
+		enemyBullets[i] = (Object){{0, 868}, Bullet};
 	}
-	/*
-		uint8_t row = 1;
-	uint8_t col = 1;
-	for (uint8_t i = 0; i < MAX_ENEMIES; i++) {
-		enemyArr[MAX_ENEMIES - (i+1)] = (EnemyObj) { { {100 + (col * 55), row * 50}, Enemy}, 1, 0, { 100+(col * 55), row * 50 }, { col, row } };
+	
+	/*uint8_t row = 0;
+	uint8_t col = 0;
+	for (uint8_t i = 0; i < 2; i++) {
+		enemyArr[i] = (EnemyObj) { { {156 + (col * 55), 150 +(row * 50)}, Enemy}, 2	, 0, { 156+(col * 55), 150 + (row * 50) }, { col, row } };
 		col++;
 		if ((i+1) % (MAX_ENEMIES/3) == 0 && i != 0) {
 			row++;
-			col = 1;
+			col = 0;
 		}
 		curEnemyArr[i] = i;
 		curEnemy++;
-	}
-	*/
+	}*/
+	
 	
 	
 	//curEnemyArr[0] = MAX_ENEMIES-1;
@@ -196,9 +210,9 @@ void startLevel(uint8_t level){
 	}
 }
 
-bool spawnEnemies(uint8_t frames,Spawn spawn) {
+bool spawnEnemies(uint8_t frames, Spawn spawn, uint8_t i) {
 	if(frames == spawn.frame) {
-		// kprintf("\n\rspawning");
+		curEnemyArr[curEnemy] = i;
 		curEnemy +=1;
 		return true;
 	}
@@ -207,39 +221,46 @@ bool spawnEnemies(uint8_t frames,Spawn spawn) {
 
 }
 
-// void addEnemy() {
-// 	curEnemy += 1;
-// }
-
 void delEnemy(uint8_t index) {
 	curEnemy -= 1;
-	// kprintf("\n\r%d",enemyArr[curEnemyArr[curEnemy]].origin.x);
 	if(index!=curEnemy) {
-		// uint8_t t = curEnemyArr[index];
-		// curEnemyArr[index] = curEnemyArr[curEnemy];
-		// curEnemyArr[curEnemy] = t;
 		curEnemyArr[index] = curEnemyArr[curEnemy];
 	}
 
 }
 
-// Shape ship = (Shape){
-// 	{
-// 	{{0, -3}, 0x000000FF},
-// 	{{0, -2}, 0x000000FF},
-// 	{{-1, -1}, 0x000000FF}, {{0, -1}, 0x000000FF}, {{1, -1}, 0x000000FF},
-// 	{{-1, 0}, 0x000000FF}, {{0, 0}, 0x000000FF}, {{1, 0}, 0x000000FF},
-// 	{{-2, 1}, 0x000000FF}, {{-1, 1}, 0x000000FF}, {{0, 1}, 0x000000FF}, {{1, 1}, 0x000000FF}, {{2, 1}, 0x000000FF},
-// 	{{-2, 2}, 0x000000FF}, {{-1, 2}, 0x000000FF}, {{0, 2}, 0x000000FF}, {{1, 2}, 0x000000FF}, {{2, 2}, 0x000000FF}
-// 	}, 18
-	
-// };
-
-Object ship = (Object){
+Object ship = (Object) {
 	{500, 750},
-	Ship
+		Ship
 };
 
+Object shipLife1 = (Object) { {70, 25}, Ship };
+Object shipLife2 = (Object) { {120, 25}, Ship };
+Object letterS = (Object) { {175, 25}, S };
+Object letterC = (Object) { {200, 25}, C };
+Object letterO = (Object) { {225, 25}, O };
+Object letterR = (Object) { {250, 25}, R };
+Object letterE = (Object) { {275, 25}, E };
+Object n01 = (Object) { {310, 25}, n0 };
+Object n02 = (Object) { {335, 25}, n0 };
+Object n03 = (Object) { {360, 25}, n0 };
+Object n04 = (Object) { {385, 25}, n0 };
+Object n05 = (Object) { {410, 25}, n0 };
+
+void drawInitialStatics() {
+	staticDraw(&shipLife1);
+	staticDraw(&shipLife2);
+	staticDraw(&letterS);
+	staticDraw(&letterC);
+	staticDraw(&letterO);
+	staticDraw(&letterR);
+	staticDraw(&letterE);
+	staticDraw(&n01);
+	staticDraw(&n02);
+	staticDraw(&n03);
+	staticDraw(&n04);
+	staticDraw(&n05);
+}
 
 
 
@@ -247,33 +268,33 @@ Level levels[NUMBER_LEVELS] = {
 
 	(Level){
 		{
-			{ { {{300, 150}, Enemy}, 0, 0, { 0, 0 }, {0,0} }, 0 }
+			{ { {{300, 150}, Enemy}, 0, 0, Right, { 0, 0 }, {0,0} }, 0 }
 			,
-			{ { {{250, 100}, Enemy}, 1, 0, { 250, 100 }, {6,2} }, 0 }
+			{ { {{250, 100}, Enemy}, 1, 0, Left, { 250, 100 }, {6,2} }, 0 }
 			,
-			{ { {{300, 150}, Enemy}, 0, 0, { 0, 0 }, {7,0} }, 4 }
+			{ { {{300, 150}, Enemy}, 0, 0, Left, { 0, 0 }, {7,0} }, 4 }
 			,
-			{ { {{250, 100}, Enemy}, 1, 0, { 250, 100 }, {1,2} }, 5 }
+			{ { {{250, 100}, Enemy}, 1, 0, Right, { 250, 100 }, {1,2} }, 5 }
 			,
-			{ { {{300, 150}, Enemy}, 0, 0, { 0, 0 }, {2,1} }, 8 }
+			{ { {{300, 150}, Enemy}, 0, 0, Right, { 0, 0 }, {2,1} }, 8 }
 			,
-			{ { {{250, 100}, Enemy}, 1, 0, { 250, 100 }, {5,2} }, 10 }
+			{ { {{250, 100}, Enemy}, 1, 0, Left, { 250, 100 }, {5,2} }, 10 }
 			,
-			{ { {{300, 150}, Enemy}, 0, 0, { 0, 0 }, {5,1} }, 12 }
+			{ { {{300, 150}, Enemy}, 0, 0, Left, { 0, 0 }, {5,1} }, 12 }
 			,
-			{ { {{250, 100}, Enemy}, 1, 0, { 250, 100 }, {2,2} }, 15 }
+			{ { {{250, 100}, Enemy}, 1, 0, Right, { 250, 100 }, {2,2} }, 15 }
 			,
-			{ { {{250, 100}, Enemy}, 1, 0, { 250, 100 }, {1,1} }, 20 }
+			{ { {{250, 100}, Enemy}, 1, 0, Left, { 250, 100 }, {1,1} }, 20 }
 			,
-			{ { {{250, 100}, Enemy}, 1, 0, { 250, 100 }, {6,1} }, 25 }
+			{ { {{250, 100}, Enemy}, 1, 0, Right, { 250, 100 }, {6,1} }, 25 }
 			,
-			{ { {{250, 100}, Enemy}, 1, 0, { 250, 100 }, {3,1} }, 30 }
+			{ { {{250, 100}, Enemy}, 1, 0, Left, { 250, 100 }, {3,1} }, 30 }
 			,
-			{ { {{250, 100}, Enemy}, 1, 0, { 250, 100 }, {4,1} }, 35 }
+			{ { {{250, 100}, Enemy}, 1, 0, Right, { 250, 100 }, {4,1} }, 35 }
 			,
-			{ { {{300, 150}, Enemy}, 0, 0, { 0, 0 }, {3,2} }, 60 }
+			{ { {{300, 150}, Enemy}, 0, 0, Right, { 0, 0 }, {3,2} }, 60 }
 			,
-			{ { {{300, 150}, Enemy}, 0, 0, { 0, 0 }, {4,2} }, 65 }
+			{ { {{300, 150}, Enemy}, 0, 0, Right, { 0, 0 }, {4,2} }, 65 }
 		},
 		14
 		
@@ -314,14 +335,7 @@ Level levels[NUMBER_LEVELS] = {
 	}
 };
 
-// Object enemy = (Object){
-// 	{200, 300},
-// 	Enemy
-// };
-
-
-
-Shape objectShapes[3] = { 
+Shape objectShapes[18] = { 
 	(Shape){{
 	{{-4, 4}, 0x000000FF},{{4, 4}, 0x000000FF},
 	{{-4, 3}, 0x000000FF},{{4, 3}, 0x000000FF}, {{-1, 3}, 0x00FF0000},{{1, 3}, 0x00FF0000},
@@ -334,13 +348,6 @@ Shape objectShapes[3] = {
 	{{-4,-4}, 0x000000FF},{{4,-4}, 0x000000FF}, {{0,-4}, 0x00FF0000},{{-3, -4}, 0x000000FF},{{3, -4}, 0x000000FF},
 	}, 57},
 	(Shape){{
-		// {{0, -3}, 0x000000FF},
-		// {{0, -2}, 0x000000FF},
-		// {{-1, -1}, 0x000000FF}, {{0, -1}, 0x000000FF}, {{1, -1}, 0x000000FF},
-		// {{-1, 0}, 0x000000FF}, {{0, 0}, 0x000000FF}, {{1, 0}, 0x000000FF},
-		// {{-2, 1}, 0x000000FF}, {{-1, 1}, 0x000000FF}, {{0, 1}, 0x000000FF}, {{1, 1}, 0x000000FF}, {{2, 1}, 0x000000FF},
-		// {{-2, 2}, 0x000000FF}, {{-1, 2}, 0x000000FF}, {{0, 2}, 0x000000FF}, {{1, 2}, 0x000000FF}, {{2, 2}, 0x000000FF}
-		// }, 18	
 																					{{0, -4}, 0xFBB74F},
 																{{-1, -3}, 0xFBB74F},{{0, -3}, 0x2BFD41},{{1, -3}, 0xFBB74F},
 																{{-1, -2}, 0xFBB74F},{{0, -2}, 0x2BFD41},{{1, -2}, 0xFBB74F},
@@ -353,22 +360,114 @@ Shape objectShapes[3] = {
 		}, 49	
 	},
 	(Shape){{
-		// {{0, 4}, 0xE813DC},
-		// {{-1, 3}, 0xE813DC},{{0, 3}, 0xE813DC},{{1, 3}, 0xE813DC},
-		// {{-1, 2}, 0xE813DC},{{0, 2}, 0x0DE3FF},{{1, 2}, 0xE813DC},
-		// {{0, 1}, 0x2D2DC5},
-		// {{-1, 0}, 0x2D2DC5},{{0, 0}, 0xE813DC},{{1, 0}, 0x2D2DC5},
-		// {{0, -1}, 0x2D2DC5},
-		// {{-1, -2}, 0xE813DC},{{0, -2}, 0x0DE3FF},{{1, -2}, 0xE813DC},
-		// {{-1, -3}, 0xE813DC},{{0, -3}, 0xE813DC},{{1, -3}, 0xE813DC},
-		// {{0, -4}, 0xE813DC},
-		// }, 22}
 		{{0, -2}, 0x2B2BFD},
 		{{0, -1}, 0xE813DC},
 		{{0, 0}, 0xE813DC},
 		{{0, 1}, 0x2B2BFD},
 		{{0, 2}, 0x0DE3FF},
-		}, 5}
+		}, 5
+	},
+	(Shape) {{ // Letter S
+		{{-2, -3}, 0x0000FF},{{-2, -2}, 0x0000FF},{{-2, -1}, 0x0000FF},{{-2, 0}, 0x0000FF},{{-2,2}, 0x0000FF},{{-2,3}, 0x0000FF},
+		{{-1,-3}, 0x0000FF},{{0,-3}, 0x0000FF},{{1,-3}, 0x0000FF},{{2,-3}, 0x0000FF},
+		{{-1,0}, 0x0000FF},{{0,0}, 0x0000FF},{{1,0}, 0x0000FF},{{2,0}, 0x0000FF},
+		{{2, -3}, 0x0000FF},{{2, -2}, 0x0000FF},{{2, 1}, 0x0000FF},{{2, 0}, 0x0000FF},{{2,2}, 0x0000FF},{{2,3}, 0x0000FF},
+		{{-1,3}, 0x0000FF},{{0,3}, 0x0000FF},{{1,-3}, 0x0000FF},{{1, 3}, 0x0000FF}
+		}, 24
+	},
+	(Shape) {{//Letter C
+		{{-2, -3}, 0x0000FF},{{-2, -2}, 0x0000FF},{{-2, -1}, 0x0000FF},{{-2, 0}, 0x0000FF},{{-2, 1}, 0x0000FF},{{-2,2}, 0x0000FF},{{-2,3}, 0x0000FF},
+		{{-1, -3}, 0x0000FF},{{0, -3}, 0x0000FF},{{1, -3}, 0x0000FF},{{2, -3}, 0x0000FF},
+		{{-1, 3}, 0x0000FF},{{0, 3}, 0x0000FF},{{1, 3}, 0x0000FF},{{2, 3}, 0x0000FF},
+		{{2, -2}, 0x0000FF},{{2, 2}, 0x0000FF}
+		}, 17
+	},
+	(Shape) {{//Letter O
+		{ {-2, -3}, 0x0000FF},{ {-2, -2}, 0x0000FF },{ {-2, -1}, 0x0000FF },{ {-2, 0}, 0x0000FF },{ {-2, 1}, 0x0000FF },{ {-2,2}, 0x0000FF },{ {-2,3}, 0x0000FF },
+		{ {2, -3}, 0x0000FF },{ {2, -2}, 0x0000FF },{ {2, -1}, 0x0000FF },{ {2, 0}, 0x0000FF },{ {2, 1}, 0x0000FF },{ {2,2}, 0x0000FF },{ {2,3}, 0x0000FF },
+		{ {-1, -3}, 0x0000FF },{ {0, -3}, 0x0000FF },{ {1, -3}, 0x0000FF },{ {-1, 3}, 0x0000FF },{ {0, 3}, 0x0000FF },{ {1, 3}, 0x0000FF }
+		}, 20
+	},
+	(Shape) {{//Letter R
+		{ {-2, -3}, 0x0000FF},{ {-2, -2}, 0x0000FF },{ {-2, -1}, 0x0000FF },{ {-2, 0}, 0x0000FF },{ {-2, 1}, 0x0000FF },{ {-2,2}, 0x0000FF },{ {-2,3}, 0x0000FF },
+		{ {-1, -3}, 0x0000FF },{ {0, -3}, 0x0000FF },{ {1, -3}, 0x0000FF },
+		{ {2, -1}, 0x0000FF },{ {2, -2}, 0x0000FF },
+		{ {-1, 0}, 0x0000FF },{ {0, 0}, 0x0000FF },{ {1, 0}, 0x0000FF },
+		{ {0, 1}, 0x0000FF },{ {1, 2}, 0x0000FF },{ {2, 3}, 0x0000FF }
+		}, 18
+	},
+	(Shape) {{//Letter E
+		{ {-2, -3}, 0x0000FF},{ {-2, -2}, 0x0000FF },{ {-2, -1}, 0x0000FF },{ {-2, 0}, 0x0000FF },{ {-2, 1}, 0x0000FF },{ {-2,2}, 0x0000FF },{ {-2,3}, 0x0000FF },
+		{ {-1, -3}, 0x0000FF },{ {0, -3}, 0x0000FF },{ {1, -3}, 0x0000FF },{ {2, -3}, 0x0000FF },
+		{ {-1, 0}, 0x0000FF },{ {0, 0}, 0x0000FF },{ {1, 0}, 0x0000FF },{ {2, 0}, 0x0000FF },
+		{ {-1, 3}, 0x0000FF },{ {0, 3}, 0x0000FF },{ {1, 3}, 0x0000FF },{ {2, 3}, 0x0000FF }
+		}, 19
+	},
+	(Shape) {{//Number 0
+		{ {-2, -3}, 0xFFFFFF},{ {-2, -2}, 0xFFFFFF },{ {-2, -1}, 0xFFFFFF },{ {-2, 0}, 0xFFFFFF },{ {-2, 1}, 0xFFFFFF },{ {-2,2}, 0xFFFFFF },{ {-2,3}, 0xFFFFFF },
+		{ {2, -3}, 0xFFFFFF },{ {2, -2}, 0xFFFFFF },{ {2, -1}, 0xFFFFFF },{ {2, 0}, 0xFFFFFF },{ {2, 1}, 0xFFFFFF },{ {2,2}, 0xFFFFFF },{ {2,3}, 0xFFFFFF },
+		{ {-1, -3}, 0xFFFFFF },{ {0, -3}, 0xFFFFFF },{ {1, -3}, 0xFFFFFF },
+		{ {-1, 3}, 0xFFFFFF },{ {0, 3}, 0xFFFFFF },{ {1, 3}, 0xFFFFFF }
+		}, 20
+	},
+	(Shape) {{//Number 1
+		{ {0, -3}, 0xFFFFFF},{ {0, -2}, 0xFFFFFF },{ {0, -1}, 0xFFFFFF },{ {0, 0}, 0xFFFFFF },{ {0, 1}, 0xFFFFFF },{ {0,2}, 0xFFFFFF },{ {0,3}, 0xFFFFFF },
+		}, 7
+	},
+	(Shape) {{//Number 2
+		{ {-2, -1}, 0xFFFFFF},{ {-1, -3}, 0xFFFFFF },{ {0, -3}, 0xFFFFFF },{ {1, -3}, 0xFFFFFF },{ {2,-1}, 0xFFFFFF },
+		{ {1, 0}, 0xFFFFFF },{ {0, 1}, 0xFFFFFF },{ {-1, 2}, 0xFFFFFF },{ {-2, 3}, 0xFFFFFF },{ {-1, 3}, 0xFFFFFF },{ {0, 3}, 0xFFFFFF },{ {1, 3}, 0xFFFFFF },{ {2, 3}, 0xFFFFFF },{ {2, -2}, 0xFFFFFF },{ {-2, -2}, 0xFFFFFF },
+		}, 15
+	},
+	(Shape) {{//Number 3
+		{ {2, -3}, 0xFFFFFF},{ {2, -2}, 0xFFFFFF },{ {2, -1}, 0xFFFFFF },{ {2, 0}, 0xFFFFFF },{ {2, 1}, 0xFFFFFF },{ {2,2}, 0xFFFFFF },{ {2,3}, 0xFFFFFF },
+		{ {-1, -3}, 0xFFFFFF },{ {0, -3}, 0xFFFFFF },{ {1, -3}, 0xFFFFFF },{ {-2, -3}, 0xFFFFFF },
+		{ {-1, 0}, 0xFFFFFF },{ {0, 0}, 0xFFFFFF },{ {1, 0}, 0xFFFFFF },{ {-2, 0}, 0xFFFFFF },
+		{ {-1, 3}, 0xFFFFFF },{ {0, 3}, 0xFFFFFF },{ {1, 3}, 0xFFFFFF },{ {-2, 3}, 0xFFFFFF }
+		}, 19
+	},
+	(Shape) {{//Number 4
+		{ {2, -3}, 0xFFFFFF },{ {2, -2}, 0xFFFFFF },{ {2, -1}, 0xFFFFFF },{ {2, 0}, 0xFFFFFF },{ {2, 1}, 0xFFFFFF },{ {2,2}, 0xFFFFFF },{ {2,3}, 0xFFFFFF },
+		{ {-1, 0}, 0xFFFFFF },{ {0, 0}, 0xFFFFFF },{ {1, 0}, 0xFFFFFF },
+		{ {-2, -3}, 0xFFFFFF },{ {-2, -2}, 0xFFFFFF },{ {-2, -1}, 0xFFFFFF },{ {-2, 0}, 0xFFFFFF }
+		}, 14
+	},	
+	(Shape) {{//Number 5
+		{ {2, -3}, 0xFFFFFF},{ {-2, -2}, 0xFFFFFF },{ {-2, -1}, 0xFFFFFF },{ {2, 0}, 0xFFFFFF },{ {2, 1}, 0xFFFFFF },{ {2,2}, 0xFFFFFF },{ {2,3}, 0xFFFFFF },
+		{ {-1, -3}, 0xFFFFFF },{ {0, -3}, 0xFFFFFF },{ {1, -3}, 0xFFFFFF },{ {-2, -3}, 0xFFFFFF },
+		{ {-1, 0}, 0xFFFFFF },{ {0, 0}, 0xFFFFFF },{ {1, 0}, 0xFFFFFF },{ {-2, 0}, 0xFFFFFF },
+		{ {-1, 3}, 0xFFFFFF },{ {0, 3}, 0xFFFFFF },{ {1, 3}, 0xFFFFFF },{ {-2, 3}, 0xFFFFFF }
+		}, 19
+	},
+	(Shape) {{//Number 6
+		{ {2, -3}, 0xFFFFFF},{ {-2, -2}, 0xFFFFFF },{ {-2, -1}, 0xFFFFFF },{ {2, 0}, 0xFFFFFF },{ {2, 1}, 0xFFFFFF },{ {2,2}, 0xFFFFFF },{ {2,3}, 0xFFFFFF },
+		{ {-1, -3}, 0xFFFFFF },{ {0, -3}, 0xFFFFFF },{ {1, -3}, 0xFFFFFF },{ {-2, -3}, 0xFFFFFF },
+		{ {-1, 0}, 0xFFFFFF },{ {0, 0}, 0xFFFFFF },{ {1, 0}, 0xFFFFFF },{ {-2, 0}, 0xFFFFFF },
+		{ {-1, 3}, 0xFFFFFF },{ {0, 3}, 0xFFFFFF },{ {1, 3}, 0xFFFFFF },{ {-2, 3}, 0xFFFFFF },
+		{ {-2, 1}, 0xFFFFFF },{ {-2, 2}, 0xFFFFFF }
+		}, 21
+	},
+	(Shape) {{//Number 7
+		{ {-2, -3}, 0xFFFFFF},{ { -1, -3}, 0xFFFFFF},{ {0, -3}, 0xFFFFFF },{ {1, -3}, 0xFFFFFF },{ { -1, -3}, 0xFFFFFF },{ {2, -3}, 0xFFFFFF },
+		{ {2, -2}, 0xFFFFFF },{ {2, -1}, 0xFFFFFF },{ {2, 0}, 0xFFFFFF },{ {2, 1}, 0xFFFFFF },{ {2,2}, 0xFFFFFF },{ {2,3}, 0xFFFFFF }
+		}, 12
+	},
+	(Shape) {{//Number 8
+		{ {2, -3}, 0xFFFFFF},{ {-2, -2}, 0xFFFFFF },{ {-2, -1}, 0xFFFFFF },{ {2, 0}, 0xFFFFFF },{ {2, 1}, 0xFFFFFF },{ {2,2}, 0xFFFFFF },{ {2,3}, 0xFFFFFF },
+		{ {-1, -3}, 0xFFFFFF },{ {0, -3}, 0xFFFFFF },{ {1, -3}, 0xFFFFFF },{ {-2, -3}, 0xFFFFFF },
+		{ {-1, 0}, 0xFFFFFF },{ {0, 0}, 0xFFFFFF },{ {1, 0}, 0xFFFFFF },{ {-2, 0}, 0xFFFFFF },
+		{ {-1, 3}, 0xFFFFFF },{ {0, 3}, 0xFFFFFF },{ {1, 3}, 0xFFFFFF },{ {-2, 3}, 0xFFFFFF },
+		{ {-2, 1}, 0xFFFFFF },{ {-2, 2}, 0xFFFFFF },
+		{ {2, -2}, 0xFFFFFF },{ {2, -1}, 0xFFFFFF }
+		}, 23
+	},
+	(Shape) {{//Number 9
+		{ {2, -3}, 0xFFFFFF},{ {-2, -2}, 0xFFFFFF },{ {-2, -1}, 0xFFFFFF },{ {2, 0}, 0xFFFFFF },{ {2, 1}, 0xFFFFFF },{ {2,2}, 0xFFFFFF },{ {2,3}, 0xFFFFFF },
+		{ {-1, -3}, 0xFFFFFF },{ {0, -3}, 0xFFFFFF },{ {1, -3}, 0xFFFFFF },{ {-2, -3}, 0xFFFFFF },
+		{ {-1, 0}, 0xFFFFFF },{ {0, 0}, 0xFFFFFF },{ {1, 0}, 0xFFFFFF },{ {-2, 0}, 0xFFFFFF },
+		{ {2, -2}, 0xFFFFFF },{ {2, -1}, 0xFFFFFF }
+		}, 17
+	}
 };
 
 //size of the object, width and height 
