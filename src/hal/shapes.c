@@ -140,20 +140,20 @@ void shapes_init(void){
 		// enemyArr[i] = (EnemyObj){{{0, -10}, Enemy}, Idle, 0, {0, -10}, {0, 0}};
 		enemyBullets[i] = (Object){{0, 868}, Bullet};
 	}
-	/*
-		uint8_t row = 1;
-	uint8_t col = 1;
-	for (uint8_t i = 0; i < MAX_ENEMIES; i++) {
-		enemyArr[MAX_ENEMIES - (i+1)] = (EnemyObj) { { {100 + (col * 55), row * 50}, Enemy}, 1, 0, { 100+(col * 55), row * 50 }, { col, row } };
+	
+	uint8_t row = 0;
+	uint8_t col = 0;
+	for (uint8_t i = 0; i < 2; i++) {
+		enemyArr[i] = (EnemyObj) { { {156 + (col * 55), 150 +(row * 50)}, Enemy}, 2	, 0, { 156+(col * 55), 150 + (row * 50) }, { col, row } };
 		col++;
 		if ((i+1) % (MAX_ENEMIES/3) == 0 && i != 0) {
 			row++;
-			col = 1;
+			col = 0;
 		}
 		curEnemyArr[i] = i;
 		curEnemy++;
 	}
-	*/
+	
 	
 	
 	//curEnemyArr[0] = MAX_ENEMIES-1;
@@ -231,6 +231,23 @@ Object ship = (Object){
 	Ship
 };
 
+Object shipLife1 = (Object) {{100, 720},Ship};
+Object shipLife2 = (Object) {{150, 720},Ship};
+Object letterS = (Object) {{200, 720},S};
+Object letterC = (Object) {{225, 720},C};
+Object letterO = (Object) {{250, 720},O};
+Object letterR = (Object) {{275, 720},R};
+Object letterE = (Object) {{300, 720},E};
+Object number0 = (Object) {{325, 720},n0};
+Object number1 = (Object) {{350, 720},n1};
+Object number2 = (Object) {{375, 720},n2};
+Object number3 = (Object) {{400, 720},n3};
+Object number4 = (Object) {{425, 720},n4};
+Object number5 = (Object) {{450, 720},n5};
+Object number6 = (Object) {{475, 720},n6};
+Object number7 = (Object) {{500, 720},n7};
+Object number8 = (Object) {{525, 720},n8};
+Object number9 = (Object) {{550, 720},n9};
 
 
 
@@ -276,9 +293,7 @@ Level levels[NUMBER_LEVELS] = {
 // 	Enemy
 // };
 
-
-
-Shape objectShapes[3] = { 
+Shape objectShapes[18] = { 
 	(Shape){{
 	{{-4, 4}, 0x000000FF},{{4, 4}, 0x000000FF},
 	{{-4, 3}, 0x000000FF},{{4, 3}, 0x000000FF}, {{-1, 3}, 0x00FF0000},{{1, 3}, 0x00FF0000},
@@ -325,7 +340,109 @@ Shape objectShapes[3] = {
 		{{0, 0}, 0xE813DC},
 		{{0, 1}, 0x2B2BFD},
 		{{0, 2}, 0x0DE3FF},
-		}, 5}
+		}, 5
+	},
+	(Shape) {{ // Letter S
+		{{-2, -3}, 0x0000FF},{{-2, -2}, 0x0000FF},{{-2, -1}, 0x0000FF},{{-2, 0}, 0x0000FF},{{-2,2}, 0x0000FF},{{-2,3}, 0x0000FF},
+		{{-1,-3}, 0x0000FF},{{0,-3}, 0x0000FF},{{1,-3}, 0x0000FF},{{2,-3}, 0x0000FF},
+		{{-1,0}, 0x0000FF},{{0,0}, 0x0000FF},{{1,0}, 0x0000FF},{{2,0}, 0x0000FF},
+		{{2, -3}, 0x0000FF},{{2, -2}, 0x0000FF},{{2, 1}, 0x0000FF},{{2, 0}, 0x0000FF},{{2,2}, 0x0000FF},{{2,3}, 0x0000FF},
+		{{-1,3}, 0x0000FF},{{0,3}, 0x0000FF},{{1,-3}, 0x0000FF},{{1, 3}, 0x0000FF}
+		}, 24
+	},
+	(Shape) {{//Letter C
+		{{-2, -3}, 0x0000FF},{{-2, -2}, 0x0000FF},{{-2, -1}, 0x0000FF},{{-2, 0}, 0x0000FF},{{-2, 1}, 0x0000FF},{{-2,2}, 0x0000FF},{{-2,3}, 0x0000FF},
+		{{-1, -3}, 0x0000FF},{{0, -3}, 0x0000FF},{{1, -3}, 0x0000FF},{{2, -3}, 0x0000FF},
+		{{-1, 3}, 0x0000FF},{{0, 3}, 0x0000FF},{{1, 3}, 0x0000FF},{{2, 3}, 0x0000FF},
+		{{2, -2}, 0x0000FF},{{2, 2}, 0x0000FF}
+		}, 17
+	},
+	(Shape) {{//Letter O
+		{ {-2, -3}, 0x0000FF},{ {-2, -2}, 0x0000FF },{ {-2, -1}, 0x0000FF },{ {-2, 0}, 0x0000FF },{ {-2, 1}, 0x0000FF },{ {-2,2}, 0x0000FF },{ {-2,3}, 0x0000FF },
+		{ {2, -3}, 0x0000FF },{ {2, -2}, 0x0000FF },{ {2, -1}, 0x0000FF },{ {2, 0}, 0x0000FF },{ {2, 1}, 0x0000FF },{ {2,2}, 0x0000FF },{ {2,3}, 0x0000FF },
+		{ {-1, -3}, 0x0000FF },{ {0, -3}, 0x0000FF },{ {1, -3}, 0x0000FF },{ {-1, 3}, 0x0000FF },{ {0, 3}, 0x0000FF },{ {1, 3}, 0x0000FF }
+		}, 20
+	},
+	(Shape) {{//Letter R
+		{ {-2, -3}, 0x0000FF},{ {-2, -2}, 0x0000FF },{ {-2, -1}, 0x0000FF },{ {-2, 0}, 0x0000FF },{ {-2, 1}, 0x0000FF },{ {-2,2}, 0x0000FF },{ {-2,3}, 0x0000FF },
+		{ {-1, -3}, 0x0000FF },{ {0, -3}, 0x0000FF },{ {1, -3}, 0x0000FF },
+		{ {2, -1}, 0x0000FF },{ {2, -2}, 0x0000FF },
+		{ {-1, 0}, 0x0000FF },{ {0, 0}, 0x0000FF },{ {1, 0}, 0x0000FF },
+		{ {0, 1}, 0x0000FF },{ {1, 2}, 0x0000FF },{ {2, 3}, 0x0000FF }
+		}, 18
+	},
+	(Shape) {{//Letter E
+		{ {-2, -3}, 0x0000FF},{ {-2, -2}, 0x0000FF },{ {-2, -1}, 0x0000FF },{ {-2, 0}, 0x0000FF },{ {-2, 1}, 0x0000FF },{ {-2,2}, 0x0000FF },{ {-2,3}, 0x0000FF },
+		{ {-1, -3}, 0x0000FF },{ {0, -3}, 0x0000FF },{ {1, -3}, 0x0000FF },{ {2, -3}, 0x0000FF },
+		{ {-1, 0}, 0x0000FF },{ {0, 0}, 0x0000FF },{ {1, 0}, 0x0000FF },{ {2, 0}, 0x0000FF },
+		{ {-1, 3}, 0x0000FF },{ {0, 3}, 0x0000FF },{ {1, 3}, 0x0000FF },{ {2, 3}, 0x0000FF }
+		}, 19
+	},
+	(Shape) {{//Number 0
+		{ {-2, -3}, 0xFFFFFF},{ {-2, -2}, 0xFFFFFF },{ {-2, -1}, 0xFFFFFF },{ {-2, 0}, 0xFFFFFF },{ {-2, 1}, 0xFFFFFF },{ {-2,2}, 0xFFFFFF },{ {-2,3}, 0xFFFFFF },
+		{ {2, -3}, 0xFFFFFF },{ {2, -2}, 0xFFFFFF },{ {2, -1}, 0xFFFFFF },{ {2, 0}, 0xFFFFFF },{ {2, 1}, 0xFFFFFF },{ {2,2}, 0xFFFFFF },{ {2,3}, 0xFFFFFF },
+		{ {-1, -3}, 0xFFFFFF },{ {0, -3}, 0xFFFFFF },{ {1, -3}, 0xFFFFFF },
+		{ {-1, 3}, 0xFFFFFF },{ {0, 3}, 0xFFFFFF },{ {1, 3}, 0xFFFFFF }
+		}, 20
+	},
+	(Shape) {{//Number 1
+		{ {0, -3}, 0xFFFFFF},{ {0, -2}, 0xFFFFFF },{ {0, -1}, 0xFFFFFF },{ {0, 0}, 0xFFFFFF },{ {0, 1}, 0xFFFFFF },{ {0,2}, 0xFFFFFF },{ {0,3}, 0xFFFFFF },
+		}, 7
+	},
+	(Shape) {{//Number 2
+		{ {-2, -1}, 0xFFFFFF},{ {-1, -3}, 0xFFFFFF },{ {0, -3}, 0xFFFFFF },{ {1, -3}, 0xFFFFFF },{ {2,-1}, 0xFFFFFF },
+		{ {1, 0}, 0xFFFFFF },{ {0, 1}, 0xFFFFFF },{ {-1, 2}, 0xFFFFFF },{ {-2, 3}, 0xFFFFFF },{ {-1, 3}, 0xFFFFFF },{ {0, 3}, 0xFFFFFF },{ {1, 3}, 0xFFFFFF },{ {2, 3}, 0xFFFFFF },{ {2, -2}, 0xFFFFFF },{ {-2, -2}, 0xFFFFFF },
+		}, 15
+	},
+	(Shape) {{//Number 3
+		{ {2, -3}, 0xFFFFFF},{ {2, -2}, 0xFFFFFF },{ {2, -1}, 0xFFFFFF },{ {2, 0}, 0xFFFFFF },{ {2, 1}, 0xFFFFFF },{ {2,2}, 0xFFFFFF },{ {2,3}, 0xFFFFFF },
+		{ {-1, -3}, 0xFFFFFF },{ {0, -3}, 0xFFFFFF },{ {1, -3}, 0xFFFFFF },{ {-2, -3}, 0xFFFFFF },
+		{ {-1, 0}, 0xFFFFFF },{ {0, 0}, 0xFFFFFF },{ {1, 0}, 0xFFFFFF },{ {-2, 0}, 0xFFFFFF },
+		{ {-1, 3}, 0xFFFFFF },{ {0, 3}, 0xFFFFFF },{ {1, 3}, 0xFFFFFF },{ {-2, 3}, 0xFFFFFF }
+		}, 19
+	},
+	(Shape) {{//Number 4
+		{ {2, -3}, 0xFFFFFF },{ {2, -2}, 0xFFFFFF },{ {2, -1}, 0xFFFFFF },{ {2, 0}, 0xFFFFFF },{ {2, 1}, 0xFFFFFF },{ {2,2}, 0xFFFFFF },{ {2,3}, 0xFFFFFF },
+		{ {-1, 0}, 0xFFFFFF },{ {0, 0}, 0xFFFFFF },{ {1, 0}, 0xFFFFFF },
+		{ {-2, -3}, 0xFFFFFF },{ {-2, -2}, 0xFFFFFF },{ {-2, -1}, 0xFFFFFF },{ {-2, 0}, 0xFFFFFF }
+		}, 14
+	},	
+	(Shape) {{//Number 5
+		{ {2, -3}, 0xFFFFFF},{ {-2, -2}, 0xFFFFFF },{ {-2, -1}, 0xFFFFFF },{ {2, 0}, 0xFFFFFF },{ {2, 1}, 0xFFFFFF },{ {2,2}, 0xFFFFFF },{ {2,3}, 0xFFFFFF },
+		{ {-1, -3}, 0xFFFFFF },{ {0, -3}, 0xFFFFFF },{ {1, -3}, 0xFFFFFF },{ {-2, -3}, 0xFFFFFF },
+		{ {-1, 0}, 0xFFFFFF },{ {0, 0}, 0xFFFFFF },{ {1, 0}, 0xFFFFFF },{ {-2, 0}, 0xFFFFFF },
+		{ {-1, 3}, 0xFFFFFF },{ {0, 3}, 0xFFFFFF },{ {1, 3}, 0xFFFFFF },{ {-2, 3}, 0xFFFFFF }
+		}, 19
+	},
+	(Shape) {{//Number 6
+		{ {2, -3}, 0xFFFFFF},{ {-2, -2}, 0xFFFFFF },{ {-2, -1}, 0xFFFFFF },{ {2, 0}, 0xFFFFFF },{ {2, 1}, 0xFFFFFF },{ {2,2}, 0xFFFFFF },{ {2,3}, 0xFFFFFF },
+		{ {-1, -3}, 0xFFFFFF },{ {0, -3}, 0xFFFFFF },{ {1, -3}, 0xFFFFFF },{ {-2, -3}, 0xFFFFFF },
+		{ {-1, 0}, 0xFFFFFF },{ {0, 0}, 0xFFFFFF },{ {1, 0}, 0xFFFFFF },{ {-2, 0}, 0xFFFFFF },
+		{ {-1, 3}, 0xFFFFFF },{ {0, 3}, 0xFFFFFF },{ {1, 3}, 0xFFFFFF },{ {-2, 3}, 0xFFFFFF },
+		{ {-2, 1}, 0xFFFFFF },{ {-2, 2}, 0xFFFFFF }
+		}, 21
+	},
+	(Shape) {{//Number 7
+		{ {-2, -3}, 0xFFFFFF},{ { -1, -3}, 0xFFFFFF},{ {0, -3}, 0xFFFFFF },{ {1, -3}, 0xFFFFFF },{ { -1, -3}, 0xFFFFFF },{ {2, -3}, 0xFFFFFF },
+		{ {2, -2}, 0xFFFFFF },{ {2, -1}, 0xFFFFFF },{ {2, 0}, 0xFFFFFF },{ {2, 1}, 0xFFFFFF },{ {2,2}, 0xFFFFFF },{ {2,3}, 0xFFFFFF }
+		}, 12
+	},
+	(Shape) {{//Number 8
+		{ {2, -3}, 0xFFFFFF},{ {-2, -2}, 0xFFFFFF },{ {-2, -1}, 0xFFFFFF },{ {2, 0}, 0xFFFFFF },{ {2, 1}, 0xFFFFFF },{ {2,2}, 0xFFFFFF },{ {2,3}, 0xFFFFFF },
+		{ {-1, -3}, 0xFFFFFF },{ {0, -3}, 0xFFFFFF },{ {1, -3}, 0xFFFFFF },{ {-2, -3}, 0xFFFFFF },
+		{ {-1, 0}, 0xFFFFFF },{ {0, 0}, 0xFFFFFF },{ {1, 0}, 0xFFFFFF },{ {-2, 0}, 0xFFFFFF },
+		{ {-1, 3}, 0xFFFFFF },{ {0, 3}, 0xFFFFFF },{ {1, 3}, 0xFFFFFF },{ {-2, 3}, 0xFFFFFF },
+		{ {-2, 1}, 0xFFFFFF },{ {-2, 2}, 0xFFFFFF },
+		{ {2, -2}, 0xFFFFFF },{ {2, -1}, 0xFFFFFF }
+		}, 23
+	},
+	(Shape) {{//Number 9
+		{ {2, -3}, 0xFFFFFF},{ {-2, -2}, 0xFFFFFF },{ {-2, -1}, 0xFFFFFF },{ {2, 0}, 0xFFFFFF },{ {2, 1}, 0xFFFFFF },{ {2,2}, 0xFFFFFF },{ {2,3}, 0xFFFFFF },
+		{ {-1, -3}, 0xFFFFFF },{ {0, -3}, 0xFFFFFF },{ {1, -3}, 0xFFFFFF },{ {-2, -3}, 0xFFFFFF },
+		{ {-1, 0}, 0xFFFFFF },{ {0, 0}, 0xFFFFFF },{ {1, 0}, 0xFFFFFF },{ {-2, 0}, 0xFFFFFF },
+		{ {2, -2}, 0xFFFFFF },{ {2, -1}, 0xFFFFFF }
+		}, 17
+	}
 };
 
 //size of the object, width and height 

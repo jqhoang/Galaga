@@ -58,6 +58,13 @@ bool collisionCheck(Object obj1, Object obj2);
 
 
 
+uint8_t lives = 3;
+uint8_t scoreIncrement = 10;
+uint16_t score = 0;
+uint16_t scoreLimit = 65530; //65536 = max size of uint16_t, 2^16
+uint8_t scoreLimitDigits = 5;
+uint8_t digitOffset = -25;
+
 void main(){
 
     hal_io_serial_init();
@@ -69,8 +76,6 @@ void main(){
             wait_for_ten_secs();
         }
     }
-
-
 
 	for (int i = 50; i < SYSTEM_SCREEN_WIDTH - 50; ++i)
 		put_pixel_raw(i + SYSTEM_SCREEN_WIDTH * 50, VIDEO_COLOR_WHITE);
@@ -156,6 +161,7 @@ void main(){
 		for (uint8_t enemy = 0; enemy < curEnemy; ++enemy) {
 			if (curEnemyArr[enemy] == ship1Attack || curEnemyArr[enemy] == ship2Attack)
 			{
+				//TODO only select 2 idle guys
 				uint8_t rand = get_system_timer() % 3;
 				enemyArr[curEnemyArr[enemy]].currentPath = rand + 2;
 				enemyArr[curEnemyArr[enemy]].start = enemyArr[curEnemyArr[enemy]].o.origin;
@@ -182,6 +188,11 @@ void main(){
 					break;
 			}
 			(*pathUpdateFuncs[enemyArr[curEnemyArr[enemy]].currentPath])(&enemyArr[curEnemyArr[enemy]], p);
+
+			//Enemy ship collision check
+			if (collisionCheck(enemyArr[curEnemyArr[enemy]].o, ship)) {
+				lives--;
+			}
 		}
 
 		drawShape(&ship);
@@ -198,6 +209,8 @@ void main(){
 					if(collisionCheck(shipBullets[i],enemyArr[curEnemyArr[t]].o)){
 						shipBullets[i].origin.y = 0;
 						kprintf("\n\rkilled");
+						score += scoreIncrement;
+						//drawStatic()
 						delEnemy(t);
 						break;
 					}
@@ -210,7 +223,7 @@ void main(){
 				drawShape(&enemyBullets[i]);
 				if(collisionCheck(enemyBullets[i], ship)){
 					enemyBullets[i].origin.y = 868;
-					kprintf("\n\rLost a life");
+					lives--;
 					break;
 				}
 				enemyBullets[i].origin.x += enemyBullets[i].speed.x;
@@ -219,6 +232,44 @@ void main(){
 		}
 		draw();
 		frameCount++;
+		//Previous check for lives/score
+
+		//TODO move outside of while and call drawStatic()
+		/*
+		
+		if (lives == 3) {
+			drawShape(&shipLife1);
+			drawShape(&shipLife2);
+		}
+		else if (lives == 2) {
+			drawShape(&shipLife1);
+		}
+		//need to call draw static a million times, so 5 max digits
+		uint16_t scoreCopy = score;
+		for(uint8_t digit = 0; digit < scoreLimitDigits; ++digit) {
+			uint8_t rightMostNumber = scoreCopy % 10;
+			//300, 720 needs to change to actual position
+			Object numberToDraw = (Object) { {digit * digitOffset + 300,720}, ObjType[7 + rightMostNumber]}
+			//drawStatic(&numberToDraw)
+			scoreCopy /= 10;
+		}
+		drawShape(&letterS);
+		drawShape(&letterC);
+		drawShape(&letterO);
+		drawShape(&letterR);
+		drawShape(&letterE);
+		drawShape(&number0);
+		drawShape(&number1);
+		drawShape(&number2);
+		drawShape(&number3);
+		drawShape(&number4);
+		drawShape(&number5);
+		drawShape(&number6);
+		drawShape(&number7);
+		drawShape(&number8);
+		drawShape(&number9);
+		//
+		*/
 		idleShift += idleDirec * IDLE_SHIFT;
 		if (idleShift == 60 || idleShift == -60)
 			idleDirec *= -1;
