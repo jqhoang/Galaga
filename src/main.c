@@ -47,6 +47,7 @@ void bulletCheck(uint8_t index);
 bool collisionCheck(Object obj1, Object obj2);
 void drawNumbers();
 void drawInitialStatics();
+void deleteShipLives();
 
 uint8_t lives = 3;
 uint8_t scoreIncrement = 10;
@@ -94,9 +95,19 @@ void main(){
     	uint8_t c=0;
 		uart0_nonblocking_getc(&c);
 		if (c == 'a')
-			ship.origin.x -= 20;
+		{
+			if (ship.origin.x - 25 >= 60)
+			{
+				ship.origin.x -= 20;
+			}
+		}
 		if (c == 'd')
-			ship.origin.x += 20;
+		{
+			if (ship.origin.x + 25 <= SYSTEM_SCREEN_WIDTH - 55)
+			{
+				ship.origin.x += 20;
+			}
+		}
 		if (c=='p') {
 			tempEnemySpawn = true;
 			frameCount = 0;
@@ -179,6 +190,7 @@ void main(){
 				if (get_system_timer() - prevLife >= invulnerabilityTime) {
 					kprintf("\n\rdied");
 					lives--;
+					deleteShipLives();
 					prevLife = get_system_timer();
 				}	
 			}
@@ -216,6 +228,7 @@ void main(){
 					if (get_system_timer() - prevLife >= invulnerabilityTime) {
 						kprintf("\n\rdied");
 						lives--;
+						deleteShipLives();
 						prevLife = get_system_timer();
 					}
 					break;
@@ -226,13 +239,11 @@ void main(){
 		}
 		draw();
 		frameCount++;
-		/*
 		
-		if (lives == 3) {
+		if (lives == 0) {
+			kprintf("\n\rGAME OVER!");
+			break;
 		}
-		else if (lives == 2) {
-			drawShape(&shipLife1);
-		}*/
 		
 		idleShift += idleDirec * IDLE_SHIFT;
 		if (idleShift == 60 || idleShift == -60)
@@ -278,10 +289,10 @@ void drawNumbers() {
 	}
 }
 
-void drawShipLives() {
-	/*
-		uint8_t offset = 0;
-	if(lives == 2)
-		staticDraw()
-	*/
+void deleteShipLives() {
+	if (lives == 2) 
+		staticDeleteShip(&shipLife1);
+	else if (lives == 1)
+		staticDeleteShip(&shipLife2);
+	
 }
