@@ -5,6 +5,7 @@
 #include "shapes.h"
 #include "../system.h"
 #include "../drivers/delays/delays.h"
+#include "hal.h"
 
 void relativePathUpdate(EnemyObj* obj){
 	obj->o.origin = addPoint(obj->start, subtractPoint(relativePath[obj->currentPath][obj->pathPos], relativePath[obj->currentPath][0]));
@@ -35,7 +36,11 @@ void attackShoot(EnemyObj* obj, Point p){
 }
 
 void entry1Update(EnemyObj* obj, Point p){
-	pathUpdate(obj);
+	if (obj->pathDirection == Right)
+		obj->o.origin = relativePath[obj->currentPath][obj->pathPos];
+	else
+		obj->o.origin = (Point){SYSTEM_SCREEN_WIDTH - relativePath[obj->currentPath][obj->pathPos].x, relativePath[obj->currentPath][obj->pathPos].y};
+	++obj->pathPos;
 	if (obj->pathPos == relativePathSizes[obj->currentPath]
 		|| obj->o.origin.y > SYSTEM_SCREEN_LENGTH - 25) {
 		obj->currentPath = Finish;
@@ -45,7 +50,11 @@ void entry1Update(EnemyObj* obj, Point p){
 	}
 }
 void entry2Update(EnemyObj* obj, Point p){
-	pathUpdate(obj);
+	if (obj->pathDirection == Left)
+		obj->o.origin = relativePath[obj->currentPath][obj->pathPos];
+	else
+		obj->o.origin = (Point){SYSTEM_SCREEN_WIDTH - relativePath[obj->currentPath][obj->pathPos].x, relativePath[obj->currentPath][obj->pathPos].y};
+	++obj->pathPos;
 	if (obj->pathPos == relativePathSizes[obj->currentPath]
 		|| obj->o.origin.y > SYSTEM_SCREEN_LENGTH - 25) {
 		obj->currentPath = Finish;
@@ -220,33 +229,33 @@ Level levels[NUMBER_LEVELS] = {
 
 	(Level){
 		{
-			{ { {{300, 150}, Enemy}, 0, 0, { 0, 0 }, {0,0} }, 0 }
+			{ { {{300, 150}, Enemy}, 0, 0, Right, { 0, 0 }, {0,0} }, 0 }
 			,
-			{ { {{250, 100}, Enemy}, 1, 0, { 250, 100 }, {6,2} }, 0 }
+			{ { {{250, 100}, Enemy}, 1, 0, Left, { 250, 100 }, {6,2} }, 0 }
 			,
-			{ { {{300, 150}, Enemy}, 0, 0, { 0, 0 }, {7,0} }, 4 }
+			{ { {{300, 150}, Enemy}, 0, 0, Left, { 0, 0 }, {7,0} }, 4 }
 			,
-			{ { {{250, 100}, Enemy}, 1, 0, { 250, 100 }, {1,2} }, 5 }
+			{ { {{250, 100}, Enemy}, 1, 0, Right, { 250, 100 }, {1,2} }, 5 }
 			,
-			{ { {{300, 150}, Enemy}, 0, 0, { 0, 0 }, {2,1} }, 8 }
+			{ { {{300, 150}, Enemy}, 0, 0, Right, { 0, 0 }, {2,1} }, 8 }
 			,
-			{ { {{250, 100}, Enemy}, 1, 0, { 250, 100 }, {5,2} }, 10 }
+			{ { {{250, 100}, Enemy}, 1, 0, Left, { 250, 100 }, {5,2} }, 10 }
 			,
-			{ { {{300, 150}, Enemy}, 0, 0, { 0, 0 }, {5,1} }, 12 }
+			{ { {{300, 150}, Enemy}, 0, 0, Left, { 0, 0 }, {5,1} }, 12 }
 			,
-			{ { {{250, 100}, Enemy}, 1, 0, { 250, 100 }, {2,2} }, 15 }
+			{ { {{250, 100}, Enemy}, 1, 0, Right, { 250, 100 }, {2,2} }, 15 }
 			,
-			{ { {{250, 100}, Enemy}, 1, 0, { 250, 100 }, {1,1} }, 20 }
+			{ { {{250, 100}, Enemy}, 1, 0, Left, { 250, 100 }, {1,1} }, 20 }
 			,
-			{ { {{250, 100}, Enemy}, 1, 0, { 250, 100 }, {6,1} }, 25 }
+			{ { {{250, 100}, Enemy}, 1, 0, Right, { 250, 100 }, {6,1} }, 25 }
 			,
-			{ { {{250, 100}, Enemy}, 1, 0, { 250, 100 }, {3,1} }, 30 }
+			{ { {{250, 100}, Enemy}, 1, 0, Left, { 250, 100 }, {3,1} }, 30 }
 			,
-			{ { {{250, 100}, Enemy}, 1, 0, { 250, 100 }, {4,1} }, 35 }
+			{ { {{250, 100}, Enemy}, 1, 0, Right, { 250, 100 }, {4,1} }, 35 }
 			,
-			{ { {{300, 150}, Enemy}, 0, 0, { 0, 0 }, {3,2} }, 60 }
+			{ { {{300, 150}, Enemy}, 0, 0, Right, { 0, 0 }, {3,2} }, 60 }
 			,
-			{ { {{300, 150}, Enemy}, 0, 0, { 0, 0 }, {4,2} }, 65 }
+			{ { {{300, 150}, Enemy}, 0, 0, Right, { 0, 0 }, {4,2} }, 65 }
 		},
 		14
 		
