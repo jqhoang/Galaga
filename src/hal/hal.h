@@ -16,6 +16,7 @@ typedef uint32_t VideoColor;
 
 enum SerialId { SerialA = 0, SerialB, SerialC, SerialD  };
 
+int16_t abs2(int16_t v);
 
 ///
 ///  D E L A Y

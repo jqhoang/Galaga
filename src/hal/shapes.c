@@ -5,6 +5,7 @@
 #include "shapes.h"
 #include "../system.h"
 #include "../drivers/delays/delays.h"
+#include "hal.h"
 
 void relativePathUpdate(EnemyObj* obj){
 	obj->o.origin = addPoint(obj->start, subtractPoint(relativePath[obj->currentPath][obj->pathPos], relativePath[obj->currentPath][0]));
@@ -24,42 +25,95 @@ void pathRepeat(EnemyObj* obj){
 	}
 }
 
+void attackShoot(EnemyObj* obj, Point p){
+	for(uint8_t i = 0; i < MAX_ENEMIES; i++) 
+		if(enemyBullets[i].origin.y >= 868) {
+			float slope = (obj->o.origin.y - p.y) / (float)(obj->o.origin.x - p.x);
+			float division = 35 / (slope + 1);
+			enemyBullets[i] = (Object){{obj->o.origin.x, obj->o.origin.y}, Bullet, {division, 35 - division}};
+			return;
+		}
+}
+
 void entry1Update(EnemyObj* obj, Point p){
-	pathUpdate(obj);
-	pathRepeat(obj);
+	if (obj->pathDirection == Right)
+		obj->o.origin = relativePath[obj->currentPath][obj->pathPos];
+	else
+		obj->o.origin = (Point){SYSTEM_SCREEN_WIDTH - relativePath[obj->currentPath][obj->pathPos].x, relativePath[obj->currentPath][obj->pathPos].y};
+	++obj->pathPos;
+	if (obj->pathPos == relativePathSizes[obj->currentPath]
+		|| obj->o.origin.y > SYSTEM_SCREEN_LENGTH - 25) {
+		obj->currentPath = Finish;
+		obj->o.speed.x = 0 + (obj->o.origin.x - (p.y*(60 - abs2(60 - (p.y*(p.x+(p.y*(FRAMES_FOR_ENTRY_FINISH * IDLE_SHIFT))))))+ obj->gridPos.x * 55 + 156))/FRAMES_FOR_ENTRY_FINISH;
+		obj->o.speed.y = (obj->o.origin.y - (150 + obj->gridPos.y * 50))/FRAMES_FOR_ENTRY_FINISH;
+
+	}
 }
 void entry2Update(EnemyObj* obj, Point p){
-	pathUpdate(obj);
-	pathRepeat(obj);
+	if (obj->pathDirection == Left)
+		obj->o.origin = relativePath[obj->currentPath][obj->pathPos];
+	else
+		obj->o.origin = (Point){SYSTEM_SCREEN_WIDTH - relativePath[obj->currentPath][obj->pathPos].x, relativePath[obj->currentPath][obj->pathPos].y};
+	++obj->pathPos;
+	if (obj->pathPos == relativePathSizes[obj->currentPath]
+		|| obj->o.origin.y > SYSTEM_SCREEN_LENGTH - 25) {
+		obj->currentPath = Finish;
+		obj->o.speed.x = 0 + (obj->o.origin.x - (p.y*(60 - abs2(60 - (p.y*(p.x+(p.y*(FRAMES_FOR_ENTRY_FINISH * IDLE_SHIFT))))))+ obj->gridPos.x * 55 + 156))/FRAMES_FOR_ENTRY_FINISH;
+		obj->o.speed.y = (obj->o.origin.y - (150 + obj->gridPos.y * 50))/FRAMES_FOR_ENTRY_FINISH;
+
+	}
 }
 void attack1Update(EnemyObj* obj, Point p){
 	relativePathUpdate(obj);
-	if (obj->pathPos == 15)
-		for(uint8_t i = 0; i < MAX_ENEMIES; i++) 
-			if(enemyBullets[i].origin.y >= 868) {
-				float slope = (obj->o.origin.y - p.y) / (float)(obj->o.origin.x - p.x);
-				float division = 35 / (slope + 1);
-				enemyBullets[i] = (Object){{obj->o.origin.x, obj->o.origin.y}, Bullet, {division, 35 - division}};
-				break;
-			}
-	pathRepeat(obj);
+	if (obj->pathPos == 15)  
+		attackShoot(obj, p);
+	if (obj->pathPos == relativePathSizes[obj->currentPath]
+		|| obj->o.origin.y > SYSTEM_SCREEN_LENGTH - 25) {
+		obj->currentPath = Idle;
+		obj->pathPos = 0;
+	}
 }
 void attack2Update(EnemyObj* obj, Point p){
 	relativePathUpdate(obj);
-	pathRepeat(obj);
+	if (obj->pathPos == 15)
+		attackShoot(obj, p);
+	if (obj->pathPos == relativePathSizes[obj->currentPath]
+		|| obj->o.origin.y > SYSTEM_SCREEN_LENGTH - 25) {
+		obj->currentPath = Idle;
+		obj->pathPos = 0;
+	}
 }
 void attack3Update(EnemyObj* obj, Point p){
 	relativePathUpdate(obj);
-	pathRepeat(obj);
+	if (obj->pathPos == 10)
+		attackShoot(obj, p);
+	if (obj->pathPos == relativePathSizes[obj->currentPath]
+		|| obj->o.origin.y > SYSTEM_SCREEN_LENGTH - 25) {
+		obj->currentPath = Idle;
+		obj->pathPos = 0;
+	}
 }
 void idleUpdate(EnemyObj* obj, Point p){
-
+	obj->o.origin = (Point){p.x + obj->gridPos.x * 55 + 156, 150 + obj->gridPos.y * 50};
 }
+
 void reEntryUpdate(EnemyObj* obj, Point p){
 
 }
 
-void (*pathUpdateFuncs[7])(EnemyObj*, Point) = {&entry1Update, &entry2Update, &attack1Update, &attack2Update, &attack3Update, &idleUpdate, &reEntryUpdate};
+//path 7 starting from 0
+void entryFinish(EnemyObj* obj, Point p) {
+	// obj->o.origin = (Point){p.x + obj->gridPos.x * 55 + 156, 150 + obj->gridPos.y * 50};
+	obj->o.origin.x -= obj->o.speed.x;
+	obj->o.origin.y -= obj->o.speed.y;
+	if (obj->o.origin.y < 190 + obj->gridPos.y * 50) {
+		obj->currentPath = Idle;
+		obj->pathPos = 0;
+	}
+}
+
+
+void (*pathUpdateFuncs[8])(EnemyObj*, Point) = {&entry1Update, &entry2Update, &attack1Update, &attack2Update, &attack3Update, &idleUpdate, &reEntryUpdate, &entryFinish};
 
 Point addPoint(Point p1, Point p2) {
 	return (Point) { p1.x + p2.x, p1.y + p2.y };
@@ -77,8 +131,8 @@ void shapes_init(void){
 	}
 
 	for(uint8_t i = 0; i < MAX_ENEMIES; i++) {
-		enemyArr[i] = (EnemyObj){{{0, -10}, Enemy}, Idle, 0, {0, -10}, {0, 0}};
-		enemyBullets[i] = (Object){{0, 868},Bullet};
+		// enemyArr[i] = (EnemyObj){{{0, -10}, Enemy}, Idle, 0, {0, -10}, {0, 0}};
+		enemyBullets[i] = (Object){{0, -10},Bullet};
 	}
 	
 	uint8_t row = 0;
@@ -97,30 +151,55 @@ void shapes_init(void){
 	
 	
 	//curEnemyArr[0] = MAX_ENEMIES-1;
-	/*
-		uint8_t rand = get_system_timer() % 2;
-	enemyArr[MAX_ENEMIES - 1] = (EnemyObj) { {{300, 300}, Enemy}, 0, 0, { 300, 300 }, {0, 0} };
-	uint8_t rand2 = get_system_timer() % 2;
-	enemyArr[MAX_ENEMIES - 2] = (EnemyObj) { {{300, 100}, Enemy}, 2, 0, { 300, 100 }, {0, 0} };
-	curEnemyArr[0] = MAX_ENEMIES-1;
-	*/
+
+	// uint8_t rand = get_system_timer() % 2;
+	// enemyArr[MAX_ENEMIES - 1] = (EnemyObj) { {{300, 300}, Enemy}, 3, 0, { 300, 300 }, {0, 0} };
+	// uint8_t rand2 = get_system_timer() % 2;
+	// enemyArr[MAX_ENEMIES - 2] = (EnemyObj) { {{300, 100}, Enemy}, 1, 0, { 300, 100 }, {0, 0} };
+	// curEnemyArr[0] = MAX_ENEMIES-1;
+	// for(uint8_t i = 0; i < MAX_ENEMIES; i++) {
+	// 	if(enemyArr[i].o.origin.y != -10) {
+	// 		addEnemy(i);
+	// 	}
+	// }
+
+
+	startLevel(0);
+
+}
+
+
+void startLevel(uint8_t level){
 	for(uint8_t i = 0; i < MAX_ENEMIES; i++) {
-		if(enemyArr[i].o.origin.y != -10) {
-			addEnemy(i);
-		}
+		curEnemyArr[i] = i;
 	}
+	for(uint8_t i = 0; i < levels[level].numEnemies; i++) {
+		enemyArr[i] = levels[level].enemies[i].enemy;
+	}
+}
+
+bool spawnEnemies(uint8_t frames,Spawn spawn) {
+	if(frames == spawn.frame) {
+		// kprintf("\n\rspawning");
+		curEnemy +=1;
+		return true;
+	}
+	return false;
+
 
 }
 
-void addEnemy(uint8_t index) {
-	curEnemyArr[curEnemy] = index;
-	curEnemy += 1;
-}
+// void addEnemy() {
+// 	curEnemy += 1;
+// }
 
 void delEnemy(uint8_t index) {
 	curEnemy -= 1;
 	// kprintf("\n\r%d",enemyArr[curEnemyArr[curEnemy]].origin.x);
 	if(index!=curEnemy) {
+		// uint8_t t = curEnemyArr[index];
+		// curEnemyArr[index] = curEnemyArr[curEnemy];
+		// curEnemyArr[curEnemy] = t;
 		curEnemyArr[index] = curEnemyArr[curEnemy];
 	}
 
@@ -161,13 +240,44 @@ Object number7 = (Object) {{500, 720},n7};
 Object number8 = (Object) {{525, 720},n8};
 Object number9 = (Object) {{550, 720},n9};
 
-// Level levels[NUMBER_LEVELS] = {
 
-// 	{1,0,1,0,1,0,1,0}
-// 	// ,2
 
-	
-// };
+Level levels[NUMBER_LEVELS] = {
+
+	(Level){
+		{
+			{ { {{300, 150}, Enemy}, 0, 0, Right, { 0, 0 }, {0,0} }, 0 }
+			,
+			{ { {{250, 100}, Enemy}, 1, 0, Left, { 250, 100 }, {6,2} }, 0 }
+			,
+			{ { {{300, 150}, Enemy}, 0, 0, Left, { 0, 0 }, {7,0} }, 4 }
+			,
+			{ { {{250, 100}, Enemy}, 1, 0, Right, { 250, 100 }, {1,2} }, 5 }
+			,
+			{ { {{300, 150}, Enemy}, 0, 0, Right, { 0, 0 }, {2,1} }, 8 }
+			,
+			{ { {{250, 100}, Enemy}, 1, 0, Left, { 250, 100 }, {5,2} }, 10 }
+			,
+			{ { {{300, 150}, Enemy}, 0, 0, Left, { 0, 0 }, {5,1} }, 12 }
+			,
+			{ { {{250, 100}, Enemy}, 1, 0, Right, { 250, 100 }, {2,2} }, 15 }
+			,
+			{ { {{250, 100}, Enemy}, 1, 0, Left, { 250, 100 }, {1,1} }, 20 }
+			,
+			{ { {{250, 100}, Enemy}, 1, 0, Right, { 250, 100 }, {6,1} }, 25 }
+			,
+			{ { {{250, 100}, Enemy}, 1, 0, Left, { 250, 100 }, {3,1} }, 30 }
+			,
+			{ { {{250, 100}, Enemy}, 1, 0, Right, { 250, 100 }, {4,1} }, 35 }
+			,
+			{ { {{300, 150}, Enemy}, 0, 0, Right, { 0, 0 }, {3,2} }, 60 }
+			,
+			{ { {{300, 150}, Enemy}, 0, 0, Right, { 0, 0 }, {4,2} }, 65 }
+		},
+		14
+		
+	}
+};
 
 // Object enemy = (Object){
 // 	{200, 300},

@@ -51,11 +51,12 @@ void wait_for_ten_secs(void);
 void bulletCheck(uint8_t index);
 bool collisionCheck(Object obj1, Object obj2);
 
-uint32_t zoom_title=1;
-uint32_t zoom_text=1;
-const uint8_t maxBullets = 10;
-bool changed=true;
-unsigned long prevbullet = 0;
+
+
+
+
+
+
 
 uint8_t lives = 3;
 uint8_t scoreIncrement = 10;
@@ -88,6 +89,12 @@ void main(){
 	
 	// GAME LOOP (~20 fps)
 	int frameCount = 0;
+	int currentLevel = 0;
+	bool tempEnemySpawn = false;
+	uint8_t spawn=0;
+	int8_t idleShift = 0;
+	int8_t idleDirec = 1;
+	unsigned long prevbullet = 0;
 	while(true){
     	uint8_t c=0;
 		uart0_nonblocking_getc(&c);
@@ -96,12 +103,15 @@ void main(){
 		if (c == 'd')
 			ship.origin.x += 10;
 		if (c=='p') {
-			curEnemy = 0;
-			for(uint8_t i = 0; i < MAX_ENEMIES; i++) {
-				if(enemyArr[i].o.origin.y != -10) {
-					addEnemy(i);
-				}
-			}
+			// curEnemy = 0;
+			// for(uint8_t i = 0; i < MAX_ENEMIES; i++) {
+			// 	if(enemyArr[i].o.origin.y != -10) {
+			// 		addEnemy(i);
+			// 	}
+			// }
+			tempEnemySpawn = true;
+			frameCount = 0;
+
 		}
 		if (c == 'k'){
 			// kprintf("\r\norigX:%d",abs2(-160));
@@ -115,24 +125,48 @@ void main(){
 				}
 			}
 		}
+
+
+		//this will trigger is users click p
+		if(tempEnemySpawn && spawn < levels[currentLevel].numEnemies) {
+			// kprintf("\n\r%d",spawn);
+			while(spawnEnemies(frameCount,levels[currentLevel].enemies[spawn]) && spawn < levels[currentLevel].numEnemies) {
+				// kprintf("\n\r%d change",spawn);
+				spawn++;
+			}
+		}
 		
 		// if(enemyArr)
 		//when enemy at 0 dies, we change the array so that the next enemy becomes 0
 		//tis makes it look like the enemy that is moving did not get killed.
+		
+		
+		
 		for (uint8_t enemy = 0; enemy < curEnemy; ++enemy) {
 			if (enemyArr[curEnemyArr[enemy]].currentPath == Idle && frameCount % 40 == 0 && frameCount != 0)
 			{
 				//TODO only select 2 idle guys
 				uint8_t rand = get_system_timer() % 3;
 				enemyArr[curEnemyArr[enemy]].currentPath = rand + 2;
+				enemyArr[curEnemyArr[enemy]].start = enemyArr[curEnemyArr[enemy]].o.origin;
 			}
 
 			Point p = {0, 0};
 			switch(enemyArr[curEnemyArr[enemy]].currentPath){
-				case 2:
-				case 3:
-				case 4:
+				case Attack1:
+				case Attack2:
+				case Attack3:
 					p = ship.origin;
+					break;
+				
+				case Entry1:
+				case Entry2:
+				case Finish:
+					p.y = idleDirec;
+				case Idle:
+					p.x = idleShift;
+
+
 					break;
 			}
 			(*pathUpdateFuncs[enemyArr[curEnemyArr[enemy]].currentPath])(&enemyArr[curEnemyArr[enemy]], p);
@@ -145,6 +179,7 @@ void main(){
 
 		drawShape(&ship);
 		// curEnemy = 1;
+		// kprintf("\n\r%d",curEnemy);
 		for(uint8_t i = 0; i <curEnemy;i++) {
 			drawShape(&(enemyArr[curEnemyArr[i]].o));
 		}
@@ -178,7 +213,6 @@ void main(){
 			}
 		}
 		draw();
-		hal_cpu_delay(50);
 		frameCount++;
 		//Previous check for lives/score
 
@@ -218,6 +252,10 @@ void main(){
 		drawShape(&number9);
 		//
 		*/
+		idleShift += idleDirec * IDLE_SHIFT;
+		if (idleShift == 60 || idleShift == -60)
+			idleDirec *= -1;
+		hal_cpu_delay(50);
 	}
 }
 
