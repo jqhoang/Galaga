@@ -202,18 +202,38 @@ void delEnemy(uint8_t index) {
 
 }
 
-Object ship = (Object){
+Object ship = (Object) {
 	{500, 750},
-	Ship
+		Ship
 };
 
-Object shipLife1 = (Object) {{70, 25},Ship};
-Object shipLife2 = (Object) {{120, 25},Ship};
-Object letterS = (Object) {{175, 25},S};
-Object letterC = (Object) {{200, 25},C};
-Object letterO = (Object) {{225, 25},O};
-Object letterR = (Object) {{250, 25},R};
-Object letterE = (Object) {{275, 25},E};
+Object shipLife1 = (Object) { {70, 25}, Ship };
+Object shipLife2 = (Object) { {120, 25}, Ship };
+Object letterS = (Object) { {175, 25}, S };
+Object letterC = (Object) { {200, 25}, C };
+Object letterO = (Object) { {225, 25}, O };
+Object letterR = (Object) { {250, 25}, R };
+Object letterE = (Object) { {275, 25}, E };
+Object n01 = (Object) { {310, 25}, n0 };
+Object n02 = (Object) { {335, 25}, n0 };
+Object n03 = (Object) { {360, 25}, n0 };
+Object n04 = (Object) { {385, 25}, n0 };
+Object n05 = (Object) { {410, 25}, n0 };
+
+void drawInitialStatics() {
+	staticDraw(&shipLife1);
+	staticDraw(&shipLife2);
+	staticDraw(&letterS);
+	staticDraw(&letterC);
+	staticDraw(&letterO);
+	staticDraw(&letterR);
+	staticDraw(&letterE);
+	staticDraw(&n01);
+	staticDraw(&n02);
+	staticDraw(&n03);
+	staticDraw(&n04);
+	staticDraw(&n05);
+}
 
 
 

@@ -267,22 +267,12 @@ void wait_for_ten_secs(void){
         hal_cpu_delay(1000);
 }
 
-void drawInitialStatics() {
-	staticDraw(&shipLife1);
-	staticDraw(&shipLife2);
-	staticDraw(&letterS);
-	staticDraw(&letterC);
-	staticDraw(&letterO);
-	staticDraw(&letterR);
-	staticDraw(&letterE);
-}
-
 void drawNumbers() {
 	uint16_t scoreCopy = score;
 	uint8_t digit = 0;
 	while(scoreCopy) {
 		uint8_t rightMostNumber = scoreCopy % 10;
-		Object numberToDraw = (Object) { {-(digit * digitOffset) + 500, 25}, (ObjType)(8 + rightMostNumber), { 0,0 } };
+		Object numberToDraw = (Object) { {-(digit * digitOffset) + 410, 25}, (ObjType)(8 + rightMostNumber), { 0,0 } };
 		staticDraw(&numberToDraw);
 		scoreCopy /= 10;
 		digit++;
