@@ -56,6 +56,8 @@ uint16_t scoreLimit = 65530; //65536 = max size of uint16_t, 2^16
 uint8_t digitOffset = 25;
 unsigned long prevLife = 0;
 uint32_t invulnerabilityTime = 800000;
+bool roundEnd = false;
+bool gameEnd = false;
 
 void main(){
 
@@ -81,12 +83,14 @@ void main(){
 	
 	// GAME LOOP (~20 fps)
 	int frameCount = 0;
-	int currentLevel = 1;
+	int currentLevel = 0;
 	bool tempEnemySpawn = false;
 	uint8_t spawn = 0;
 	int8_t idleShift = 0;
 	int8_t idleDirec = 1;
 	unsigned long prevbullet = 0;
+	unsigned long roundEndTime = 0;
+	unsigned long gameStart = 0;
 
 	
 	drawInitialStatics();
@@ -112,6 +116,9 @@ void main(){
 			if(tempEnemySpawn == false) {
 				tempEnemySpawn = true;
 				frameCount = 0;
+				startLevel(currentLevel);
+				kprintf("\n\rLevel: %d",currentLevel);
+				gameStart = get_system_timer();
 			}
 		}
 		if (c == 'k'){
@@ -127,10 +134,26 @@ void main(){
 			}
 		}
 
+		if(roundEnd && get_system_timer() - roundEndTime >= 10000000 && currentLevel < NUMBER_LEVELS && !gameEnd) {
+			roundEnd = false;
+			spawn = 0;
+			currentLevel += 1;
+			frameCount = 0;
+			startLevel(currentLevel);
+
+		}
+		if(gameEnd && roundEnd) {
+			kprintf("\n\rGame Finished, You Win");
+			kprintf("\n\rYour Time is %d", get_system_timer() - gameStart);
+			roundEnd =false;
+		}
+
 
 		//this will trigger is users click p
 		if(tempEnemySpawn && spawn < levels[currentLevel].numEnemies) {
 			while(spawnEnemies(frameCount, levels[currentLevel].enemies[spawn], spawn) && spawn < levels[currentLevel].numEnemies) {
+				
+				kprintf("\n\rSpawning %d", spawn);
 				spawn++;
 			}
 		}
@@ -210,12 +233,23 @@ void main(){
 				for(uint8_t t = 0; t <curEnemy;t++) {
 					if(collisionCheck(shipBullets[i],enemyArr[curEnemyArr[t]].o)){
 						shipBullets[i].origin.y = 0;
-						kprintf("\n\rkilled");
+						// kprintf("\n\rkilled");
 						if (score <= scoreLimit) {
 							score += scoreIncrement;
 							drawNumbers();
 						}
 						delEnemy(t);
+						kprintf("\n\rLcurEnemy: %d",curEnemy);
+						kprintf("\n\rSpawn %d",spawn);
+						if(spawn == levels[currentLevel].numEnemies && curEnemy == 0) {
+							roundEnd = true;
+						 	roundEndTime = get_system_timer();
+							kprintf("\n\rLevel: %d",currentLevel+1);
+							if(currentLevel + 1 == NUMBER_LEVELS) {
+								gameEnd = true;
+							}
+						}
+
 						break;
 					}
 				}

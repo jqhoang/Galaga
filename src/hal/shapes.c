@@ -120,7 +120,6 @@ void reEntryUpdate(EnemyObj* obj, Point p){
 	//x:pos in 10 frames p.x+(p.y*(framesforrentry * IDLE_SHIFT));
 	if(obj->o.origin.y == 25) {
 		int framesforrentry = ((150 + obj->gridPos.y*50) - 25)/25;
-		kprintf("\n\r%d",framesforrentry);
 		obj->o.origin.x = (p.y*(60 - abs2(60 - p.y*(p.x+(p.y*(framesforrentry * IDLE_SHIFT))))))+ obj->gridPos.x * 55 + 156;
 		// kprintf("\n\r%d",obj->o.origin.x);
 		obj->o.origin.y +=25;
@@ -199,7 +198,7 @@ void shapes_init(void){
 	// }
 
 
-	startLevel(1);
+	
 
 }
 
@@ -337,17 +336,17 @@ Level levels[NUMBER_LEVELS] = {
 			,
 			{ { {{250, 100}, Enemy}, 0, 0, Left, { 250, 100 }, {6,2} }, 160 }
 			,
-			{ { {{300, 150}, Enemy}, 1, 0, Right, { 0, 0 }, {2,2} }, 160 }
+			{ { {{300, 150}, Enemy}, 1, 0, Right, { 0, 0 }, {2,2} }, 161 }
 			,
-			{ { {{250, 100}, Enemy}, 1, 0, Left, { 250, 100 }, {5,2} }, 160 }
+			{ { {{250, 100}, Enemy}, 1, 0, Left, { 250, 100 }, {5,2} }, 161 }
 			,
 			{ { {{300, 150}, Enemy}, 0, 0, Right, { 0, 0 }, {3,2} }, 170 }
 			,
 			{ { {{250, 100}, Enemy}, 0, 0, Left, { 250, 100 }, {4,2} }, 170 }
 			,
-			{ { {{300, 150}, Enemy}, 1, 0, Right, { 0, 0 }, {3,1} }, 170 }
+			{ { {{300, 150}, Enemy}, 1, 0, Right, { 0, 0 }, {3,1} }, 171 }
 			,
-			{ { {{250, 100}, Enemy}, 1, 0, Left, { 250, 100 }, {4,1} }, 170 }		
+			{ { {{250, 100}, Enemy}, 1, 0, Left, { 250, 100 }, {4,1} }, 171 }		
 		},
 		22
 		
