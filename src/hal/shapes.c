@@ -77,10 +77,10 @@ void attack1Update(EnemyObj* obj, Point p){
 		|| obj->o.origin.y > SYSTEM_SCREEN_LENGTH - 25) {
 		obj->currentPath = ReEntry;
 		obj->pathPos = 0;
-		
-		int framesforrentry = ((150 + obj->gridPos.y*50) - 50)/25;
-		obj->o.origin.y = 50;
-		obj->o.origin.x = p.x+(p.y*(framesforrentry * IDLE_SHIFT));
+		obj->o.origin.y = 25;
+		obj->o.origin.x= 25;
+	
+
 	}
 }
 void attack2Update(EnemyObj* obj, Point p){
@@ -91,10 +91,8 @@ void attack2Update(EnemyObj* obj, Point p){
 		|| obj->o.origin.y > SYSTEM_SCREEN_LENGTH - 25) {
 		obj->currentPath = ReEntry;
 		obj->pathPos = 0;
-
-		int framesforrentry = ((150 + obj->gridPos.y*50) - 50)/25;
-		obj->o.origin.y = 50;
-		obj->o.origin.x = p.x+(p.y*(framesforrentry * IDLE_SHIFT));
+		obj->o.origin.y = 25;
+		obj->o.origin.x= 25;
 	}
 }
 void attack3Update(EnemyObj* obj, Point p){
@@ -105,10 +103,8 @@ void attack3Update(EnemyObj* obj, Point p){
 		|| obj->o.origin.y > SYSTEM_SCREEN_LENGTH - 25) {
 		obj->currentPath = ReEntry;
 		obj->pathPos = 0;
-		//rentry
-		int framesforrentry = ((150 + obj->gridPos.y*50) - 50)/25;
-		obj->o.origin.y = 50;
-		obj->o.origin.x = p.x+(p.y*(framesforrentry * IDLE_SHIFT));
+		obj->o.origin.y = 25;
+		obj->o.origin.x= 25;
 	}
 }
 void idleUpdate(EnemyObj* obj, Point p){
@@ -122,12 +118,19 @@ void reEntryUpdate(EnemyObj* obj, Point p){
 	//idle shift is number of pixels per frame
 	//
 	//x:pos in 10 frames p.x+(p.y*(framesforrentry * IDLE_SHIFT));
-
-	obj->o.origin.y +=25;
-	
-	if(obj->o.origin.y >= obj->gridPos.y) {
-		obj->currentPath = Idle;
+	if(obj->o.origin.y == 25) {
+		int framesforrentry = ((150 + obj->gridPos.y*50) - 25)/25;
+		kprintf("\n\r%d",framesforrentry);
+		obj->o.origin.x = (p.y*(60 - abs2(60 - p.y*(p.x+(p.y*(framesforrentry * IDLE_SHIFT))))))+ obj->gridPos.x * 55 + 156;
+		// kprintf("\n\r%d",obj->o.origin.x);
+		obj->o.origin.y +=25;
+	} else {
+		obj->o.origin.y +=25;
+		if(obj->o.origin.y >= 150 + obj->gridPos.y * 50) {
+			obj->currentPath = Idle;
+		}
 	}
+
 
 	// obj->o.speed.x = 0 + (obj->o.origin.x - (p.y*(60 - abs2(60 - (p.y*(p.x+(p.y*(FRAMES_FOR_ENTRY_FINISH * IDLE_SHIFT))))))+ obj->gridPos.x * 55 + 156))/FRAMES_FOR_ENTRY_FINISH;
 	// obj->o.speed.y = (obj->o.origin.y - (150 + obj->gridPos.y * 50))/FRAMES_FOR_ENTRY_FINISH;
@@ -196,7 +199,7 @@ void shapes_init(void){
 	// }
 
 
-	startLevel(0);
+	startLevel(1);
 
 }
 
@@ -302,35 +305,51 @@ Level levels[NUMBER_LEVELS] = {
 
 	(Level){
 		{
-			{ { {{300, 150}, Enemy}, 0, 0, { 0, 0 }, {0,0} }, 0 }
+			{ { {{300, 150}, Enemy}, 1, 0, Right, { 0, 0 }, {0,0} }, 0 }
 			,
-			{ { {{250, 100}, Enemy}, 1, 0, { 250, 100 }, {6,2} }, 0 }
+			{ { {{250, 100}, Enemy}, 1, 0, Left, { 250, 100 }, {7,0} }, 0 }
 			,
-			{ { {{300, 150}, Enemy}, 0, 0, { 0, 0 }, {7,0} }, 4 }
+			{ { {{300, 150}, Enemy}, 1, 0, Right, { 0, 0 }, {0,2} }, 4 }
 			,
-			{ { {{250, 100}, Enemy}, 1, 0, { 250, 100 }, {1,2} }, 5 }
+			{ { {{250, 100}, Enemy}, 1, 0, Left, { 250, 100 }, {7,2} }, 4 }
 			,
-			{ { {{300, 150}, Enemy}, 0, 0, { 0, 0 }, {2,1} }, 8 }
+			{ { {{300, 150}, Enemy}, 1, 0, Right, { 0, 0 }, {2,1} }, 8 }
 			,
-			{ { {{250, 100}, Enemy}, 1, 0, { 250, 100 }, {5,2} }, 10 }
+			{ { {{250, 100}, Enemy}, 1, 0, Left, { 250, 100 }, {5,1} }, 8 }
 			,
-			{ { {{300, 150}, Enemy}, 0, 0, { 0, 0 }, {5,1} }, 12 }
+			{ { {{300, 150}, Enemy}, 0, 0, Right, { 0, 0 }, {1,0} }, 82 }
 			,
-			{ { {{250, 100}, Enemy}, 1, 0, { 250, 100 }, {2,2} }, 15 }
+			{ { {{250, 100}, Enemy}, 0, 0, Left, { 250, 100 }, {6,0} }, 82 }
 			,
-			{ { {{250, 100}, Enemy}, 1, 0, { 250, 100 }, {1,1} }, 20 }
+			{ { {{300, 150}, Enemy}, 0, 0, Right, { 0, 0 }, {2,0} }, 86 }
 			,
-			{ { {{250, 100}, Enemy}, 1, 0, { 250, 100 }, {6,1} }, 25 }
+			{ { {{250, 100}, Enemy}, 0, 0, Left, { 250, 100 }, {5,0} }, 86 }
 			,
-			{ { {{250, 100}, Enemy}, 1, 0, { 250, 100 }, {3,1} }, 30 }
+			{ { {{300, 150}, Enemy}, 0, 0, Right, { 0, 0 }, {3,0} }, 90 }
 			,
-			{ { {{250, 100}, Enemy}, 1, 0, { 250, 100 }, {4,1} }, 35 }
+			{ { {{250, 100}, Enemy}, 0, 0, Left, { 250, 100 }, {4,0} }, 90 }
 			,
-			{ { {{300, 150}, Enemy}, 0, 0, { 0, 0 }, {3,2} }, 60 }
+			{ { {{300, 150}, Enemy}, 0, 0, Right, { 0, 0 }, {1,1} }, 94 }
 			,
-			{ { {{300, 150}, Enemy}, 0, 0, { 0, 0 }, {4,2} }, 65 }
+			{ { {{250, 100}, Enemy}, 0, 0, Left, { 250, 100 }, {6,1} }, 94 }	
+			,
+			{ { {{300, 150}, Enemy}, 0, 0, Right, { 0, 0 }, {1,2} }, 160 }
+			,
+			{ { {{250, 100}, Enemy}, 0, 0, Left, { 250, 100 }, {6,2} }, 160 }
+			,
+			{ { {{300, 150}, Enemy}, 1, 0, Right, { 0, 0 }, {2,2} }, 160 }
+			,
+			{ { {{250, 100}, Enemy}, 1, 0, Left, { 250, 100 }, {5,2} }, 160 }
+			,
+			{ { {{300, 150}, Enemy}, 0, 0, Right, { 0, 0 }, {3,2} }, 170 }
+			,
+			{ { {{250, 100}, Enemy}, 0, 0, Left, { 250, 100 }, {4,2} }, 170 }
+			,
+			{ { {{300, 150}, Enemy}, 1, 0, Right, { 0, 0 }, {3,1} }, 170 }
+			,
+			{ { {{250, 100}, Enemy}, 1, 0, Left, { 250, 100 }, {4,1} }, 170 }		
 		},
-		14
+		22
 		
 	}
 };

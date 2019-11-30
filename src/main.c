@@ -49,7 +49,7 @@ void drawNumbers();
 void drawInitialStatics();
 void deleteShipLives();
 
-uint8_t lives = 3;
+uint8_t lives = 100;
 uint8_t scoreIncrement = 10;
 uint16_t score = 0;
 uint16_t scoreLimit = 65530; //65536 = max size of uint16_t, 2^16
@@ -81,7 +81,7 @@ void main(){
 	
 	// GAME LOOP (~20 fps)
 	int frameCount = 0;
-	int currentLevel = 0;
+	int currentLevel = 1;
 	bool tempEnemySpawn = false;
 	uint8_t spawn = 0;
 	int8_t idleShift = 0;
@@ -109,9 +109,10 @@ void main(){
 			}
 		}
 		if (c=='p') {
-			tempEnemySpawn = true;
-			frameCount = 0;
-
+			if(tempEnemySpawn == false) {
+				tempEnemySpawn = true;
+				frameCount = 0;
+			}
 		}
 		if (c == 'k'){
 			// kprintf("\r\norigX:%d",abs2(-160));
@@ -178,6 +179,7 @@ void main(){
 				case Entry1:
 				case Entry2:
 				case Finish:
+				case ReEntry:
 					p.y = idleDirec;
 				case Idle:
 					p.x = idleShift;

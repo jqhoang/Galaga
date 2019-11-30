@@ -4,7 +4,7 @@
 #define PIXEL_SIZE 4
 #define MAX_BULLETS 3
 #define MAX_ENEMIES 20
-#define NUMBER_LEVELS 1
+#define NUMBER_LEVELS 2
 #define FRAMES_FOR_ENTRY_FINISH 14
 #define IDLE_SHIFT 3
 // row 1 is 100 
