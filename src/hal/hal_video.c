@@ -24,7 +24,7 @@ uint32_t hal_video_init( void ){
         return HAL_FAILED;
     }
 	//fb=(void*)((unsigned long)1007681536); // THIS IS THE NUMBER THAT THE FRAME BUFFER IS SET TO, CAN WE CHANGE THIS TO ANY NUMBER WE WANT TO INCORPORATE FRONT AND BACK FRAME BUFFERS, 3c100000f
-	kprintf( "\n\rMain Frame Buffer: %0xf", fb );
+	//kprintf( "\n\rMain Frame Buffer: %0xf", fb );
     return HAL_SUCCESS;
 }
 

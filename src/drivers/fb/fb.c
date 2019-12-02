@@ -109,7 +109,7 @@ uint32_t* fb_init()
         height=mbox[6];
         pitch=mbox[33];
         fb=(void*)((unsigned long)mbox[28]);
-		kprintf("\n\ry:%d", mbox[29]);
+		//kprintf("\n\ry:%d", mbox[29]);
     } else {
         //Failed to init screen at 32-bit 1024x768
         return NULL;

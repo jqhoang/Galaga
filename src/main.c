@@ -49,7 +49,7 @@ void drawNumbers();
 void drawInitialStatics();
 void deleteShipLives();
 
-uint8_t lives = 100;
+uint8_t lives = 3;
 uint8_t scoreIncrement = 10;
 uint16_t score = 0;
 uint16_t scoreLimit = 65530; //65536 = max size of uint16_t, 2^16
@@ -123,7 +123,7 @@ void main(){
 		}
 		if (c == 'k'){
 			// kprintf("\r\norigX:%d",abs2(-160));
-			if(get_system_timer() - prevbullet >= 150000) {
+			if(get_system_timer() - prevbullet >= 500000) {
 				for(uint8_t i = 0; i < MAX_BULLETS;i++) {
 					if(shipBullets[i].origin.y <=0) {
 						prevbullet = get_system_timer();
@@ -134,7 +134,7 @@ void main(){
 			}
 		}
 
-		if(roundEnd && get_system_timer() - roundEndTime >= 10000000 && currentLevel < NUMBER_LEVELS && !gameEnd) {
+		if(roundEnd && get_system_timer() - roundEndTime >= 5000000 && currentLevel < NUMBER_LEVELS && !gameEnd) {
 			roundEnd = false;
 			spawn = 0;
 			currentLevel += 1;
@@ -153,7 +153,7 @@ void main(){
 		if(tempEnemySpawn && spawn < levels[currentLevel].numEnemies) {
 			while(spawnEnemies(frameCount, levels[currentLevel].enemies[spawn], spawn) && spawn < levels[currentLevel].numEnemies) {
 				
-				kprintf("\n\rSpawning %d", spawn);
+				//kprintf("\n\rSpawning %d", spawn);
 				spawn++;
 			}
 		}
@@ -162,19 +162,19 @@ void main(){
 		uint8_t idlingEnemiesCount = 0;
 		uint8_t ship1Attack = -1;
 		uint8_t ship2Attack = -1;
-		if (frameCount % 100 == 0 
-			&& frameCount > levels[currentLevel].enemies[levels[currentLevel].numEnemies - 1].frame + relativePathSizes[levels[currentLevel].enemies[levels[currentLevel].numEnemies - 1].enemy.currentPath] + FRAMES_FOR_ENTRY_FINISH){
+		if (frameCount % 60 == 0 
+			&& frameCount > levels[currentLevel].enemies[levels[currentLevel].numEnemies - 1].frame + relativePathSizes[levels[currentLevel].enemies[levels[currentLevel].numEnemies - 1].enemy.currentPath] + FRAMES_FOR_ENTRY_FINISH - 40){
 			for (uint8_t enemy = 0; enemy < curEnemy; ++enemy) 
 				if (enemyArr[curEnemyArr[enemy]].currentPath == Idle) {
 					idlingEnemies[idlingEnemiesCount] = curEnemyArr[enemy];
 					idlingEnemiesCount++;
 				}
-			if (idlingEnemiesCount > 1) {
+			if (idlingEnemiesCount > 0) {
 				ship1Attack = idlingEnemies[get_system_timer() % idlingEnemiesCount];
 				idlingEnemies[ship1Attack] = idlingEnemies[idlingEnemiesCount];
 				idlingEnemiesCount--;
 			}
-			if (idlingEnemiesCount > 1) 
+			if (idlingEnemiesCount > 0) 
 				ship2Attack = idlingEnemies[get_system_timer() % idlingEnemiesCount];
 		}
 		
@@ -213,7 +213,7 @@ void main(){
 			//Enemy ship collision check
 			if (collisionCheck(enemyArr[curEnemyArr[enemy]].o, ship)) {
 				if (get_system_timer() - prevLife >= invulnerabilityTime) {
-					kprintf("\n\rdied");
+					//kprintf("\n\rdied");
 					lives--;
 					deleteShipLives();
 					prevLife = get_system_timer();
@@ -239,8 +239,8 @@ void main(){
 							drawNumbers();
 						}
 						delEnemy(t);
-						kprintf("\n\rLcurEnemy: %d",curEnemy);
-						kprintf("\n\rSpawn %d",spawn);
+						//kprintf("\n\rLcurEnemy: %d",curEnemy);
+						//kprintf("\n\rSpawn %d",spawn);
 						if(spawn == levels[currentLevel].numEnemies && curEnemy == 0) {
 							roundEnd = true;
 						 	roundEndTime = get_system_timer();
@@ -262,7 +262,7 @@ void main(){
 				if(collisionCheck(enemyBullets[i], ship)){
 					enemyBullets[i].origin.y = 868;
 					if (get_system_timer() - prevLife >= invulnerabilityTime) {
-						kprintf("\n\rdied");
+						//kprintf("\n\rdied");
 						lives--;
 						deleteShipLives();
 						prevLife = get_system_timer();

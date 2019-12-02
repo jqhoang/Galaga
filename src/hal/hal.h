@@ -50,5 +50,7 @@ int16_t abs2(int16_t v);
 void hal_video_clear( void );
 void drawShape(Object* s);
 void draw();
+void staticDraw(Object* s);
+void staticDeleteShip(Object* s);
 void clearDrawScreen();
 #endif
